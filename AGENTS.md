@@ -17,6 +17,7 @@ Run these from this directory (prefer the `make` targets; `make help` lists them
 
 - **Build the config without applying it**: `make build`
 - **Apply the config** (requires sudo): `make switch`
+- **Create the pass-cli session** (one-time, interactive): `make pass-login`
 - **Check available nix-darwin options / changelog**: `make changelog`
 - **Search for a package by name**: `nix-env -qaP | grep <name>`
 
@@ -29,7 +30,9 @@ Run these from this directory (prefer the `make` targets; `make help` lists them
 - `system.stateVersion` should not be bumped casually; see `darwin-rebuild changelog` for guidance.
 - Home-manager requires the `users.users.metru.home` (and `uid`/`shell`) set in nix-darwin; it derives the home dir from there.
 - `flake.lock` must be owned by `metru`, not root: a previous `sudo darwin-rebuild switch` can leave it root-owned, which blocks non-sudo builds from updating the lock file (`error: opening file "flake.lock": Permission denied`). Fix with `sudo chown metru:staff flake.lock`.
+- New (untracked) files must be `git add`-ed before rebuilding: nix flakes ignore untracked files even in a dirty tree, so a new file silently won't make it into the config until it's in the git index.
 - The home-manager `home.activation.removeLegacyOpencode` script deletes any stale hand-written files under `~/.config/opencode` (e.g. `opencode.jsonc`, `package.json`, `node_modules`).
+- **Secrets via Proton Pass CLI** (`pass-cli`): the source of truth for API keys is the Proton Pass vault `api_keys` (e.g. item `m5air_opencode`, field `API Key`, used for the opencode-go subscription). Run `make pass-login` once to create the session (persists in the macOS keychain). `make switch` then auto-regenerates `~/.local/share/opencode/auth.json` from that vault via the `opencode-set-key` fish function. This post-step is best-effort — a pass-cli failure never fails the rebuild; override with `PASS_CLI=0 make switch`. On-demand equivalent: `opencode-set-key`.
 
 ## Secrets (public repo)
 
@@ -39,6 +42,7 @@ This repo is public — anything committed is visible to the world. Treat it acc
 - Before every commit, inspect `git diff` and `git status` for anything sensitive. If you're unsure, don't commit it.
 - If a secret was ever committed, even to an amended/unpushed commit, treat it as compromised and rotate it — git history is permanent.
 - Prefer indirection: reference secret files by path (e.g. `age`-encrypted secrets, `secrets/<name>.nix` via `agenix`/`sops-nix` with `.gitignore`d decrypted files) rather than embedding values.
+- Credentials that tools generate for you (e.g. opencode's `~/.local/share/opencode/auth.json`) live **outside** this repo — never copy them into the `home/` tree. Keep the source of truth in the Proton Pass vault (`api_keys`) and let `opencode-set-key` / `make switch` regenerate the local file.
 
 ## Workflow
 

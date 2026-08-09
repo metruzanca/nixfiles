@@ -11,7 +11,24 @@
 
   outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager }:
   let
-    configuration = { pkgs, ... }: {
+    configuration = { pkgs, ... }:
+    let
+      handy = pkgs.stdenvNoCC.mkDerivation {
+        pname = "handy";
+        version = "0.9.5";
+        src = pkgs.fetchurl {
+          url = "https://github.com/cjpais/Handy/releases/download/v0.9.5/Handy_0.9.5_aarch64.dmg";
+          sha256 = "3bc52ee4a5010f9a3c50e3519d6510c4aa620bd6b98caa3022ebd3d6372690bc";
+        };
+        nativeBuildInputs = [ pkgs.undmg ];
+        sourceRoot = ".";
+        installPhase = ''
+          mkdir -p $out/Applications
+          cp -R Handy.app $out/Applications/
+        '';
+      };
+    in {
+
       # List packages installed in system profile. To search by name, run:
       # $ nix-env -qaP | grep wget
       environment.systemPackages =
@@ -21,6 +38,7 @@
           pkgs.alacritty
           pkgs.alacritty.terminfo
           pkgs.herdr
+          handy
 
           # Terminal tools
           pkgs.starship
@@ -46,6 +64,7 @@
           pkgs.tailscale
           pkgs.protonmail-desktop
           pkgs.proton-pass
+          pkgs.proton-pass-cli
         ];
 
       # Allow proprietary packages (Spotify, Discord, etc.).

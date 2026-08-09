@@ -1,4 +1,6 @@
-.PHONY: help build switch changelog
+PASS_CLI ?= 1
+
+.PHONY: help build switch changelog pass-login
 
 help: ## Show available commands
 	@cat $(MAKEFILE_LIST) | grep -E '^[a-zA-Z_-]+:.*?## .*$$' | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -8,6 +10,16 @@ build: ## Build the config without applying it
 
 switch: ## Apply the config (requires sudo)
 	sudo darwin-rebuild switch --flake .#m5air
+	@if [ "$(PASS_CLI)" = "1" ]; then \
+		if fish -c 'opencode-set-key' 2>/dev/null; then \
+			echo "opencode-set-key: credential refreshed"; \
+		else \
+			echo "pass-cli: skipped (run 'make pass-login' once). Rebuild OK."; \
+		fi; \
+	fi
+
+pass-login: ## Create the pass-cli session (one-time, interactive)
+	pass-cli login
 
 changelog: ## Check available nix-darwin options / changelog
 	darwin-rebuild changelog

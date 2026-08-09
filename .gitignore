@@ -1,3 +1,9 @@
 
 # Nix flake install artifacts, I think?
 result
+
+# Secrets (belt-and-suspenders; real secret files live outside this repo)
+auth.json
+*.key
+.env
+.env.*
