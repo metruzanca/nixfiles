@@ -194,6 +194,8 @@
       # Manage user dotfiles (e.g. opencode config) declaratively.
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
+      # Preserve pre-existing files before Home Manager replaces them.
+      home-manager.backupFileExtension = "backup";
       home-manager.users.metru = { pkgs, lib, ... }: {
         home = {
           username = "metru";
