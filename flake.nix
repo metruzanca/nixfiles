@@ -145,6 +145,14 @@
           recursive = true;
         };
 
+        # ~/.config/fish is fully managed by nix, mirroring home/.config/fish.
+        # config.fish is intentionally absent (a writable local file, so tools
+        # can freely append to it).
+        xdg.configFile."fish" = {
+          source = ./home/.config/fish;
+          recursive = true;
+        };
+
         # Remove legacy files that were previously written by hand so nothing
         # from the old setup lingers alongside the nix-managed config.
         home.activation.removeLegacyOpencode = lib.hm.dag.entryAfter
