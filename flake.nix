@@ -39,7 +39,6 @@
           pkgs.spotify
           pkgs.brave
           pkgs.discord
-          pkgs.whatsapp-for-mac
           pkgs.zed-editor
 
           # Proton & networking
@@ -48,7 +47,7 @@
           pkgs.proton-pass
         ];
 
-      # Allow proprietary packages (Spotify, Discord, WhatsApp, etc.).
+      # Allow proprietary packages (Spotify, Discord, etc.).
       nixpkgs.config.allowUnfree = true;
 
       # Necessary for using flakes on this system.
@@ -126,7 +125,6 @@
         { app = "/Applications/Nix Apps/Zed.app"; }
         { app = "/Applications/Nix Apps/Spotify.app"; }
         { app = "/Applications/Nix Apps/Discord.app"; }
-        { app = "/Applications/Nix Apps/WhatsApp.app"; }
         { app = "/Applications/Nix Apps/Proton Mail.app"; }
       ];
 
@@ -135,10 +133,6 @@
         rectangle = {
           serviceConfig.RunAtLoad = true;
           serviceConfig.ProgramArguments = [ "/Applications/Nix Apps/Rectangle.app/Contents/MacOS/Rectangle" ];
-        };
-        whatsapp = {
-          serviceConfig.RunAtLoad = true;
-          serviceConfig.ProgramArguments = [ "/Applications/Nix Apps/WhatsApp.app/Contents/MacOS/WhatsApp" ];
         };
       };
 
