@@ -13,11 +13,11 @@ The single source of truth is `flake.nix`, which covers four categories:
 
 ## Key commands
 
-Run these from this directory:
+Run these from this directory (prefer the `make` targets; `make help` lists them):
 
-- **Build the config without applying it**: `darwin-rebuild build --flake .#m5air`
-- **Apply the config** (requires sudo): `sudo darwin-rebuild switch --flake .#m5air`
-- **Check available nix-darwin options / changelog**: `darwin-rebuild changelog`
+- **Build the config without applying it**: `make build`
+- **Apply the config** (requires sudo): `make switch`
+- **Check available nix-darwin options / changelog**: `make changelog`
 - **Search for a package by name**: `nix-env -qaP | grep <name>`
 
 ## Conventions & gotchas
@@ -31,11 +31,21 @@ Run these from this directory:
 - `flake.lock` must be owned by `metru`, not root: a previous `sudo darwin-rebuild switch` can leave it root-owned, which blocks non-sudo builds from updating the lock file (`error: opening file "flake.lock": Permission denied`). Fix with `sudo chown metru:staff flake.lock`.
 - The home-manager `home.activation.removeLegacyOpencode` script deletes any stale hand-written files under `~/.config/opencode` (e.g. `opencode.jsonc`, `package.json`, `node_modules`).
 
+## Secrets (public repo)
+
+This repo is public — anything committed is visible to the world. Treat it accordingly:
+
+- Never commit env vars, API keys, tokens, passwords, or personal data (paths revealing identity, real usernames, etc.). This includes config that nix will render into world-readable files (e.g. `opencode.json`, `launchd` plists, `system.defaults`).
+- Before every commit, inspect `git diff` and `git status` for anything sensitive. If you're unsure, don't commit it.
+- If a secret was ever committed, even to an amended/unpushed commit, treat it as compromised and rotate it — git history is permanent.
+- Prefer indirection: reference secret files by path (e.g. `age`-encrypted secrets, `secrets/<name>.nix` via `agenix`/`sops-nix` with `.gitignore`d decrypted files) rather than embedding values.
+
 ## Workflow
 
 1. Edit `flake.nix` to add/change packages or settings.
-2. Run `darwin-rebuild build --flake .#m5air` to validate.
-3. Apply with `sudo darwin-rebuild switch --flake .#m5air`.
+2. Run `make build` to validate.
+3. Apply with `make switch`.
 4. Restart any affected applications (or log out/in) for environment changes to take effect.
 5. Commit changes once they've been verified — i.e. the build passes and the changes are expected to work — an amend later is fine if a fix is needed. Pushing is left to the user.
-6. When multiple agents have touched the same file, only stage the hunks relevant to your own change (e.g. `git add -p`) rather than committing the whole file.
+6. Before staging, re-check `git status` and `git diff --staged` for secrets.
+7. When multiple agents have touched the same file, only stage the hunks relevant to your own change (e.g. `git add -p`) rather than committing the whole file.
