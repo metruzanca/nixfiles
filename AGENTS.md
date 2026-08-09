@@ -4,11 +4,12 @@ This directory contains a [nix-darwin](https://github.com/nix-darwin/nix-darwin)
 
 ## What it manages
 
-The single source of truth is `flake.nix`, which covers three categories:
+The single source of truth is `flake.nix`, which covers four categories:
 
 - **CLIs**: tools like `evil-helix`, `opencode`, and fish (as the login shell).
 - **Apps**: GUI applications installed into the system profile (e.g. `alacritty`).
 - **System config**: macOS preferences (e.g. natural scrolling off), nix settings (flakes enabled), the primary user's login shell, and platform/state settings.
+- **User dotfiles** (via home-manager): `~/.config/opencode` is fully managed. Files under `./opencode/` in this repo (opencode.json, `agent/`, `commands/`, `skills/`) are symlinked into the user's config; edit those files here and rebuild.
 
 ## Key commands
 
@@ -26,6 +27,9 @@ Run these from this directory:
 - `users.users.metru.shell` is only applied because `metru` is listed in `users.knownUsers`; nix-darwin otherwise leaves the primary (admin) user untouched.
 - Changing the login shell only takes effect for new login sessions — a re-login or reboot may be needed.
 - `system.stateVersion` should not be bumped casually; see `darwin-rebuild changelog` for guidance.
+- Home-manager requires the `users.users.metru.home` (and `uid`/`shell`) set in nix-darwin; it derives the home dir from there.
+- `flake.lock` must be owned by `metru`, not root: a previous `sudo darwin-rebuild switch` can leave it root-owned, which blocks non-sudo builds from updating the lock file (`error: opening file "flake.lock": Permission denied`). Fix with `sudo chown metru:staff flake.lock`.
+- The home-manager `home.activation.removeLegacyOpencode` script deletes any stale hand-written files under `~/.config/opencode` (e.g. `opencode.jsonc`, `package.json`, `node_modules`).
 
 ## Workflow
 

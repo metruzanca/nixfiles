@@ -5,9 +5,11 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager.url = "github:nix-community/home-manager";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs }:
+  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager }:
   let
     configuration = { pkgs, ... }: {
       # List packages installed in system profile. To search by name, run:
@@ -59,6 +61,7 @@
       users.knownUsers = [ "metru" ];
       users.users.metru = {
         uid = 501;
+        home = "/Users/metru";
         shell = pkgs.fish;
       };
 
@@ -77,13 +80,45 @@
 
       # Traditional scroll direction (disable "natural" scrolling).
       system.defaults.NSGlobalDomain."com.apple.swipescrolldirection" = false;
+
+      # Manage user dotfiles (e.g. opencode config) declaratively.
+      home-manager.useGlobalPkgs = true;
+      home-manager.useUserPackages = true;
+      home-manager.users.metru = { pkgs, lib, ... }: {
+        home = {
+          username = "metru";
+          stateVersion = "25.05";
+        };
+
+        # ~/.config/opencode is fully managed by nix.
+        xdg.configFile = {
+          "opencode/opencode.json".source = ./opencode/opencode.json;
+          "opencode/agent".source = ./opencode/agent;
+          "opencode/commands".source = ./opencode/commands;
+          "opencode/skills".source = ./opencode/skills;
+        };
+
+        # Remove legacy files that were previously written by hand so nothing
+        # from the old setup lingers alongside the nix-managed config.
+        home.activation.removeLegacyOpencode = lib.hm.dag.entryAfter
+          [ "writeBoundary" ] ''
+            rm -rf "$HOME/.config/opencode/opencode.jsonc" \
+              "$HOME/.config/opencode/package.json" \
+              "$HOME/.config/opencode/package-lock.json" \
+              "$HOME/.config/opencode/node_modules" \
+              "$HOME/.config/opencode/.gitignore"
+          '';
+      };
     };
   in
   {
     # Build darwin flake using:
     # $ darwin-rebuild build --flake .#simple
     darwinConfigurations."m5air" = nix-darwin.lib.darwinSystem {
-      modules = [ configuration ];
+      modules = [
+        configuration
+        home-manager.darwinModules.home-manager
+      ];
     };
   };
 }
