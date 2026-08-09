@@ -38,3 +38,4 @@ Run these from this directory:
 3. Apply with `sudo darwin-rebuild switch --flake .#m5air`.
 4. Restart any affected applications (or log out/in) for environment changes to take effect.
 5. Commit changes once they've been verified — i.e. the build passes and the changes are expected to work — an amend later is fine if a fix is needed. Pushing is left to the user.
+6. When multiple agents have touched the same file, only stage the hunks relevant to your own change (e.g. `git add -p`) rather than committing the whole file.
