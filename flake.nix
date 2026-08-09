@@ -34,6 +34,7 @@
           pkgs.tree
 
           # Desktop apps
+          pkgs.raycast
           pkgs.rectangle
           pkgs.shottr
           pkgs.spotify
@@ -133,6 +134,10 @@
         rectangle = {
           serviceConfig.RunAtLoad = true;
           serviceConfig.ProgramArguments = [ "/Applications/Nix Apps/Rectangle.app/Contents/MacOS/Rectangle" ];
+        };
+        raycast = {
+          serviceConfig.RunAtLoad = true;
+          serviceConfig.ProgramArguments = [ "/Applications/Nix Apps/Raycast.app/Contents/MacOS/Raycast" ];
         };
       };
 
