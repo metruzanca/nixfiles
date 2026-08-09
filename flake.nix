@@ -119,12 +119,12 @@
           stateVersion = "25.05";
         };
 
-        # ~/.config/opencode is fully managed by nix.
-        xdg.configFile = {
-          "opencode/opencode.json".source = ./opencode/opencode.json;
-          "opencode/agent".source = ./opencode/agent;
-          "opencode/commands".source = ./opencode/commands;
-          "opencode/skills".source = ./opencode/skills;
+        # ~/.config/opencode is fully managed by nix. The repo tree mirrors
+        # the home dir (home/.config/opencode) and is linked recursively, so
+        # dropping a new file (e.g. a skill) into the repo picks it up.
+        xdg.configFile."opencode" = {
+          source = ./home/.config/opencode;
+          recursive = true;
         };
 
         # Remove legacy files that were previously written by hand so nothing

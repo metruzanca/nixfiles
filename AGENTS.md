@@ -9,7 +9,7 @@ The single source of truth is `flake.nix`, which covers four categories:
 - **CLIs**: tools like `evil-helix`, `opencode`, and fish (as the login shell).
 - **Apps**: GUI applications installed into the system profile (e.g. `alacritty`).
 - **System config**: macOS preferences (e.g. natural scrolling off), nix settings (flakes enabled), the primary user's login shell, and platform/state settings.
-- **User dotfiles** (via home-manager): `~/.config/opencode` is fully managed. Files under `./opencode/` in this repo (opencode.json, `agent/`, `commands/`, `skills/`) are symlinked into the user's config; edit those files here and rebuild.
+- **User dotfiles** (via home-manager): `~/.config/opencode` is fully managed. Files under `home/.config/opencode/` in this repo mirror the home dir (like GNU Stow) and are linked recursively via `xdg.configFile."opencode" = { source = ./home/.config/opencode; recursive = true; }`; drop any new file there (opencode.json, `agent/`, `commands/`, `skills/`) and rebuild.
 
 ## Key commands
 
