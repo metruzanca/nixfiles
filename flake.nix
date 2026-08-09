@@ -81,6 +81,18 @@
       # Traditional scroll direction (disable "natural" scrolling).
       system.defaults.NSGlobalDomain."com.apple.swipescrolldirection" = false;
 
+      # Auto-hide the Dock and pin a fixed set of apps (replaces what was there).
+      system.defaults.dock.autohide = true;
+      system.defaults.dock.show-recents = false;
+      system.defaults.dock.persistent-apps = [
+        { app = "/Applications/Nix Apps/Brave Browser.app"; }
+        { app = "/Applications/Nix Apps/Zed.app"; }
+        { app = "/Applications/Nix Apps/Spotify.app"; }
+        { app = "/Applications/Nix Apps/Discord.app"; }
+        { app = "/Applications/Nix Apps/WhatsApp.app"; }
+        { app = "/Applications/Nix Apps/Proton Mail.app"; }
+      ];
+
       # Default apps via LaunchServices (overwrites the LSHandlers array).
       system.defaults.CustomUserPreferences."com.apple.LaunchServices/com.apple.launchservices.secure" = {
         LSHandlers = [
