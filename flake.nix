@@ -118,6 +118,14 @@
       # Use F1-F12 as standard function keys; hold Fn for media/volume controls.
       system.defaults.CustomUserPreferences."com.apple.keyboard".FnState = true;
 
+      # Disable Spotlight keyboard shortcuts (Raycast replaces it).
+      system.defaults.CustomUserPreferences."com.apple.symbolichotkeys".AppleSymbolicHotKeys = {
+        # Spotlight search (Cmd+Space)
+        "64" = { enabled = false; };
+        # Spotlight Finder window (Cmd+Option+Space)
+        "65" = { enabled = false; };
+      };
+
       # Auto-hide the Dock and pin a fixed set of apps (replaces what was there).
       system.defaults.dock.autohide = true;
       system.defaults.dock.show-recents = false;
