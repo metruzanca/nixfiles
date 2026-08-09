@@ -30,3 +30,5 @@ Generally, if a tool appends a blob of code to my config file, that's a good can
 ## functions
 
 Another great feature of fish, each file named after a command is a sort of lazy-evaluated script. All files here are only loaded when the function is called. So e.g. if I never uses `bass`, it'll never be evaluated.
+
+`herdr-remote <ssh-host> [session]` attaches to a Herdr session running in a remote WSL environment. It defaults to the `agents` session.

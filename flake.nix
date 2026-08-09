@@ -62,6 +62,7 @@
 
           # Proton & networking
           pkgs.tailscale
+          pkgs.tailscale-gui
           pkgs.protonmail-desktop
           pkgs.proton-pass
           pkgs.proton-pass-cli
@@ -169,6 +170,10 @@
         handy = {
           serviceConfig.RunAtLoad = true;
           serviceConfig.ProgramArguments = [ "/Applications/Nix Apps/Handy.app/Contents/MacOS/Handy" ];
+        };
+        tailscale = {
+          serviceConfig.RunAtLoad = true;
+          serviceConfig.ProgramArguments = [ "/Applications/Nix Apps/Tailscale.app/Contents/MacOS/Tailscale" ];
         };
       };
 
