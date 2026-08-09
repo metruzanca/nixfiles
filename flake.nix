@@ -166,6 +166,10 @@
           serviceConfig.RunAtLoad = true;
           serviceConfig.ProgramArguments = [ "/Applications/Nix Apps/Raycast.app/Contents/MacOS/Raycast" ];
         };
+        handy = {
+          serviceConfig.RunAtLoad = true;
+          serviceConfig.ProgramArguments = [ "/Applications/Nix Apps/Handy.app/Contents/MacOS/Handy" ];
+        };
       };
 
       # Default apps via LaunchServices (overwrites the LSHandlers array).
