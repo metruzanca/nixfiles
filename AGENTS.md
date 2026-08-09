@@ -37,3 +37,4 @@ Run these from this directory:
 2. Run `darwin-rebuild build --flake .#m5air` to validate.
 3. Apply with `sudo darwin-rebuild switch --flake .#m5air`.
 4. Restart any affected applications (or log out/in) for environment changes to take effect.
+5. Commit changes once they've been verified — i.e. the build passes and the changes are expected to work — an amend later is fine if a fix is needed. Pushing is left to the user.
