@@ -99,6 +99,18 @@
         { app = "/Applications/Nix Apps/Proton Mail.app"; }
       ];
 
+      # Launch apps at login (login items).
+      launchd.user.agents = {
+        rectangle = {
+          serviceConfig.RunAtLoad = true;
+          serviceConfig.ProgramArguments = [ "/Applications/Nix Apps/Rectangle.app/Contents/MacOS/Rectangle" ];
+        };
+        whatsapp = {
+          serviceConfig.RunAtLoad = true;
+          serviceConfig.ProgramArguments = [ "/Applications/Nix Apps/WhatsApp.app/Contents/MacOS/WhatsApp" ];
+        };
+      };
+
       # Default apps via LaunchServices (overwrites the LSHandlers array).
       system.defaults.CustomUserPreferences."com.apple.LaunchServices/com.apple.launchservices.secure" = {
         LSHandlers = [
