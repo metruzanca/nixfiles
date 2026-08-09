@@ -78,6 +78,12 @@
       # The platform the configuration will be used on.
       nixpkgs.hostPlatform = "aarch64-darwin";
 
+      # System name, matching the flake output name (m5air). nix-darwin sets
+      # ComputerName / HostName / LocalHostName via `scutil --set`.
+      networking.hostName = "m5air";
+      networking.computerName = "m5air";
+      networking.localHostName = "m5air";
+
       # Traditional scroll direction (disable "natural" scrolling).
       system.defaults.NSGlobalDomain."com.apple.swipescrolldirection" = false;
 
