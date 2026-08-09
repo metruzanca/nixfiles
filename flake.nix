@@ -115,6 +115,9 @@
       # Traditional scroll direction (disable "natural" scrolling).
       system.defaults.NSGlobalDomain."com.apple.swipescrolldirection" = false;
 
+      # Use F1-F12 as standard function keys; hold Fn for media/volume controls.
+      system.defaults.CustomUserPreferences."com.apple.keyboard".FnState = true;
+
       # Auto-hide the Dock and pin a fixed set of apps (replaces what was there).
       system.defaults.dock.autohide = true;
       system.defaults.dock.show-recents = false;
