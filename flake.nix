@@ -83,6 +83,11 @@
           pkgs.proton-pass-cli
         ];
 
+      # Fonts installed into /Library/Fonts/Nix Fonts.
+      fonts.packages = [
+        pkgs.nerd-fonts.fira-code
+      ];
+
       # Allow proprietary packages (Spotify, etc.).
       nixpkgs.config.allowUnfree = true;
 
@@ -251,6 +256,13 @@
         # dropping a new file (e.g. a skill) into the repo picks it up.
         xdg.configFile."opencode" = {
           source = ./home/.config/opencode;
+          recursive = true;
+        };
+
+        # ~/.config/alacritty is fully managed by nix, mirroring
+        # home/.config/alacritty.
+        xdg.configFile."alacritty" = {
+          source = ./home/.config/alacritty;
           recursive = true;
         };
 
