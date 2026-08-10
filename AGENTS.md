@@ -19,7 +19,7 @@ Run these from this directory (prefer the `make` targets; `make help` lists them
 - **Apply the config** (requires sudo): `make switch`
 - **Create the pass-cli session** (one-time, interactive): `make pass-login`
 - **Check available nix-darwin options / changelog**: `make changelog`
-- **Search for a package by name**: `nix-env -qaP | grep <name>`
+- **Search for a package by name**: `nix search nixpkgs <name>` (e.g. `nix search nixpkgs parsec`). Let it finish evaluating the whole index before reading the results — matches can show up late (e.g. `parsec-bin`, "Remote streaming service client", is the Parsec remote-desktop app).
 
 ## Conventions & gotchas
 
