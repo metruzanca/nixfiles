@@ -51,6 +51,13 @@
     recursive = true;
   };
 
+  # ~/.config/helix is fully managed by nix, mirroring
+  # home/.config/helix.
+  xdg.configFile."helix" = {
+    source = ../../home/.config/helix;
+    recursive = true;
+  };
+
   # ~/.config/fish is fully managed by nix, mirroring home/.config/fish.
   # config.fish is intentionally absent (a writable local file, so tools
   # can freely append to it).
