@@ -182,6 +182,17 @@
             c=$((c+1))
           done
         fi
+
+        # Set the desktop wallpaper (best-effort; requires Automation
+        # permission for System Events granted to whatever runs `make switch`).
+        # Runs as the primary user because the wallpaper store is per-user.
+        WALLPAPER=/Users/metru/Pictures/fragment.jpg
+        if [[ -f "$WALLPAPER" ]]; then
+          sudo -u metru osascript -e 'tell application "System Events" to tell every desktop to set picture to "'"$WALLPAPER"'"' \
+            || echo "wallpaper: could not set desktop picture (grant Automation access to System Events)"
+        else
+          echo "wallpaper: $WALLPAPER not found, skipping"
+        fi
       '';
 
       # Traditional scroll direction (disable "natural" scrolling).
@@ -313,6 +324,13 @@
         xdg.configFile."fish" = {
           source = ./home/.config/fish;
           recursive = true;
+        };
+
+        # ~/Pictures/fragment.jpg — the desktop wallpaper, kept at a stable
+        # path so the wallpaper activation script can reference it. Source:
+        # https://www.reddit.com/r/pixelsorting/comments/13z2qi1/fragment/
+        home.file."Pictures/fragment.jpg" = {
+          source = ./wallpaper/fragment.jpg;
         };
 
         # Remove legacy files that were previously written by hand so nothing
