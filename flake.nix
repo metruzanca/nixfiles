@@ -84,6 +84,7 @@
           pkgs.spotify
           pkgs.brave
           pkgs.zed-editor
+          pkgs.telegram-desktop
 
           # Proton & networking
           pkgs.tailscale
