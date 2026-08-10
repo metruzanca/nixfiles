@@ -20,6 +20,14 @@ The `Makefile` provides short commands for building and applying the configurati
 
 Keep `modules/common/` portable: packages that only exist on macOS (e.g. `raycast`, `rectangle`, `caffeine`, `shottr`, `tailscale-gui`) belong in `modules/darwin/packages.nix`, not `modules/common/packages.nix`. Check a package's platforms with `nix eval nixpkgs#<pkg>.meta.platforms`; if only darwin systems are listed, it goes in the darwin module.
 
+## Tool sources
+
+Three levels, from most to least preferred:
+
+1. **Nix** — the default. System packages, CLIs, fonts, and macOS preferences live here.
+2. **Homebrew** — fallback for macOS GUI apps that are impractical to package in nix (currently: Discord, WhatsApp, Parsec).
+3. **mise** — per-project dev tooling (languages, compilers, interpreters). Mise itself is installed via nix; the tool versions it manages live in each project's `.mise.toml`.
+
 ## Use It As Inspiration
 
 This setup is personal. Do not apply it unchanged to another Mac.

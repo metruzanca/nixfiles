@@ -28,6 +28,15 @@ The config is split into modules by concern so a second machine can share the po
 - If the app is available in Homebrew and setting it up in nix-darwin would be complicated, prefer the Homebrew route (`homebrew.casks` / `homebrew.brews`). **Simplicity over source preference.**
 - Homebrew currently manages: `discord`, `whatsapp`, `parsec` (casks; installed to `/Applications`).
 
+## Dev tooling (mise)
+
+[mise](https://mise.jdx.dev) handles per-project dev tooling — languages, compilers, interpreters, and any runtime a repo needs (e.g. `node`, `go`, `python`). It is **not** a replacement for nix; nix installs `mise` itself and other system-level packages. Use mise when a project wants a specific toolchain version that shouldn't be global.
+
+- **Installed via nix** — `pkgs.mise` in `modules/common/packages.nix`.
+- **Auto-activates in fish** — the `home/.config/fish/conf.d/mise.fish` snippet runs `mise activate fish | source` on interactive shell startup.
+- **Per-project config** — repos declare their toolchains in `.mise.toml` (or `.mise/config.toml`). mise reads these files automatically when you enter the directory.
+- **Not managed by this repo** — mise tool versions live in each project's `.mise.toml`, not here. Only mise itself is declared.
+
 ## Key commands
 
 Run these from this directory (prefer the `make` targets; `make help` lists them):
