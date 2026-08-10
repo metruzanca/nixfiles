@@ -27,6 +27,22 @@
           cp -R Handy.app $out/Applications/
         '';
       };
+
+      herdr = pkgs.stdenvNoCC.mkDerivation {
+        pname = "herdr";
+        version = "0.8.0";
+        src = pkgs.fetchurl {
+          url = "https://github.com/herdrdev/herdr/releases/download/v0.8.0/herdr-macos-aarch64";
+          hash = "sha256-1Tqfk/zP38xVYyknv1EAL1rdCqeZC831CP+9hKxlgXg=";
+        };
+        dontUnpack = true;
+        installPhase = ''
+          install -Dm755 $src $out/bin/herdr
+        '';
+        meta = pkgs.herdr.meta // {
+          platforms = [ "aarch64-darwin" ];
+        };
+      };
     in {
 
       # List packages installed in system profile. To search by name, run:
@@ -37,7 +53,7 @@
           pkgs.opencode
           pkgs.alacritty
           pkgs.alacritty.terminfo
-          pkgs.herdr
+           herdr
           handy
 
           # Terminal tools
@@ -201,13 +217,38 @@
       home-manager.useUserPackages = true;
       # Preserve pre-existing files before Home Manager replaces them.
       home-manager.backupFileExtension = "backup";
-      home-manager.users.metru = { pkgs, lib, ... }: {
-        home = {
-          username = "metru";
-          stateVersion = "25.05";
-        };
+        home-manager.users.metru = { pkgs, lib, ... }: {
+          home = {
+            username = "metru";
+            stateVersion = "25.05";
+          };
 
-        # ~/.config/opencode is fully managed by nix. The repo tree mirrors
+          programs.ssh = {
+            enable = true;
+            enableDefaultConfig = false;
+            settings = {
+              "*" = {
+                ForwardAgent = false;
+                AddKeysToAgent = "no";
+                Compression = false;
+                ServerAliveInterval = 0;
+                ServerAliveCountMax = 3;
+                HashKnownHosts = false;
+                UserKnownHostsFile = "~/.ssh/known_hosts";
+                ControlMaster = "no";
+                ControlPath = "~/.ssh/master-%r@%n:%p";
+                ControlPersist = "no";
+              };
+              "desktop" = {
+                User = "szanca";
+              };
+              "rasp" = {
+                User = "metru";
+              };
+            };
+          };
+
+          # ~/.config/opencode is fully managed by nix. The repo tree mirrors
         # the home dir (home/.config/opencode) and is linked recursively, so
         # dropping a new file (e.g. a skill) into the repo picks it up.
         xdg.configFile."opencode" = {
