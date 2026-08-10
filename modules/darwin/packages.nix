@@ -37,7 +37,7 @@ in {
 
     # macOS-only desktop apps
     pkgs.caffeine
-    pkgs.raycast
+    pkgs.raycast # settings backup: backups/raycast-config.rayconfig (passphrase in Proton Pass → raycast_settings_password)
     pkgs.rectangle
     pkgs.shottr
     pkgs.tailscale-gui
