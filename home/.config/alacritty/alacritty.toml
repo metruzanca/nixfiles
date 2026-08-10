@@ -1,11 +1,9 @@
+[window]
+opacity = 0.85
+# Disabling this on MacOS will prevent the window from having tabs.
+# decorations = "None"
+startup_mode = "Maximized"
+
 [font]
-family = "FiraCode Nerd Font Mono"
-
-[font.bold]
-family = "FiraCode Nerd Font Mono"
-
-[font.italic]
-family = "FiraCode Nerd Font Mono"
-
-[font.bold_italic]
-family = "FiraCode Nerd Font Mono"
+size = 14.0
+normal = { family = "FiraCode Nerd Font" }
