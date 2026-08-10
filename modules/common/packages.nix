@@ -21,6 +21,7 @@
       pkgs.tree
 
       # Desktop apps
+      pkgs.caffeine
       pkgs.raycast
       pkgs.rectangle
       pkgs.shottr
