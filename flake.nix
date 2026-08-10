@@ -73,7 +73,6 @@
           pkgs.shottr
           pkgs.spotify
           pkgs.brave
-          pkgs.discord
           pkgs.zed-editor
 
           # Proton & networking
@@ -84,7 +83,7 @@
           pkgs.proton-pass-cli
         ];
 
-      # Allow proprietary packages (Spotify, Discord, etc.).
+      # Allow proprietary packages (Spotify, etc.).
       nixpkgs.config.allowUnfree = true;
 
       # Necessary for using flakes on this system.
@@ -169,7 +168,6 @@
         { app = "/Applications/Nix Apps/Brave Browser.app"; }
         { app = "/Applications/Nix Apps/Zed.app"; }
         { app = "/Applications/Nix Apps/Spotify.app"; }
-        { app = "/Applications/Nix Apps/Discord.app"; }
         { app = "/Applications/Nix Apps/Proton Mail.app"; }
       ];
 
