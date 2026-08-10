@@ -283,6 +283,13 @@
             };
           };
 
+            # ~/AGENTS.md — tells AI agents this system is nix-managed.
+          # force: overwrite the pre-existing hand-written file, no backup.
+          home.file.".AGENTS.md" = {
+            source = ./home/AGENTS.md;
+            force = true;
+          };
+
           # ~/.config/opencode is fully managed by nix. The repo tree mirrors
         # the home dir (home/.config/opencode) and is linked recursively, so
         # dropping a new file (e.g. a skill) into the repo picks it up.
