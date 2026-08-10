@@ -7,9 +7,19 @@
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
+    # Pin the official taps so Homebrew taps are fully declarative.
+    homebrew-core = {
+      url = "github:homebrew/homebrew-core";
+      flake = false;
+    };
+    homebrew-cask = {
+      url = "github:homebrew/homebrew-cask";
+      flake = false;
+    };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager }:
+  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, nix-homebrew, homebrew-core, homebrew-cask }:
   let
     configuration = { pkgs, ... }:
     let
@@ -90,6 +100,28 @@
 
       # Allow proprietary packages (Spotify, etc.).
       nixpkgs.config.allowUnfree = true;
+
+      # Homebrew: installs Homebrew itself via Nix (nix-homebrew) and manages a
+      # few apps that don't package well in nixpkgs via the homebrew module.
+      nix-homebrew = {
+        enable = true;
+        user = "metru";
+        autoMigrate = true;
+        taps = {
+          "homebrew/homebrew-core" = homebrew-core;
+          "homebrew/homebrew-cask" = homebrew-cask;
+        };
+      };
+
+      homebrew = {
+        enable = true;
+        onActivation = {
+          autoUpdate = true;
+          cleanup = "zap";
+          upgrade = true;
+        };
+        casks = [ "discord" "whatsapp" "parsec" ];
+      };
 
       # Necessary for using flakes on this system.
       nix.settings.experimental-features = "nix-command flakes";
@@ -293,6 +325,11 @@
     darwinConfigurations."m5air" = nix-darwin.lib.darwinSystem {
       modules = [
         configuration
+        nix-homebrew.darwinModules.nix-homebrew
+        # Align the homebrew module's taps with the pinned nix-homebrew taps.
+        ({ config, ... }: {
+          homebrew.taps = builtins.attrNames config.nix-homebrew.taps;
+        })
         home-manager.darwinModules.home-manager
       ];
     };

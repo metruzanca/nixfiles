@@ -11,6 +11,13 @@ The single source of truth is `flake.nix`, which covers four categories:
 - **System config**: macOS preferences (e.g. natural scrolling off), nix settings (flakes enabled), the primary user's login shell, and platform/state settings.
 - **User dotfiles** (via home-manager): `~/.config/opencode` is fully managed. Files under `home/.config/opencode/` in this repo mirror the home dir (like GNU Stow) and are linked recursively via `xdg.configFile."opencode" = { source = ./home/.config/opencode; recursive = true; }`; drop any new file there (opencode.json, `agent/`, `commands/`, `skills/`) and rebuild.
 
+## Package sources
+
+- **Nix is the default preferred source** — try `pkgs.*` in `flake.nix` first.
+- If there is no clear nixpkgs package compatible with nix-darwin, look it up in Homebrew (`brew search <name>`).
+- If the app is available in Homebrew and setting it up in nix-darwin would be complicated, prefer the Homebrew route (`homebrew.casks` / `homebrew.brews`). **Simplicity over source preference.**
+- Homebrew currently manages: `discord`, `whatsapp`, `parsec` (casks; installed to `/Applications`).
+
 ## Key commands
 
 Run these from this directory (prefer the `make` targets; `make help` lists them):
