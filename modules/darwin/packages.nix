@@ -34,5 +34,12 @@ in {
   environment.systemPackages = [
     herdr
     handy
+
+    # macOS-only desktop apps
+    pkgs.caffeine
+    pkgs.raycast
+    pkgs.rectangle
+    pkgs.shottr
+    pkgs.tailscale-gui
   ];
 }

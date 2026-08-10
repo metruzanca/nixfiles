@@ -20,18 +20,13 @@
       pkgs.gh
       pkgs.tree
 
-      # Desktop apps
-      pkgs.caffeine
-      pkgs.raycast
-      pkgs.rectangle
-      pkgs.shottr
+      # Desktop apps (cross-platform; macOS-only apps live in darwin/packages.nix)
       pkgs.spotify
       pkgs.brave
       pkgs.zed-editor
 
       # Proton & networking
       pkgs.tailscale
-      pkgs.tailscale-gui
       pkgs.protonmail-desktop
       pkgs.proton-pass
       pkgs.proton-pass-cli
