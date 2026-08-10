@@ -201,6 +201,8 @@
       # Auto-hide the Dock and pin a fixed set of apps (replaces what was there).
       system.defaults.dock.autohide = true;
       system.defaults.dock.show-recents = false;
+      # Disable the Quick Note hot corner (bottom-right).
+      system.defaults.CustomUserPreferences."com.apple.dock"."wvous-br-corner" = 0;
       system.defaults.dock.persistent-apps = [
         { app = "/Applications/Nix Apps/Brave Browser.app"; }
         { app = "/Applications/Nix Apps/Zed.app"; }

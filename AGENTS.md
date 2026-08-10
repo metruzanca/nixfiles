@@ -30,6 +30,7 @@ Run these from this directory (prefer the `make` targets; `make help` lists them
 
 ## Conventions & gotchas
 
+- Never run `defaults write` to change preferences — that bypasses the declarative config and will be lost on the next rebuild. Always express changes in `flake.nix` via `system.defaults` / `system.defaults.CustomUserPreferences` and apply them with `make switch`. `defaults read` for inspection is fine.
 - The `.#m5air` flake output must match the current hostname when switching.
 - nix-darwin does not install Xcode Command Line Tools; that is managed via macOS (`xcode-select --install`).
 - `users.users.metru.shell` is only applied because `metru` is listed in `users.knownUsers`; nix-darwin otherwise leaves the primary (admin) user untouched.
