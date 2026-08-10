@@ -19,6 +19,7 @@
       pkgs.htop
       pkgs.gh
       pkgs.tree
+      pkgs.mise
 
       # Desktop apps (cross-platform; macOS-only apps live in darwin/packages.nix)
       pkgs.spotify
