@@ -38,7 +38,8 @@ Run these from this directory (prefer the `make` targets; `make help` lists them
 
 This repo is public — anything committed is visible to the world. Treat it accordingly:
 
-- Never commit env vars, API keys, tokens, passwords, or personal data (paths revealing identity, real usernames, etc.). This includes config that nix will render into world-readable files (e.g. `opencode.json`, `launchd` plists, `system.defaults`).
+- Never commit env vars, API keys, tokens, passwords, or paths revealing identity. This includes config that nix will render into world-readable files (e.g. `opencode.json`, `launchd` plists, `system.defaults`).
+- Usernames (local accounts, SSH users, etc.) are allowed and not treated as secrets; the machines they reference are only reachable over the Tailscale network.
 - Before every commit, inspect `git diff` and `git status` for anything sensitive. If you're unsure, don't commit it.
 - If a secret was ever committed, even to an amended/unpushed commit, treat it as compromised and rotate it — git history is permanent.
 - Prefer indirection: reference secret files by path (e.g. `age`-encrypted secrets, `secrets/<name>.nix` via `agenix`/`sops-nix` with `.gitignore`d decrypted files) rather than embedding values.
