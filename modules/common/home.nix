@@ -73,10 +73,23 @@
     source = ../../wallpaper/fragment.jpg;
   };
 
-  # Remove legacy files that were previously written by hand so nothing
-  # from the old setup lingers alongside the nix-managed config.
-  home.activation.removeLegacyOpencode = lib.hm.dag.entryAfter
-    [ "writeBoundary" ] ''
+  # Remove legacy leftovers from the old opencode layout. Before
+  # checkLinkTargets (i.e. before home-manager inspects/links files):
+  # - Stale whole-directory symlinks (agent/, commands/) pointing into an
+  #   old home-manager generation. They put the managed files behind a
+  #   read-only store path, so home-manager can't update them and spams
+  #   "will be skipped since they are the same" / "Moving ... failed!"
+  #   on every switch. Only symlinks are removed; the per-file layout
+  #   home-manager creates is left alone.
+  home.activation.removeLegacyOpencode = lib.hm.dag.entryBefore
+    [ "checkLinkTargets" ] ''
+      for d in agent commands; do
+        p="$HOME/.config/opencode/$d"
+        if [[ -L "$p" ]]; then
+          rm "$p"
+        fi
+      done
+
       rm -rf "$HOME/.config/opencode/opencode.jsonc" \
         "$HOME/.config/opencode/package.json" \
         "$HOME/.config/opencode/package-lock.json" \
