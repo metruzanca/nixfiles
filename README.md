@@ -9,12 +9,16 @@ The configuration is split into modules by concern, so a second machine can reus
 
 - `flake.nix` defines the flake inputs and wires the `m5air` system together. It pins the Homebrew taps and passes them to the darwin module via `specialArgs`.
 - `hosts/m5air.nix` is the per-machine entry point: platform, hostname, and the Home Manager wiring (`home-manager.users.metru = import ../modules/common/home.nix`).
-- `modules/common/` holds portable settings: system packages, nix settings, the primary user, and the Home Manager user config.
-- `modules/darwin/` holds macOS-only settings: preferences, login items, activation scripts, and Homebrew.
+- `modules/common/` holds portable settings: system packages (cross-platform only), nix settings, the primary user, and the Home Manager user config.
+- `modules/darwin/` holds macOS-only settings: preferences, login items, activation scripts, Homebrew, and macOS-only desktop apps.
 
 The `home/` directory contains user configuration. Home Manager links these files into the home directory during a system switch.
 
 The `Makefile` provides short commands for building and applying the configuration.
+
+## Package placement
+
+Keep `modules/common/` portable: packages that only exist on macOS (e.g. `raycast`, `rectangle`, `caffeine`, `shottr`, `tailscale-gui`) belong in `modules/darwin/packages.nix`, not `modules/common/packages.nix`. Check a package's platforms with `nix eval nixpkgs#<pkg>.meta.platforms`; if only darwin systems are listed, it goes in the darwin module.
 
 ## Use It As Inspiration
 

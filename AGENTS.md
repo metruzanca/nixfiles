@@ -8,7 +8,7 @@ The config is split into modules by concern so a second machine can share the po
 
 - **`hosts/m5air.nix`** — per-machine entry point: `hostPlatform`, hostname, `stateVersion`, and the home-manager wiring (`useGlobalPkgs`/`useUserPackages`/`backupFileExtension`, plus `home-manager.users.metru = import ../modules/common/home.nix`). It imports the modules below; a new machine is a new file here. A non-macOS machine imports `modules/common/*` and skips `modules/darwin/`.
 - **`modules/common/`** — portable settings reusable on any host:
-  - `packages.nix`: CLIs (`evil-helix`, `opencode`, terminal tools), GUI apps (`alacritty`, `raycast`, …), fonts, `allowUnfree`.
+  - `packages.nix`: CLIs (`evil-helix`, `opencode`, terminal tools), cross-platform GUI apps (`alacritty`, `brave`, `zed-editor`), fonts, `allowUnfree`. Only packages that exist on non-macOS platforms belong here.
   - `nix.nix`: nix settings (flakes enabled), `programs.fish`.
   - `users.nix`: the primary user's uid/home/login shell.
   - `home.nix`: home-manager user config — SSH, dotfiles, and the `removeLegacyOpencode` cleanup. It is **not** a standalone nix-darwin module: the host file assigns it as the value of `home-manager.users.metru` (`import ../modules/common/home.nix`) so home-manager's `lib.hm` is in scope — do not add it to an `imports` list. `~/.config/opencode` is fully managed: files under `home/.config/opencode/` in this repo mirror the home dir (like GNU Stow) and are linked recursively; drop any new file there (opencode.json, `agent/`, `commands/`, `skills/`) and rebuild.
@@ -17,12 +17,13 @@ The config is split into modules by concern so a second machine can share the po
   - `launchd.nix`: apps launched at login.
   - `activation.nix`: display scaling patch + wallpaper script.
   - `homebrew.nix`: nix-homebrew + homebrew casks.
-  - `packages.nix`: darwin-only derivations (`handy`, `herdr`).
+  - `packages.nix`: macOS-only packages — darwin-only derivations (`handy`, `herdr`) and desktop apps (`caffeine`, `raycast`, `rectangle`, `shottr`, `tailscale-gui`).
 - **`flake.nix`** — inputs and the `darwinConfigurations."m5air"` wiring (loads `hosts/m5air.nix`, the home-manager and nix-homebrew modules, and pins the Homebrew taps). The pinned taps are passed to `modules/darwin/homebrew.nix` via `specialArgs` (`inherit homebrew-core homebrew-cask`), so they're available as module arguments there.
 
 ## Package sources
 
 - **Nix is the default preferred source** — try `pkgs.*` in `modules/common/packages.nix` first.
+- **Package placement follows platform support**: cross-platform packages go in `modules/common/packages.nix`; macOS-only packages go in `modules/darwin/packages.nix`. If unsure, check `nix eval nixpkgs#<pkg>.meta.platforms` — darwin-only output (e.g. `[ "aarch64-darwin" ]`) means it must live in the darwin module so a Linux host can reuse `modules/common/`.
 - If there is no clear nixpkgs package compatible with nix-darwin, look it up in Homebrew (`brew search <name>`).
 - If the app is available in Homebrew and setting it up in nix-darwin would be complicated, prefer the Homebrew route (`homebrew.casks` / `homebrew.brews`). **Simplicity over source preference.**
 - Homebrew currently manages: `discord`, `whatsapp`, `parsec` (casks; installed to `/Applications`).
