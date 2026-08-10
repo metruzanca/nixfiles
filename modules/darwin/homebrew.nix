@@ -19,7 +19,7 @@
       cleanup = "zap";
       upgrade = true;
     };
-    casks = [ "discord" "whatsapp" "parsec" ];
+    casks = [ "discord" "notion" "parsec" "whatsapp" ];
   };
 
   # Align the homebrew module's taps with the pinned nix-homebrew taps.
