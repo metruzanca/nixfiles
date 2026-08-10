@@ -1,19 +1,28 @@
 # AGENTS.md
 
-This directory contains a [nix-darwin](https://github.com/nix-darwin/nix-darwin) flake that declaratively manages a MacBook Air (Apple Silicon, `aarch64-darwin`, hostname `m5air`). The system is configured entirely from code — install or change software by editing `flake.nix` and rebuilding, never by hand.
+This directory contains a [nix-darwin](https://github.com/nix-darwin/nix-darwin) flake that declaratively manages a MacBook Air (Apple Silicon, `aarch64-darwin`, hostname `m5air`). The system is configured entirely from code — install or change software by editing the module files and rebuilding, never by hand.
 
 ## What it manages
 
-The single source of truth is `flake.nix`, which covers four categories:
+The config is split into modules by concern so a second machine can share the portable parts:
 
-- **CLIs**: tools like `evil-helix`, `opencode`, and fish (as the login shell).
-- **Apps**: GUI applications installed into the system profile (e.g. `alacritty`).
-- **System config**: macOS preferences (e.g. natural scrolling off), nix settings (flakes enabled), the primary user's login shell, and platform/state settings.
-- **User dotfiles** (via home-manager): `~/.config/opencode` is fully managed. Files under `home/.config/opencode/` in this repo mirror the home dir (like GNU Stow) and are linked recursively via `xdg.configFile."opencode" = { source = ./home/.config/opencode; recursive = true; }`; drop any new file there (opencode.json, `agent/`, `commands/`, `skills/`) and rebuild.
+- **`hosts/m5air.nix`** — per-machine entry point: `hostPlatform`, hostname, `stateVersion`, and the home-manager wiring (`useGlobalPkgs`/`useUserPackages`/`backupFileExtension`, plus `home-manager.users.metru = import ../modules/common/home.nix`). It imports the modules below; a new machine is a new file here. A non-macOS machine imports `modules/common/*` and skips `modules/darwin/`.
+- **`modules/common/`** — portable settings reusable on any host:
+  - `packages.nix`: CLIs (`evil-helix`, `opencode`, terminal tools), GUI apps (`alacritty`, `raycast`, …), fonts, `allowUnfree`.
+  - `nix.nix`: nix settings (flakes enabled), `programs.fish`.
+  - `users.nix`: the primary user's uid/home/login shell.
+  - `home.nix`: home-manager user config — SSH, dotfiles, and the `removeLegacyOpencode` cleanup. It is **not** a standalone nix-darwin module: the host file assigns it as the value of `home-manager.users.metru` (`import ../modules/common/home.nix`) so home-manager's `lib.hm` is in scope — do not add it to an `imports` list. `~/.config/opencode` is fully managed: files under `home/.config/opencode/` in this repo mirror the home dir (like GNU Stow) and are linked recursively; drop any new file there (opencode.json, `agent/`, `commands/`, `skills/`) and rebuild.
+- **`modules/darwin/`** — macOS-only settings; omit on non-macOS hosts:
+  - `preferences.nix`: macOS preferences (`system.defaults` / `CustomUserPreferences`, e.g. natural scrolling off).
+  - `launchd.nix`: apps launched at login.
+  - `activation.nix`: display scaling patch + wallpaper script.
+  - `homebrew.nix`: nix-homebrew + homebrew casks.
+  - `packages.nix`: darwin-only derivations (`handy`, `herdr`).
+- **`flake.nix`** — inputs and the `darwinConfigurations."m5air"` wiring (loads `hosts/m5air.nix`, the home-manager and nix-homebrew modules, and pins the Homebrew taps). The pinned taps are passed to `modules/darwin/homebrew.nix` via `specialArgs` (`inherit homebrew-core homebrew-cask`), so they're available as module arguments there.
 
 ## Package sources
 
-- **Nix is the default preferred source** — try `pkgs.*` in `flake.nix` first.
+- **Nix is the default preferred source** — try `pkgs.*` in `modules/common/packages.nix` first.
 - If there is no clear nixpkgs package compatible with nix-darwin, look it up in Homebrew (`brew search <name>`).
 - If the app is available in Homebrew and setting it up in nix-darwin would be complicated, prefer the Homebrew route (`homebrew.casks` / `homebrew.brews`). **Simplicity over source preference.**
 - Homebrew currently manages: `discord`, `whatsapp`, `parsec` (casks; installed to `/Applications`).
@@ -30,7 +39,7 @@ Run these from this directory (prefer the `make` targets; `make help` lists them
 
 ## Conventions & gotchas
 
-- Never run `defaults write` to change preferences — that bypasses the declarative config and will be lost on the next rebuild. Always express changes in `flake.nix` via `system.defaults` / `system.defaults.CustomUserPreferences` and apply them with `make switch`. `defaults read` for inspection is fine.
+- Never run `defaults write` to change preferences — that bypasses the declarative config and will be lost on the next rebuild. Always express changes in `modules/darwin/preferences.nix` via `system.defaults` / `system.defaults.CustomUserPreferences` and apply them with `make switch`. `defaults read` for inspection is fine.
 - The `.#m5air` flake output must match the current hostname when switching.
 - nix-darwin does not install Xcode Command Line Tools; that is managed via macOS (`xcode-select --install`).
 - `users.users.metru.shell` is only applied because `metru` is listed in `users.knownUsers`; nix-darwin otherwise leaves the primary (admin) user untouched.
@@ -55,7 +64,7 @@ This repo is public — anything committed is visible to the world. Treat it acc
 
 ## Workflow
 
-1. Edit `flake.nix` to add/change packages or settings.
+1. Edit the relevant module file (see "What it manages") to add/change packages or settings.
 2. Run `make build` to validate.
 3. Apply with `make switch`.
 4. Restart any affected applications (or log out/in) for environment changes to take effect.

@@ -5,7 +5,12 @@ It is designed for an Apple Silicon Mac and serves as an example of keeping syst
 
 ## How It Works
 
-`flake.nix` defines the system configuration. It includes system packages, macOS preferences, the login shell, and the system identity.
+The configuration is split into modules by concern, so a second machine can reuse the portable parts and skip the macOS-specific ones.
+
+- `flake.nix` defines the flake inputs and wires the `m5air` system together. It pins the Homebrew taps and passes them to the darwin module via `specialArgs`.
+- `hosts/m5air.nix` is the per-machine entry point: platform, hostname, and the Home Manager wiring (`home-manager.users.metru = import ../modules/common/home.nix`).
+- `modules/common/` holds portable settings: system packages, nix settings, the primary user, and the Home Manager user config.
+- `modules/darwin/` holds macOS-only settings: preferences, login items, activation scripts, and Homebrew.
 
 The `home/` directory contains user configuration. Home Manager links these files into the home directory during a system switch.
 
@@ -17,8 +22,8 @@ This setup is personal. Do not apply it unchanged to another Mac.
 
 To adapt it:
 
-1. Change the username, home directory, user ID, hostname, and platform in `flake.nix`.
-2. Remove or replace settings that match this Mac, such as display, Dock, login item, and default app settings.
+1. Add a new `hosts/<name>.nix` (or edit `hosts/m5air.nix`) with your username, home directory, user ID, hostname, and platform.
+2. Remove or replace settings that match this Mac, such as display, Dock, login item, and default app settings (all under `modules/darwin/`).
 3. Keep the packages and user configuration that fit your own workflow.
 4. Update the flake inputs and system versions when needed.
 
