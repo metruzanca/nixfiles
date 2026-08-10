@@ -16,6 +16,11 @@ switch: ## Apply the config (requires sudo)
 		else \
 			echo "pass-cli: skipped (run 'make pass-login' once). Rebuild OK."; \
 		fi; \
+		if fish -c 'wifi-add-preferred' 2>/dev/null; then \
+			echo "wifi-add-preferred: preferred network refreshed"; \
+		else \
+			echo "wifi-add-preferred: skipped. Rebuild OK."; \
+		fi; \
 	fi
 
 pass-login: ## Create the pass-cli session (one-time, interactive)

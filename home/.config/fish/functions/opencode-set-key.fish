@@ -1,5 +1,5 @@
 function opencode-set-key
-    set -l uri "pass://api_keys/m5air_opencode/API Key"
+    set -l uri "pass://nix/m5air_opencode/API Key"
     set -l auth "$HOME/.local/share/opencode/auth.json"
 
     if not command -q pass-cli
