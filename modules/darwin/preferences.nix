@@ -7,7 +7,7 @@
   system.defaults.NSGlobalDomain."com.apple.swipescrolldirection" = false;
 
   # Use F1-F12 as standard function keys; hold Fn for media/volume controls.
-  system.defaults.CustomUserPreferences."com.apple.keyboard".FnState = true;
+  system.defaults.NSGlobalDomain."com.apple.keyboard.fnState" = true;
 
   # Disable Spotlight keyboard shortcuts (Raycast replaces it).
   system.defaults.CustomUserPreferences."com.apple.symbolichotkeys".AppleSymbolicHotKeys = {
