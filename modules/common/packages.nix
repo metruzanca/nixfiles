@@ -4,7 +4,7 @@
   # $ nix-env -qaP | grep wget
   environment.systemPackages =
     [
-      pkgs.evil-helix
+      pkgs.helix
       pkgs.opencode
       pkgs.alacritty
       pkgs.alacritty.terminfo
