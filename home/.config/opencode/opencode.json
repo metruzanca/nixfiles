@@ -21,7 +21,8 @@
     "railway": {
       "command": [
         "railway",
-        "mcp"
+        "mcp",
+        "proxy"
       ],
       "enabled": true,
       "type": "local"
