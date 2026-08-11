@@ -66,6 +66,14 @@
     recursive = true;
   };
 
+  # ~/.config/mise/conf.d is fully managed by nix — shareable tool specs,
+  # tasks, and settings. config.toml is intentionally absent (a writable
+  # local file for per-machine `mise use -g`).
+  xdg.configFile."mise/conf.d" = {
+    source = ../../home/.config/mise/conf.d;
+    recursive = true;
+  };
+
   # ~/Pictures/fragment.jpg — the desktop wallpaper, kept at a stable
   # path so the wallpaper activation script can reference it. Source:
   # https://www.reddit.com/r/pixelsorting/comments/13z2qi1/fragment/

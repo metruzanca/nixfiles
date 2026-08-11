@@ -11,7 +11,7 @@ The config is split into modules by concern so a second machine can share the po
   - `packages.nix`: CLIs (`evil-helix`, `opencode`, terminal tools), cross-platform GUI apps (`alacritty`, `brave`, `zed-editor`), fonts, `allowUnfree`. Only packages that exist on non-macOS platforms belong here.
   - `nix.nix`: nix settings (flakes enabled), `programs.fish`.
   - `users.nix`: the primary user's uid/home/login shell.
-  - `home.nix`: home-manager user config — SSH, dotfiles, and the `removeLegacyOpencode` cleanup. It is **not** a standalone nix-darwin module: the host file assigns it as the value of `home-manager.users.metru` (`import ../modules/common/home.nix`) so home-manager's `lib.hm` is in scope — do not add it to an `imports` list. `~/.config/opencode` is fully managed: files under `home/.config/opencode/` in this repo mirror the home dir (like GNU Stow) and are linked recursively; drop any new file there (opencode.json, `agent/`, `commands/`, `skills/`) and rebuild.
+  - `home.nix`: home-manager user config — SSH, dotfiles, and the `removeLegacyOpencode` cleanup. It is **not** a standalone nix-darwin module: the host file assigns it as the value of `home-manager.users.metru` (`import ../modules/common/home.nix`) so home-manager's `lib.hm` is in scope — do not add it to an `imports` list. `~/.config/opencode` and `~/.config/mise/conf.d` are fully managed: files under `home/.config/<app>/` mirror the home dir (like GNU Stow) and are linked recursively; drop new files there and rebuild. `~/.config/fish/config.fish` and `~/.config/mise/config.toml` are intentionally absent — writable local files for tools to append to or for per-machine `mise use -g`.
 - **`modules/darwin/`** — macOS-only settings; omit on non-macOS hosts:
   - `preferences.nix`: macOS preferences (`system.defaults` / `CustomUserPreferences`, e.g. natural scrolling off).
   - `launchd.nix`: apps launched at login.
@@ -34,8 +34,8 @@ The config is split into modules by concern so a second machine can share the po
 
 - **Installed via nix** — `pkgs.mise` in `modules/common/packages.nix`.
 - **Auto-activates in fish** — the `home/.config/fish/conf.d/mise.fish` snippet runs `mise activate fish | source` on interactive shell startup.
+- **Global config** — `~/.config/mise/conf.d/` is managed by nix (`home/.config/mise/conf.d/*.toml`). Drop shareable tool specs, tasks, or settings there. `~/.config/mise/config.toml` is intentionally unmanaged — a writable local file, so `mise use -g` targets per-machine tool versions and tools can freely append to it.
 - **Per-project config** — repos declare their toolchains in `.mise.toml` (or `.mise/config.toml`). mise reads these files automatically when you enter the directory.
-- **Not managed by this repo** — mise tool versions live in each project's `.mise.toml`, not here. Only mise itself is declared.
 
 ## Key commands
 
