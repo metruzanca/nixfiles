@@ -36,6 +36,14 @@
     force = true;
   };
 
+  home.file.".gitconfig" = {
+    source = ../../home/.gitconfig;
+  };
+
+  home.file.".gitignore_global" = {
+    source = ../../home/.gitignore_global;
+  };
+
   # ~/.config/opencode is fully managed by nix. The repo tree mirrors
   # the home dir (home/.config/opencode) and is linked recursively, so
   # dropping a new file (e.g. a skill) into the repo picks it up.
@@ -56,6 +64,10 @@
   xdg.configFile."helix" = {
     source = ../../home/.config/helix;
     recursive = true;
+  };
+
+  xdg.configFile."starship.toml" = {
+    source = ../../home/.config/starship.toml;
   };
 
   # ~/.config/fish is fully managed by nix, mirroring home/.config/fish.

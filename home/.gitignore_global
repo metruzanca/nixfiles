@@ -1,0 +1,10 @@
+# macos polution
+*/.DS_Store
+
+# common env files
+.env
+.envrc
+
+# for agent workflows
+reference
+references
