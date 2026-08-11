@@ -17,14 +17,9 @@
       url = "github:homebrew/homebrew-cask";
       flake = false;
     };
-    # Third-party opencode skills updated by `nix flake lock --update-input`.
-    railway_skills = {
-      url = "github:railwayapp/railway-skills";
-      flake = false;
-    };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, nix-homebrew, homebrew-core, homebrew-cask, railway_skills }:
+  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, nix-homebrew, homebrew-core, homebrew-cask }:
   {
     # Build darwin flake using:
     # $ darwin-rebuild build --flake .#m5air
@@ -40,7 +35,7 @@
       ];
       # Pin the Homebrew taps for nix-homebrew (see modules/darwin/homebrew.nix).
       specialArgs = {
-        inherit homebrew-core homebrew-cask railway_skills;
+        inherit homebrew-core homebrew-cask;
       };
     };
   };

@@ -1,21 +1,35 @@
-{ pkgs, lib, railway_skills, ... }:
+{ pkgs, lib, ... }:
 
 let
-  # Third-party opencode skills pulled from upstream repos.
-  # Each entry maps a skill name to its source and path within the repo.
-  # Adding a new skill: (1) add a flake input in flake.nix,
-  # (2) add one entry to this list.
-  thirdPartySkills = [
-    { name = "use-railway"; src = railway_skills; subPath = "plugins/railway/skills/use-railway"; }
+  fetchSkill = url:
+    let
+      match = builtins.match
+        "https://github.com/([^/]+)/([^/]+)/tree/([^/]+)/(.+)" url;
+      owner = builtins.elemAt match 0;
+      repo  = builtins.elemAt match 1;
+      rev   = builtins.elemAt match 2;
+      path  = builtins.elemAt match 3;
+      src   = builtins.fetchTree {
+        type = "git";
+        url = "https://github.com/${owner}/${repo}.git";
+        inherit rev;
+        allRefs = false;
+      };
+    in { name = builtins.baseNameOf path; src = src; subPath = "/${path}"; };
+
+  thirdPartySkills = map fetchSkill thirdPartyUrls;
+
+  # Full GitHub tree URLs: https://github.com/<owner>/<repo>/tree/<rev>/<path>
+  # The skill name is the last path segment. Update a skill by bumping the rev.
+  thirdPartyUrls = [
+    "https://github.com/railwayapp/railway-skills/tree/5d1e97178f86c82795d6737928bd641e0552166a/plugins/railway/skills/use-railway"
   ];
 
-  # Build-time derivation: the local opencode tree with third-party
-  # skills overlaid.
   opencodeSource = pkgs.runCommand "opencode-config" {} (''
     cp -r ${../../home/.config/opencode} $out
     chmod -R u+w $out
   '' + lib.concatMapStringsSep "\n" ({ name, src, subPath }: ''
-    cp -r ${src}/${subPath} $out/skills/${name}
+    cp -r ${src}${subPath} $out/skills/${name}
     chmod -R u+w $out/skills/${name}
   '') thirdPartySkills);
 in {
@@ -66,7 +80,7 @@ in {
 
   # ~/.config/opencode is fully managed by nix. Static files live
   # under home/.config/opencode; third-party skills (listed above) are
-  # overlaid at build time from their upstream flake inputs.
+  # overlaid at build time from their upstream GitHub repos.
   xdg.configFile."opencode" = {
     source = opencodeSource;
     recursive = true;

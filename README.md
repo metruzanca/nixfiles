@@ -18,14 +18,20 @@ The `Makefile` provides short commands for building and applying the configurati
 
 ## Third-party opencode skills
 
-Some opencode skills live in upstream repos (e.g. `use-railway`). These are not committed to this repo — instead they're pulled at build time from pinned flake inputs and overlaid into the opencode config.
+Some opencode skills live in upstream repos (e.g. `use-railway`). These are not committed to this repo — instead the source is declared as a GitHub tree URL, fetched at build time by `builtins.fetchTree`, and overlaid into the opencode config.
 
-To add a new third-party skill:
-1. Declare the upstream repo as a `flake = false` input in `flake.nix`.
-2. Thread it through `specialArgs` (in `flake.nix`) and `home-manager.extraSpecialArgs` (in `hosts/m5air.nix`).
-3. Add a `{ name, src, subPath }` entry to the `thirdPartySkills` list in `modules/common/home.nix`.
+To add a new third-party skill, add its GitHub tree URL to the `thirdPartyUrls` list in `modules/common/home.nix`:
+```
+https://github.com/<owner>/<repo>/tree/<rev>/<path-to-skill>
+```
+The last path segment becomes the skill name. Nothing else to touch.
 
-To update existing skills: `nix flake lock --update-input <name> && make switch`.
+To update an existing skill, bump the commit hash (`rev`) in its URL and rebuild:
+```sh
+git ls-remote https://github.com/railwayapp/railway-skills main | cut -f1
+# paste the SHA into the URL in modules/common/home.nix
+make switch
+```
 
 ## Package placement
 

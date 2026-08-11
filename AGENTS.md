@@ -11,14 +11,14 @@ The config is split into modules by concern so a second machine can share the po
   - `packages.nix`: CLIs (`evil-helix`, `opencode`, terminal tools), cross-platform GUI apps (`alacritty`, `brave`, `zed-editor`), fonts, `allowUnfree`. Only packages that exist on non-macOS platforms belong here.
   - `nix.nix`: nix settings (flakes enabled), `programs.fish`.
   - `users.nix`: the primary user's uid/home/login shell.
-  - `home.nix`: home-manager user config — SSH, dotfiles, and the `removeLegacyOpencode` cleanup. It is **not** a standalone nix-darwin module: the host file assigns it as the value of `home-manager.users.metru` (`import ../modules/common/home.nix`) so home-manager's `lib.hm` is in scope — do not add it to an `imports` list. `~/.config/opencode` and `~/.config/mise/conf.d` are fully managed: first-party files under `home/.config/<app>/` mirror the home dir (like GNU Stow) and are linked recursively. Third-party opencode skills are overlaid at build time from upstream repos declared as flake inputs (see `thirdPartySkills` list in `home.nix`). `~/.config/fish/config.fish` and `~/.config/mise/config.toml` are intentionally absent — writable local files for tools to append to or for per-machine `mise use -g`.
+  - `home.nix`: home-manager user config — SSH, dotfiles, and the `removeLegacyOpencode` cleanup. It is **not** a standalone nix-darwin module: the host file assigns it as the value of `home-manager.users.metru` (`import ../modules/common/home.nix`) so home-manager's `lib.hm` is in scope — do not add it to an `imports` list. `~/.config/opencode` and `~/.config/mise/conf.d` are fully managed: first-party files under `home/.config/<app>/` mirror the home dir (like GNU Stow) and are linked recursively. Third-party opencode skills are overlaid at build time from upstream repos — list them in `thirdPartyUrls` (see `home.nix`). `~/.config/fish/config.fish` and `~/.config/mise/config.toml` are intentionally absent — writable local files for tools to append to or for per-machine `mise use -g`.
 - **`modules/darwin/`** — macOS-only settings; omit on non-macOS hosts:
   - `preferences.nix`: macOS preferences (`system.defaults` / `CustomUserPreferences`, e.g. natural scrolling off).
   - `launchd.nix`: apps launched at login.
   - `activation.nix`: display scaling patch + wallpaper script.
   - `homebrew.nix`: nix-homebrew + homebrew casks.
   - `packages.nix`: macOS-only packages — darwin-only derivations (`handy`, `herdr`) and desktop apps (`caffeine`, `raycast`, `rectangle`, `shottr`, `tailscale-gui`).
-- **`flake.nix`** — inputs and the `darwinConfigurations."m5air"` wiring (loads `hosts/m5air.nix`, the home-manager and nix-homebrew modules, and pins the Homebrew taps). Third-party skill repos are declared as `flake = false` inputs here; `specialArgs` passes everything to nix-darwin modules, and `home-manager.extraSpecialArgs` in `hosts/m5air.nix` forwards them to home-manager.
+- **`flake.nix`** — inputs and the `darwinConfigurations."m5air"` wiring (loads `hosts/m5air.nix`, the home-manager and nix-homebrew modules, and pins the Homebrew taps). The pinned taps are passed to `modules/darwin/homebrew.nix` via `specialArgs` (`inherit homebrew-core homebrew-cask`), so they're available as module arguments there.
 
 ## Package sources
 
@@ -45,7 +45,7 @@ Run these from this directory (prefer the `make` targets; `make help` lists them
 - **Apply the config** (requires sudo): `make switch`
 - **Create the pass-cli session** (one-time, interactive): `make pass-login`
 - **Check available nix-darwin options / changelog**: `make changelog`
-- **Update third-party opencode skills** (fetches latest upstream): `nix flake lock --update-input railway_skills && make switch`. To add a new third-party skill: (1) declare the repo as a `flake = false` input in `flake.nix`, (2) thread it through `specialArgs` + `home-manager.extraSpecialArgs`, (3) add a `{ name, src, subPath }` entry to the `thirdPartySkills` list in `modules/common/home.nix`.
+- **Update third-party opencode skills** (bump the rev in `modules/common/home.nix`): `git ls-remote https://github.com/railwayapp/railway-skills main | cut -f1`, paste the SHA into the `thirdPartyUrls` URL, then `make switch`. To add a new skill: add another GitHub tree URL to `thirdPartyUrls` in `modules/common/home.nix` — nothing else to touch.
 - **Search for a package by name**: `nix search nixpkgs <name>` (e.g. `nix search nixpkgs parsec`). Let it finish evaluating the whole index before reading the results — matches can show up late (e.g. `parsec-bin`, "Remote streaming service client", is the Parsec remote-desktop app).
 
 ## Conventions & gotchas
