@@ -1,4 +1,24 @@
-{ pkgs, lib, ... }: {
+{ pkgs, lib, railway_skills, ... }:
+
+let
+  # Third-party opencode skills pulled from upstream repos.
+  # Each entry maps a skill name to its source and path within the repo.
+  # Adding a new skill: (1) add a flake input in flake.nix,
+  # (2) add one entry to this list.
+  thirdPartySkills = [
+    { name = "use-railway"; src = railway_skills; subPath = "plugins/railway/skills/use-railway"; }
+  ];
+
+  # Build-time derivation: the local opencode tree with third-party
+  # skills overlaid.
+  opencodeSource = pkgs.runCommand "opencode-config" {} (''
+    cp -r ${../../home/.config/opencode} $out
+    chmod -R u+w $out
+  '' + lib.concatMapStringsSep "\n" ({ name, src, subPath }: ''
+    cp -r ${src}/${subPath} $out/skills/${name}
+    chmod -R u+w $out/skills/${name}
+  '') thirdPartySkills);
+in {
   home = {
     username = "metru";
     stateVersion = "25.05";
@@ -44,11 +64,11 @@
     source = ../../home/.gitignore_global;
   };
 
-  # ~/.config/opencode is fully managed by nix. The repo tree mirrors
-  # the home dir (home/.config/opencode) and is linked recursively, so
-  # dropping a new file (e.g. a skill) into the repo picks it up.
+  # ~/.config/opencode is fully managed by nix. Static files live
+  # under home/.config/opencode; third-party skills (listed above) are
+  # overlaid at build time from their upstream flake inputs.
   xdg.configFile."opencode" = {
-    source = ../../home/.config/opencode;
+    source = opencodeSource;
     recursive = true;
   };
 

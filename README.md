@@ -16,6 +16,17 @@ The `home/` directory contains user configuration. Home Manager links these file
 
 The `Makefile` provides short commands for building and applying the configuration.
 
+## Third-party opencode skills
+
+Some opencode skills live in upstream repos (e.g. `use-railway`). These are not committed to this repo — instead they're pulled at build time from pinned flake inputs and overlaid into the opencode config.
+
+To add a new third-party skill:
+1. Declare the upstream repo as a `flake = false` input in `flake.nix`.
+2. Thread it through `specialArgs` (in `flake.nix`) and `home-manager.extraSpecialArgs` (in `hosts/m5air.nix`).
+3. Add a `{ name, src, subPath }` entry to the `thirdPartySkills` list in `modules/common/home.nix`.
+
+To update existing skills: `nix flake lock --update-input <name> && make switch`.
+
 ## Package placement
 
 Keep `modules/common/` portable: packages that only exist on macOS (e.g. `raycast`, `rectangle`, `caffeine`, `shottr`, `tailscale-gui`) belong in `modules/darwin/packages.nix`, not `modules/common/packages.nix`. Check a package's platforms with `nix eval nixpkgs#<pkg>.meta.platforms`; if only darwin systems are listed, it goes in the darwin module.

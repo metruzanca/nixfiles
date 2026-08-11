@@ -124,6 +124,22 @@
         "type": "github"
       }
     },
+    "railway_skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1785957919,
+        "narHash": "sha256-8SI7bPWRU5eRkr0UvWIdhjqylOtTmoSNdOipnsPW5Tc=",
+        "owner": "railwayapp",
+        "repo": "railway-skills",
+        "rev": "5d1e97178f86c82795d6737928bd641e0552166a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "railwayapp",
+        "repo": "railway-skills",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "home-manager": "home-manager",
@@ -131,7 +147,8 @@
         "homebrew-core": "homebrew-core",
         "nix-darwin": "nix-darwin",
         "nix-homebrew": "nix-homebrew",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "railway_skills": "railway_skills"
       }
     }
   },
