@@ -14,6 +14,10 @@ abbr loc 'git ls-files -z | xargs -0 wc -l 2>/dev/null | awk "END {print \$1}" |
 abbr c 'zed .'
 abbr dot '$EDITOR ~/.config/nix-darwin'
 
+# Docker -> Podman aliases
+abbr docker podman
+abbr docker-compose podman-compose
+
 # opencode (cli/tui app)
 abbr oc opencode
 # Start opencode web server, available on all interfaces (e.g. tailscale)

@@ -21,6 +21,10 @@
       pkgs.tree
       pkgs.mise
 
+      # Container tools
+      pkgs.podman
+      pkgs.podman-compose
+
       # Desktop apps (cross-platform; macOS-only apps live in darwin/packages.nix)
       pkgs.spotify
       pkgs.brave
