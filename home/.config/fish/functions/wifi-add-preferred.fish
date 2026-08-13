@@ -1,8 +1,5 @@
 function wifi-add-preferred --description 'Add a macOS preferred Wi-Fi network from Proton Pass'
     set -l vault nix
-    # Add Proton Pass Wi-Fi item titles here as new networks are needed.
-    set -l items \
-        journal_squared_ph32_wifi
 
     if not command -q pass-cli
         echo "wifi-add-preferred: pass-cli is not installed (rebuild first: make switch)" >&2
@@ -18,6 +15,9 @@ function wifi-add-preferred --description 'Add a macOS preferred Wi-Fi network f
         echo "wifi-add-preferred: no Proton Pass session — run 'make pass-login' once" >&2
         return 1
     end
+
+    # Query Wi-Fi items from Proton Pass instead of hardcoding titles.
+    set -l items (pass-cli item list --vault-name "$vault" --filter-type wifi 2>/dev/null | string match -rg '\]: (.+) \(state=')
 
     set -l interface (networksetup -listallhardwareports | awk '/Hardware Port: Wi-Fi/{getline; sub("Device: ", ""); print}')
     if test -z "$interface"
