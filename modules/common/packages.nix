@@ -21,6 +21,9 @@
       pkgs.tree
       pkgs.mise
 
+      # Common utilities
+      pkgs.jq
+
       # Container tools
       pkgs.podman
       pkgs.podman-compose
