@@ -24,3 +24,5 @@ abbr oc opencode
 abbr ocw 'opencode web --hostname="0.0.0.0"'
 # Start opencode web server in background
 abbr bocw 'bj opencode web --hostname="0.0.0.0"'
+# Helix cheatsheet
+abbr hxc 'hx ~/dev/helix-cheatsheet/helix-cheatsheet.md'
