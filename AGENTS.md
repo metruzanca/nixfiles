@@ -43,6 +43,7 @@ Run these from this directory (prefer the `make` targets; `make help` lists them
 
 - **Build the config without applying it**: `make build`
 - **Apply the config** (requires sudo): `make switch`
+- **Clean up old generations and the nix store** (requires sudo): `make clean` — deletes system/home-manager generations older than 7 days and garbage-collects the store. Nix never cleans itself; run this occasionally if the store grows.
 - **Create the pass-cli session** (one-time, interactive): `make pass-login`
 - **Check available nix-darwin options / changelog**: `make changelog`
 - **Update third-party opencode skills** (bump the rev in `modules/common/home.nix`): `git ls-remote https://github.com/railwayapp/railway-skills main | cut -f1`, paste the SHA into the `thirdPartyUrls` URL, then `make switch`. To add a new skill: add another GitHub tree URL to `thirdPartyUrls` in `modules/common/home.nix` — nothing else to touch.

@@ -1,6 +1,6 @@
 PASS_CLI ?= 1
 
-.PHONY: help build switch changelog pass-login
+.PHONY: help build switch clean changelog pass-login
 
 help: ## Show available commands
 	@cat $(MAKEFILE_LIST) | grep -E '^[a-zA-Z_-]+:.*?## .*$$' | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -22,6 +22,10 @@ switch: ## Apply the config (requires sudo)
 			echo "wifi-add-preferred: skipped. Rebuild OK."; \
 		fi; \
 	fi
+
+clean: ## Delete generations older than 7 days and garbage-collect the nix store (requires sudo)
+	sudo nix-collect-garbage --delete-older-than 7d
+	sudo nix-store --optimise
 
 pass-login: ## Create the pass-cli session (one-time, interactive)
 	pass-cli login
