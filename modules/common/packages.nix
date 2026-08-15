@@ -58,6 +58,7 @@ in {
       pkgs.gh
       pkgs.tree
       pkgs.mise
+      pkgs.zellij
 
       # Common utilities
       pkgs.jq
