@@ -26,3 +26,5 @@ abbr ocw 'opencode web --hostname="0.0.0.0"'
 abbr bocw 'bj opencode web --hostname="0.0.0.0"'
 # Helix cheatsheet
 abbr hxc 'hx ~/dev/helix-cheatsheet/helix-cheatsheet.md'
+abbr hr herdr
+abbr hrr herdr-remote
