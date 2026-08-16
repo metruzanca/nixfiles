@@ -9,9 +9,9 @@
   # Use F1-F12 as standard function keys; hold Fn for media/volume controls.
   system.defaults.NSGlobalDomain."com.apple.keyboard.fnState" = true;
 
-  # Key repeat: shorter delay (half macOS default of 15) and faster speed.
-  system.defaults.NSGlobalDomain.InitialKeyRepeat = 8;
-  system.defaults.NSGlobalDomain.KeyRepeat = 1;
+  # Key repeat: macOS defaults (delay 15, speed 2).
+  # system.defaults.NSGlobalDomain.InitialKeyRepeat = 15;
+  # system.defaults.NSGlobalDomain.KeyRepeat = 2;
 
   # Disable Spotlight keyboard shortcuts (Raycast replaces it).
   system.defaults.CustomUserPreferences."com.apple.symbolichotkeys".AppleSymbolicHotKeys = {

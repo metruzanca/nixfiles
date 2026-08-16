@@ -52,6 +52,7 @@ Run these from this directory (prefer the `make` targets; `make help` lists them
 ## Conventions & gotchas
 
 - Never run `defaults write` to change preferences — that bypasses the declarative config and will be lost on the next rebuild. Always express changes in `modules/darwin/preferences.nix` via `system.defaults` / `system.defaults.CustomUserPreferences` and apply them with `make switch`. `defaults read` for inspection is fine.
+- **nix-darwin never resets un-declared values**: it only writes keys you declare, so removing/commenting out a setting does NOT revert the previously applied value — it leaves the system stuck at the old value. When reverting any `system.defaults` (or other nix-darwin) change, re-declare the key with the macOS default value and `make switch` to reset it, and tell the user this is required — otherwise the machine silently keeps the unwanted state.
 - The `.#m5air` flake output must match the current hostname when switching.
 - nix-darwin does not install Xcode Command Line Tools; that is managed via macOS (`xcode-select --install`).
 - `users.users.metru.shell` is only applied because `metru` is listed in `users.knownUsers`; nix-darwin otherwise leaves the primary (admin) user untouched.
