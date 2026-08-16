@@ -45,6 +45,7 @@ Run these from this directory (prefer the `make` targets; `make help` lists them
 - **Apply the config** (requires sudo): `make switch`
 - **Clean up old generations and the nix store** (requires sudo): `make clean` — deletes system/home-manager generations older than 7 days and garbage-collects the store. Nix never cleans itself; run this occasionally if the store grows.
 - **Create the pass-cli session** (one-time, interactive): `make pass-login`
+- **Add Wi-Fi networks from Proton Pass** to macOS's preferred network list: `make wifi`
 - **Check available nix-darwin options / changelog**: `make changelog`
 - **Update third-party opencode skills** (bump the rev in `modules/common/home.nix`): `git ls-remote https://github.com/railwayapp/railway-skills main | cut -f1`, paste the SHA into the `thirdPartyUrls` URL, then `make switch`. To add a new skill: add another GitHub tree URL to `thirdPartyUrls` in `modules/common/home.nix` — nothing else to touch.
 - **Search for a package by name**: `nix search nixpkgs <name>` (e.g. `nix search nixpkgs parsec`). Let it finish evaluating the whole index before reading the results — matches can show up late (e.g. `parsec-bin`, "Remote streaming service client", is the Parsec remote-desktop app).
@@ -63,7 +64,7 @@ Run these from this directory (prefer the `make` targets; `make help` lists them
 - `Homebrew bundle... /opt/homebrew/Library/Taps/homebrew/homebrew-core/.git: Permission denied` during `make switch` is expected and harmless. nix-homebrew manages taps as extracted tarballs (not git clones), so there is no `.git` directory, and the root-owned tap dirs prevent writes. The build still succeeds.
 - New (untracked) files must be `git add`-ed before rebuilding: nix flakes ignore untracked files even in a dirty tree, so a new file silently won't make it into the config until it's in the git index.
 - The home-manager `home.activation.removeLegacyOpencode` script deletes any stale hand-written files under `~/.config/opencode` (e.g. `opencode.jsonc`, `package.json`, `node_modules`).
-- **Secrets via Proton Pass CLI** (`pass-cli`): the source of truth for API keys and Wi-Fi credentials is the Proton Pass vault `nix` (e.g. item `m5air_opencode`; Wi-Fi items are auto-discovered via `pass-cli item list --filter-type wifi`). Run `make pass-login` once to create the session (persists in the macOS keychain). `make switch` then regenerates `~/.local/share/opencode/auth.json` via `opencode-set-key` and adds the Wi-Fi network to macOS's preferred network list via `wifi-add-preferred`. These post-steps are best-effort — a pass-cli failure never fails the rebuild; override with `PASS_CLI=0 make switch`. On-demand equivalents: `opencode-set-key` and `wifi-add-preferred`.
+- **Secrets via Proton Pass CLI** (`pass-cli`): the source of truth for API keys and Wi-Fi credentials is the Proton Pass vault `nix` (e.g. item `m5air_opencode`; Wi-Fi items are auto-discovered via `pass-cli item list --filter-type wifi`). Run `make pass-login` once to create the session (persists in the macOS keychain). `make switch` then regenerates `~/.local/share/opencode/auth.json` via `opencode-set-key`; `make wifi` adds the Wi-Fi networks to macOS's preferred network list via `wifi-add-preferred`. These post-steps are best-effort — a pass-cli failure never fails the rebuild; override with `PASS_CLI=0 make switch`. On-demand equivalents: `opencode-set-key` and `make wifi`.
 
 ## Secrets (public repo)
 
@@ -74,7 +75,7 @@ This repo is public — anything committed is visible to the world. Treat it acc
 - Before every commit, inspect `git diff` and `git status` for anything sensitive. If you're unsure, don't commit it.
 - If a secret was ever committed, even to an amended/unpushed commit, treat it as compromised and rotate it — git history is permanent.
 - Prefer indirection: reference secret files by path (e.g. `age`-encrypted secrets, `secrets/<name>.nix` via `agenix`/`sops-nix` with `.gitignore`d decrypted files) rather than embedding values.
-- Credentials that tools generate for you (e.g. opencode's `~/.local/share/opencode/auth.json`) live **outside** this repo — never copy them into the `home/` tree. Keep the source of truth in the Proton Pass vault (`nix`) and let `opencode-set-key`, `wifi-add-preferred`, and `make switch` retrieve them at runtime.
+- Credentials that tools generate for you (e.g. opencode's `~/.local/share/opencode/auth.json`) live **outside** this repo — never copy them into the `home/` tree. Keep the source of truth in the Proton Pass vault (`nix`) and let `opencode-set-key` (on `make switch`), `wifi-add-preferred` (on `make wifi`), and pass-cli retrieve them at runtime.
 
 ## Workflow
 
