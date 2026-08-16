@@ -19,12 +19,7 @@ switch: ## Apply the config (requires sudo)
 	fi
 
 wifi: ## Add the Proton Pass Wi-Fi networks to the preferred network list
-	@if fish -c 'wifi-add-preferred'; then \
-		echo "wifi-add-preferred: preferred network refreshed"; \
-	else \
-		echo "wifi-add-preferred: skipped (run 'make pass-login' once)."; \
-		exit 1; \
-	fi
+	fish -c 'wifi-add-preferred'
 
 clean: ## Delete generations older than 7 days and garbage-collect the nix store (requires sudo)
 	sudo nix-collect-garbage --delete-older-than 7d
