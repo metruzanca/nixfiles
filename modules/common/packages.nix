@@ -144,6 +144,8 @@ in {
       pkgs.tree
       pkgs.mise
       pkgs.zellij
+      # charmbracelet's AI coding agent (Go/TUI).
+      pkgs.crush
 
       # System-wide Python for scripting (also pulled in by GUI apps like Vice).
       # Per-project toolchains belong in mise (see AGENTS.md).
