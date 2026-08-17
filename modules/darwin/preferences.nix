@@ -27,7 +27,7 @@
   # Disable the Quick Note hot corner (bottom-right).
   system.defaults.CustomUserPreferences."com.apple.dock"."wvous-br-corner" = 0;
   system.defaults.dock.persistent-apps = [
-    { app = "/Applications/Nix Apps/Brave Browser.app"; }
+    { app = "/Applications/Nix Apps/Brave Origin.app"; }
     { app = "/Applications/Nix Apps/Zed.app"; }
     { app = "/Applications/Nix Apps/Spotify.app"; }
     { app = "/Applications/Nix Apps/Proton Mail.app"; }
@@ -36,10 +36,10 @@
   # Default apps via LaunchServices (overwrites the LSHandlers array).
   system.defaults.CustomUserPreferences."com.apple.LaunchServices/com.apple.launchservices.secure" = {
     LSHandlers = [
-      # Brave as default browser
-      { LSHandlerPreferredVersions = { LSHandlerRoleAll = "-"; }; LSHandlerRoleAll = "com.brave.Browser"; LSHandlerURLScheme = "http"; }
-      { LSHandlerPreferredVersions = { LSHandlerRoleAll = "-"; }; LSHandlerRoleAll = "com.brave.Browser"; LSHandlerURLScheme = "https"; }
-      { LSHandlerPreferredVersions = { LSHandlerRoleAll = "-"; }; LSHandlerRoleAll = "com.brave.Browser"; LSHandlerContentType = "public.html"; }
+      # Brave Origin as default browser
+      { LSHandlerPreferredVersions = { LSHandlerRoleAll = "-"; }; LSHandlerRoleAll = "com.brave.Origin"; LSHandlerURLScheme = "http"; }
+      { LSHandlerPreferredVersions = { LSHandlerRoleAll = "-"; }; LSHandlerRoleAll = "com.brave.Origin"; LSHandlerURLScheme = "https"; }
+      { LSHandlerPreferredVersions = { LSHandlerRoleAll = "-"; }; LSHandlerRoleAll = "com.brave.Origin"; LSHandlerContentType = "public.html"; }
       # Proton Mail as default email client
       { LSHandlerPreferredVersions = { LSHandlerRoleAll = "-"; }; LSHandlerRoleAll = "ch.protonmail.desktop"; LSHandlerURLScheme = "mailto"; }
       # Zed as default editor for text/code files

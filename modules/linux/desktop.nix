@@ -15,17 +15,14 @@
     LC_TIME = "en_US.UTF-8";
   };
 
-  # Enable the X11 windowing system (GDM defaults to a Wayland session on GNOME).
+  # Enable the X11 windowing system (the desktop environment — GNOME, see
+  # gnome.nix — provides the display manager and Wayland session).
   services.xserver.enable = true;
 
-  # Enable the GNOME Desktop Environment.
-  services.displayManager.gdm.enable = true;
-  services.desktopManager.gnome.enable = true;
-
-  # GNOME appearance/power settings (dark theme, no idle-sleep) are managed
-  # per-user via home-manager dconf in home.nix — see modules/linux/home.nix.
-  # We use the user-level dconf so values stick over what GNOME stores itself.
-  programs.dconf.enable = true;
+  # Let generic dynamically-linked executables (e.g. mise's rustup-init, other
+  # prebuilt tools) run on NixOS via the ld loader stub. Keeps dev tooling in
+  # mise on both hosts instead of falling back to nixpkgs packages.
+  programs.nix-ld.enable = true;
 
   # High-performance power mode (Settings → Power → Power Mode). PPD only
   # keeps its profile in /var/lib/power-profiles-daemon/state.ini, so apply
@@ -48,8 +45,8 @@
     variant = "";
   };
 
-  # NVIDIA (RTX 4070). `open = true` uses the open-source kernel modules,
-  # which are the recommended option on NixOS for Ada Lovelace+ cards.
+  # NVIDIA (RTX 3070 Ti, GA104). `open = true` uses the open-source kernel
+  # modules, which are the recommended option on NixOS for Ampere+ cards.
   hardware.graphics.enable = true;
   hardware.graphics.enable32Bit = true;
   hardware.nvidia = {

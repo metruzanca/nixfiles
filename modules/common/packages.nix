@@ -64,6 +64,10 @@ in {
       pkgs.mise
       pkgs.zellij
 
+      # System-wide Python for scripting (also pulled in by GUI apps like Vice).
+      # Per-project toolchains belong in mise (see AGENTS.md).
+      pkgs.python3
+
       # Common utilities
       pkgs.jq
 
@@ -73,7 +77,7 @@ in {
 
       # Desktop apps (cross-platform; macOS-only apps live in darwin/packages.nix)
       pkgs.spotify
-      pkgs.brave
+      pkgs.brave-origin
       pkgs.zed-editor
 
       # Proton & networking

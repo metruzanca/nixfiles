@@ -9,7 +9,7 @@ The config is split into modules by concern so a second machine can share the po
 - **`hosts/m5air.nix`** — the macOS machine's per-machine entry point: `hostPlatform`, hostname, `stateVersion`, and the home-manager wiring (`useGlobalPkgs`/`useUserPackages`/`backupFileExtension`, plus `home-manager.users.metru = import ../modules/common/home.nix`). It imports `modules/common/*` and `modules/darwin/`.
 - **`hosts/nixos.nix`** — the NixOS PC's per-machine entry point: same home-manager wiring, plus the bootloader and machine-specific bits. Imports `modules/common/*` and `modules/linux/`. Its generated `hosts/nixos-hardware.nix` (disk layout) must be regenerated with `nixos-generate-config` if the hardware changes. A new machine is a new `hosts/<name>.nix` plus its hardware config; macOS hosts import `modules/common/*` + `modules/darwin/`, Linux hosts import `modules/common/*` + `modules/linux/`.
 - **`modules/common/`** — portable settings reusable on any host:
-  - `packages.nix`: CLIs (`evil-helix`, `opencode`, `git`, terminal tools), cross-platform GUI apps (`alacritty`, `brave`, `zed-editor`), fonts, `allowUnfree`. Only packages that exist on non-macOS platforms belong here.
+  - `packages.nix`: CLIs (`evil-helix`, `opencode`, `git`, terminal tools), cross-platform GUI apps (`alacritty`, `brave-origin`, `zed-editor`), fonts, `allowUnfree`. Only packages that exist on non-macOS platforms belong here.
   - `nix.nix`: nix settings (flakes enabled), `programs.fish`.
   - `home.nix`: home-manager user config — SSH, dotfiles, and the `removeLegacyOpencode` cleanup. It is **not** a standalone module: the host file assigns it as the value of `home-manager.users.metru` (`import ../modules/common/home.nix`) so home-manager's `lib.hm` is in scope — do not add it to a NixOS-level `imports` list. (Plugging it into the home-manager users option via `home-manager.users.metru.imports` is fine, since that's the home-manager module system.) ~/.config/opencode` and `~/.config/mise/conf.d` are fully managed: first-party files under `home/.config/<app>/` mirror the home dir (like GNU Stow) and are linked recursively. Third-party opencode skills are overlaid at build time from upstream repos — list them in `thirdPartyUrls` (see `home.nix`). `~/.config/fish/config.fish` and `~/.config/mise/config.toml` are intentionally absent — writable local files for tools to append to or for per-machine `mise use -g`.
 - **`modules/darwin/`** — macOS-only settings; omit on Linux hosts:
@@ -21,8 +21,9 @@ The config is split into modules by concern so a second machine can share the po
   - `packages.nix`: macOS-only packages — darwin-only derivations (`handy`, `herdr`) and desktop apps (`caffeine`, `raycast`, `rectangle`, `shottr`, `tailscale-gui`).
 - **`modules/linux/`** — NixOS-only settings; omit on macOS hosts:
   - `users.nix`: the primary user's uid/home/login shell (via `users.users`, `isNormalUser`).
-  - `desktop.nix`: GNOME/GDM, NVIDIA driver + Steam, pipewire sound, printing, locale/keymap.
-  - `home.nix`: GNOME preferences for `metru` (dark theme, idle-sleep off) via home-manager `dconf`, imported by `hosts/nixos.nix`.
+  - `desktop.nix`: DE-agnostic desktop — NVIDIA driver + Steam, pipewire sound, printing, locale/keymap, power-profiles-daemon.
+  - `gnome.nix`: the GNOME desktop environment (GDM, GNOME, dconf) plus its own home-manager user config via `gnome-home.nix` (dark theme, mouse accel off, idle-sleep off, monitor layout). Self-contained so a different DE can be swapped in as its own module pair.
+  - `home.nix`: generic user config (xdg/mimeapps default browser), imported by `hosts/nixos.nix`.
   - `networking.nix`: NetworkManager, Tailscale daemon, SSH server.
 - **`flake.nix`** — inputs and the host wiring: `darwinConfigurations."m5air"` loads `hosts/m5air.nix` plus the home-manager and nix-homebrew modules and pins the Homebrew taps; `nixosConfigurations."nixos"` loads `hosts/nixos.nix` plus the home-manager module. The pinned taps are passed to `modules/darwin/homebrew.nix` via `specialArgs` (`inherit homebrew-core homebrew-cask`), so they're available as module arguments there.
 
