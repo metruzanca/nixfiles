@@ -12,7 +12,6 @@ abbr rm 'rm -r'
 abbr loc 'git ls-files -z | xargs -0 wc -l 2>/dev/null | awk "END {print \$1}" | awk "{printf \"%'\''d LOC\\n\", \$0}"'
 
 abbr c 'zed .'
-abbr dot '$EDITOR ~/.config/nix-darwin'
 
 # Docker -> Podman aliases
 abbr docker podman

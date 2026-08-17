@@ -9,11 +9,11 @@ let
       repo  = builtins.elemAt match 1;
       rev   = builtins.elemAt match 2;
       path  = builtins.elemAt match 3;
-      src   = builtins.fetchTree {
-        type = "git";
-        url = "https://github.com/${owner}/${repo}.git";
-        inherit rev;
-        allRefs = false;
+      # Build-time tarball fetch (fetchzip), so no `git` binary is needed at
+      # eval time — important on a fresh NixOS before git is installed.
+      src = pkgs.fetchFromGitHub {
+        inherit owner repo rev;
+        sha256 = "sha256-8SI7bPWRU5eRkr0UvWIdhjqylOtTmoSNdOipnsPW5Tc=";
       };
     in { name = builtins.baseNameOf path; src = src; subPath = "/${path}"; };
 

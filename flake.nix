@@ -1,5 +1,5 @@
 {
-  description = "Sam's nix-darwin system flake";
+  description = "Sam's nix system flake (nix-darwin + NixOS)";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -37,6 +37,20 @@
       specialArgs = {
         inherit homebrew-core homebrew-cask;
       };
+    };
+
+    # Build NixOS flake using:
+    # $ nixos-rebuild build --flake .#nixos
+    nixosConfigurations."nixos" = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./hosts/nixos.nix
+        # Set Git commit hash for nixos-version.
+        ({ ... }: {
+          system.configurationRevision = self.rev or self.dirtyRev or null;
+        })
+        home-manager.nixosModules.home-manager
+      ];
     };
   };
 }

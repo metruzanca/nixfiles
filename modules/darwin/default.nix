@@ -1,5 +1,6 @@
 {
   imports = [
+    ./users.nix
     ./packages.nix
     ./preferences.nix
     ./launchd.nix

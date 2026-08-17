@@ -46,6 +46,10 @@ in {
       pkgs.opencode
       pkgs.alacritty
       pkgs.alacritty.terminfo
+      # git is bundled with Xcode CLT on macOS but must be explicit on NixOS.
+      pkgs.git
+      # make builds this repo's Makefile targets (e.g. `make switch`).
+      pkgs.gnumake
 
       # Terminal tools
       pkgs.starship

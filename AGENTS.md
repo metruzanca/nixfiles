@@ -1,24 +1,30 @@
 # AGENTS.md
 
-This directory contains a [nix-darwin](https://github.com/nix-darwin/nix-darwin) flake that declaratively manages a MacBook Air (Apple Silicon, `aarch64-darwin`, hostname `m5air`). The system is configured entirely from code — install or change software by editing the module files and rebuilding, never by hand.
+This directory contains a multi-host [nix](https://nixos.org) flake that declaratively manages a MacBook Air (Apple Silicon, `aarch64-darwin`, hostname `m5air`, via [nix-darwin](https://github.com/nix-darwin/nix-darwin)) and a desktop PC (`x86_64-linux`, hostname `nixos`, via [NixOS](https://nixos.org)). Each system is configured entirely from code — install or change software by editing the module files and rebuilding, never by hand.
 
 ## What it manages
 
 The config is split into modules by concern so a second machine can share the portable parts:
 
-- **`hosts/m5air.nix`** — per-machine entry point: `hostPlatform`, hostname, `stateVersion`, and the home-manager wiring (`useGlobalPkgs`/`useUserPackages`/`backupFileExtension`, plus `home-manager.users.metru = import ../modules/common/home.nix`). It imports the modules below; a new machine is a new file here. A non-macOS machine imports `modules/common/*` and skips `modules/darwin/`.
+- **`hosts/m5air.nix`** — the macOS machine's per-machine entry point: `hostPlatform`, hostname, `stateVersion`, and the home-manager wiring (`useGlobalPkgs`/`useUserPackages`/`backupFileExtension`, plus `home-manager.users.metru = import ../modules/common/home.nix`). It imports `modules/common/*` and `modules/darwin/`.
+- **`hosts/nixos.nix`** — the NixOS PC's per-machine entry point: same home-manager wiring, plus the bootloader and machine-specific bits. Imports `modules/common/*` and `modules/linux/`. Its generated `hosts/nixos-hardware.nix` (disk layout) must be regenerated with `nixos-generate-config` if the hardware changes. A new machine is a new `hosts/<name>.nix` plus its hardware config; macOS hosts import `modules/common/*` + `modules/darwin/`, Linux hosts import `modules/common/*` + `modules/linux/`.
 - **`modules/common/`** — portable settings reusable on any host:
-  - `packages.nix`: CLIs (`evil-helix`, `opencode`, terminal tools), cross-platform GUI apps (`alacritty`, `brave`, `zed-editor`), fonts, `allowUnfree`. Only packages that exist on non-macOS platforms belong here.
+  - `packages.nix`: CLIs (`evil-helix`, `opencode`, `git`, terminal tools), cross-platform GUI apps (`alacritty`, `brave`, `zed-editor`), fonts, `allowUnfree`. Only packages that exist on non-macOS platforms belong here.
   - `nix.nix`: nix settings (flakes enabled), `programs.fish`.
-  - `users.nix`: the primary user's uid/home/login shell.
-  - `home.nix`: home-manager user config — SSH, dotfiles, and the `removeLegacyOpencode` cleanup. It is **not** a standalone nix-darwin module: the host file assigns it as the value of `home-manager.users.metru` (`import ../modules/common/home.nix`) so home-manager's `lib.hm` is in scope — do not add it to an `imports` list. `~/.config/opencode` and `~/.config/mise/conf.d` are fully managed: first-party files under `home/.config/<app>/` mirror the home dir (like GNU Stow) and are linked recursively. Third-party opencode skills are overlaid at build time from upstream repos — list them in `thirdPartyUrls` (see `home.nix`). `~/.config/fish/config.fish` and `~/.config/mise/config.toml` are intentionally absent — writable local files for tools to append to or for per-machine `mise use -g`.
-- **`modules/darwin/`** — macOS-only settings; omit on non-macOS hosts:
+  - `home.nix`: home-manager user config — SSH, dotfiles, and the `removeLegacyOpencode` cleanup. It is **not** a standalone module: the host file assigns it as the value of `home-manager.users.metru` (`import ../modules/common/home.nix`) so home-manager's `lib.hm` is in scope — do not add it to a NixOS-level `imports` list. (Plugging it into the home-manager users option via `home-manager.users.metru.imports` is fine, since that's the home-manager module system.) ~/.config/opencode` and `~/.config/mise/conf.d` are fully managed: first-party files under `home/.config/<app>/` mirror the home dir (like GNU Stow) and are linked recursively. Third-party opencode skills are overlaid at build time from upstream repos — list them in `thirdPartyUrls` (see `home.nix`). `~/.config/fish/config.fish` and `~/.config/mise/config.toml` are intentionally absent — writable local files for tools to append to or for per-machine `mise use -g`.
+- **`modules/darwin/`** — macOS-only settings; omit on Linux hosts:
+  - `users.nix`: the primary user's uid/home/login shell (via `users.knownUsers`).
   - `preferences.nix`: macOS preferences (`system.defaults` / `CustomUserPreferences`, e.g. natural scrolling off).
   - `launchd.nix`: apps launched at login.
   - `activation.nix`: display scaling patch + wallpaper script.
   - `homebrew.nix`: nix-homebrew + homebrew casks.
   - `packages.nix`: macOS-only packages — darwin-only derivations (`handy`, `herdr`) and desktop apps (`caffeine`, `raycast`, `rectangle`, `shottr`, `tailscale-gui`).
-- **`flake.nix`** — inputs and the `darwinConfigurations."m5air"` wiring (loads `hosts/m5air.nix`, the home-manager and nix-homebrew modules, and pins the Homebrew taps). The pinned taps are passed to `modules/darwin/homebrew.nix` via `specialArgs` (`inherit homebrew-core homebrew-cask`), so they're available as module arguments there.
+- **`modules/linux/`** — NixOS-only settings; omit on macOS hosts:
+  - `users.nix`: the primary user's uid/home/login shell (via `users.users`, `isNormalUser`).
+  - `desktop.nix`: GNOME/GDM, NVIDIA driver + Steam, pipewire sound, printing, locale/keymap.
+  - `home.nix`: GNOME preferences for `metru` (dark theme, idle-sleep off) via home-manager `dconf`, imported by `hosts/nixos.nix`.
+  - `networking.nix`: NetworkManager, Tailscale daemon, SSH server.
+- **`flake.nix`** — inputs and the host wiring: `darwinConfigurations."m5air"` loads `hosts/m5air.nix` plus the home-manager and nix-homebrew modules and pins the Homebrew taps; `nixosConfigurations."nixos"` loads `hosts/nixos.nix` plus the home-manager module. The pinned taps are passed to `modules/darwin/homebrew.nix` via `specialArgs` (`inherit homebrew-core homebrew-cask`), so they're available as module arguments there.
 
 ## Package sources
 
@@ -41,12 +47,12 @@ The config is split into modules by concern so a second machine can share the po
 
 Run these from this directory (prefer the `make` targets; `make help` lists them):
 
-- **Build the config without applying it**: `make build`
+- **Build the config without applying it**: `make build` (picks `darwin-rebuild`/`nixos-rebuild` from the OS; defaults to this machine's hostname, override with `make build HOST=<name>`)
 - **Apply the config** (requires sudo): `make switch`
 - **Clean up old generations and the nix store** (requires sudo): `make clean` — deletes system/home-manager generations older than 7 days and garbage-collects the store. Nix never cleans itself; run this occasionally if the store grows.
 - **Create the pass-cli session** (one-time, interactive): `make pass-login`
-- **Add Wi-Fi networks from Proton Pass** to macOS's preferred network list: `make wifi`
-- **Check available nix-darwin options / changelog**: `make changelog`
+- **Add Wi-Fi networks from Proton Pass** to macOS's preferred network list: `make wifi` (macOS only)
+- **Check available options / changelog**: `make changelog`
 - **Update third-party opencode skills** (bump the rev in `modules/common/home.nix`): `git ls-remote https://github.com/railwayapp/railway-skills main | cut -f1`, paste the SHA into the `thirdPartyUrls` URL, then `make switch`. To add a new skill: add another GitHub tree URL to `thirdPartyUrls` in `modules/common/home.nix` — nothing else to touch.
 - **Search for a package by name**: `nix search nixpkgs <name>` (e.g. `nix search nixpkgs parsec`). Let it finish evaluating the whole index before reading the results — matches can show up late (e.g. `parsec-bin`, "Remote streaming service client", is the Parsec remote-desktop app).
 
@@ -54,13 +60,14 @@ Run these from this directory (prefer the `make` targets; `make help` lists them
 
 - Never run `defaults write` to change preferences — that bypasses the declarative config and will be lost on the next rebuild. Always express changes in `modules/darwin/preferences.nix` via `system.defaults` / `system.defaults.CustomUserPreferences` and apply them with `make switch`. `defaults read` for inspection is fine.
 - **nix-darwin never resets un-declared values**: it only writes keys you declare, so removing/commenting out a setting does NOT revert the previously applied value — it leaves the system stuck at the old value. When reverting any `system.defaults` (or other nix-darwin) change, re-declare the key with the macOS default value and `make switch` to reset it, and tell the user this is required — otherwise the machine silently keeps the unwanted state.
-- The `.#m5air` flake output must match the current hostname when switching.
+- The `.#<host>` flake output (hostname) must match the current hostname when switching — the Makefile derives it from `hostname -s`.
+- On NixOS, `hosts/nixos-hardware.nix` is generated by `nixos-generate-config` and must be re-run after hardware changes (it is imported by `hosts/nixos.nix`).
 - nix-darwin does not install Xcode Command Line Tools; that is managed via macOS (`xcode-select --install`).
-- `users.users.metru.shell` is only applied because `metru` is listed in `users.knownUsers`; nix-darwin otherwise leaves the primary (admin) user untouched.
+- `users.users.metru.shell` is only applied because `metru` is listed in `users.knownUsers` (darwin) or as a normal user (NixOS); nix-darwin otherwise leaves the primary (admin) user untouched.
 - Changing the login shell only takes effect for new login sessions — a re-login or reboot may be needed.
-- `system.stateVersion` should not be bumped casually; see `darwin-rebuild changelog` for guidance.
-- Home-manager requires the `users.users.metru.home` (and `uid`/`shell`) set in nix-darwin; it derives the home dir from there.
-- `flake.lock` must be owned by `metru`, not root: a previous `sudo darwin-rebuild switch` can leave it root-owned, which blocks non-sudo builds from updating the lock file (`error: opening file "flake.lock": Permission denied`). Fix with `sudo chown metru:staff flake.lock`.
+- `system.stateVersion` should not be bumped casually; see `make changelog` for guidance.
+- Home-manager requires `users.users.metru.home` (and `uid`/`shell`) set in the host config — it derives the home dir from there. This lives in `modules/darwin/users.nix` or `modules/linux/users.nix`.
+- `flake.lock` must be owned by `metru`, not root: a previous `sudo ... switch` can leave it root-owned, which blocks non-sudo builds from updating the lock file (`error: opening file "flake.lock": Permission denied`). Fix with `sudo chown metru:users flake.lock` (or `metru:staff` on macOS).
 - `Homebrew bundle... /opt/homebrew/Library/Taps/homebrew/homebrew-core/.git: Permission denied` during `make switch` is expected and harmless. nix-homebrew manages taps as extracted tarballs (not git clones), so there is no `.git` directory, and the root-owned tap dirs prevent writes. The build still succeeds.
 - New (untracked) files must be `git add`-ed before rebuilding: nix flakes ignore untracked files even in a dirty tree, so a new file silently won't make it into the config until it's in the git index.
 - The home-manager `home.activation.removeLegacyOpencode` script deletes any stale hand-written files under `~/.config/opencode` (e.g. `opencode.jsonc`, `package.json`, `node_modules`).
