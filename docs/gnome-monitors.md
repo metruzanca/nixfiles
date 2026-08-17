@@ -64,7 +64,9 @@ The reply has four sections:
 
 Copy `connector`, `vendor`, `product`, and `serial` exactly as reported into
 `<monitorspec>`. HDR is only possible if the monitor lists color mode `2` in
-`supported-color-modes`; then write `<colormode>bt2100</colormode>`.
+`supported-color-modes`; then write `<colormode>bt2100</colormode>`. But see
+"Danger: a config mutter *accepts* can still break the display" below before
+enabling HDR — on this machine it took the display down.
 
 Example (the desktop, both 2560x1440): LG on DP-1, AORUS on HDMI-1.
 
@@ -76,6 +78,28 @@ gdbus call --session \
   --method org.gnome.Mutter.DisplayConfig.GetCurrentState \
   | tr ',' '\n' | grep -E "is-current|is-preferred|color-mode|DP-1|HDMI-1"
 ```
+
+## Danger: a config mutter *accepts* can still break the display
+
+The rate matching above only gates whether the stored config is loaded. A config
+that passes validation is actually **applied to the hardware** — and on this
+desktop (NVIDIA driver, HDMI) applying `bt2100` (HDR) color modes at high
+refresh broke the display entirely: bottom monitor went solid green, top went
+no-signal, and the GDM greeter itself crashed on the next boot. The fallback
+state (60 Hz, standard color, default layout) was the only thing that ever
+worked reliably.
+
+Testing order matters. Change one thing at a time and keep the current bootable
+generation in the GRUB menu:
+
+1. Layout/primary only (keep the rates that are already working).
+2. Then refresh rates (one monitor at a time).
+3. Then HDR (`<colormode>bt2100</colormode>`) — last, and per-monitor. Treat
+   this as likely-to-break on NVIDIA-over-HDMI, not as a free setting.
+
+If a switch breaks the display, boot the previous system generation from the
+GRUB menu (or `systemd-boot`), then `git revert` the monitors.xml change and
+commit before attempting anything else.
 
 ## Editing and applying
 
