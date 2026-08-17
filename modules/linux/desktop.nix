@@ -1,5 +1,10 @@
 { lib, pkgs, ... }: {
 
+  # Zen kernel: performance-tuned for interactive desktop/gaming use (PREEMPT,
+  # low-latency scheduler tweaks) vs. the stock kernel's throughput-oriented
+  # defaults. Good fit for this dev + gaming machine.
+  boot.kernelPackages = pkgs.linuxPackages_zen;
+
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 
