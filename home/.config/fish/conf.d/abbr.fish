@@ -28,3 +28,4 @@ abbr hxc 'hx ~/dev/helix-cheatsheet/helix-cheatsheet.md'
 abbr hr herdr
 abbr hrr herdr-remote
 alias zed zeditor
+abbr ss secretspec
