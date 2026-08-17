@@ -66,18 +66,78 @@ Copy `connector`, `vendor`, `product`, and `serial` exactly as reported into
 `<monitorspec>`. HDR is only possible if the monitor lists color mode `2` in
 `supported-color-modes`; then write `<colormode>bt2100</colormode>`. But see
 "Danger: a config mutter *accepts* can still break the display" below before
-enabling HDR — on this machine it took the display down.
+enabling HDR — combined with high refresh it took the display down.
 
-Example (the desktop, both 2560x1440): LG on DP-1, AORUS on HDMI-1.
+Tip: a shorter per-line view of the same query:
 
 ```sh
-# shorter per-line view of the same query
 gdbus call --session \
   --dest org.gnome.Mutter.DisplayConfig \
   --object-path /org/gnome/Mutter/DisplayConfig \
   --method org.gnome.Mutter.DisplayConfig.GetCurrentState \
   | tr ',' '\n' | grep -E "is-current|is-preferred|color-mode|DP-1|HDMI-1"
 ```
+
+## Current working config
+
+`home/.config/monitors.xml` (the desktop: both 2560x1440; LG on DP-1 top,
+AORUS FI27Q on HDMI-1 bottom + primary; 75/144 Hz; no HDR):
+
+```xml
+<monitors version="2">
+  <configuration>
+    <layoutmode>logical</layoutmode>
+    <logicalmonitor>
+      <x>0</x>
+      <y>0</y>
+      <scale>1</scale>
+      <monitor>
+        <monitorspec>
+          <connector>DP-1</connector>
+          <vendor>GSM</vendor>
+          <product>LG HDR QHD</product>
+          <serial>203NTNH7R303</serial>
+        </monitorspec>
+        <mode>
+          <width>2560</width>
+          <height>1440</height>
+          <rate>74.971</rate>
+        </mode>
+      </monitor>
+    </logicalmonitor>
+    <logicalmonitor>
+      <x>0</x>
+      <y>1440</y>
+      <scale>1</scale>
+      <primary>yes</primary>
+      <monitor>
+        <monitorspec>
+          <connector>HDMI-1</connector>
+          <vendor>GBT</vendor>
+          <product>AORUS FI27Q</product>
+          <serial>20490B002444</serial>
+        </monitorspec>
+        <mode>
+          <width>2560</width>
+          <height>1440</height>
+          <rate>143.972</rate>
+        </mode>
+      </monitor>
+    </logicalmonitor>
+  </configuration>
+</monitors>
+```
+
+Notes on the structure:
+
+- `<layoutmode>logical</layoutmode>` — positions below are logical pixels.
+- `<logicalmonitor>` — one per screen: `<x>/<y>` places it in the virtual
+  desktop, `<primary>yes</primary>` marks the primary (used for the top-left
+  panel / default target), `<scale>` is the display scale.
+- `<monitor><monitorspec>` — must match the connector/vendor/product/serial
+  exactly as reported by `GetCurrentState`.
+- `<mode>` — resolution + the exact 3-decimal `<rate>` mutter reports.
+- No `<colormode>` means standard color (HDR off).
 
 ## Danger: a config mutter *accepts* can still break the display
 
@@ -94,19 +154,21 @@ What has been verified on this machine, in order:
    color — works.
 2. The same with HDR (`bt2100`) at 60 Hz — works (both monitors report
    `color-mode: 2`).
-3. The high refresh rates (75 Hz LG / 144 Hz AORUS) are still **untested**.
+3. The high refresh rates (75 Hz LG / 144 Hz AORUS) at standard color —
+   works and is the current config.
 
-The fallback state (60 Hz, standard color) is the only state guaranteed to work,
-and currently the user prefers it: standard color renders more vibrant than HDR
-on these panels, so HDR stays disabled.
+The one combination that **broke** the display was 75/144 Hz **together with**
+HDR. Standard color at the high refresh rates is the current, preferred state
+(it also renders more vibrant than HDR on these panels).
 
 Testing order matters. Change one thing at a time and keep the current bootable
 generation in the GRUB menu:
 
 1. Layout/primary only (keep the rates that are already working).
-2. Then refresh rates (one monitor at a time) — untested so far.
-3. Then HDR (`<colormode>bt2100</colormode>`) — tested and working at 60 Hz,
-   but never combined with the high refresh rates.
+2. Then refresh rates (one monitor at a time).
+3. Then HDR (`<colormode>bt2100</colormode>`) — works at 60 Hz, but never
+   combined with the high refresh rates (that combination took the display
+   down).
 
 If a switch breaks the display, boot the previous system generation from the
 GRUB menu (or `systemd-boot`), then `git revert` the monitors.xml change and
