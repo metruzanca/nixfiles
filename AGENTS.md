@@ -37,6 +37,7 @@ The config is split into modules by concern so a second machine can share the po
 - If there is no clear nixpkgs package compatible with nix-darwin, look it up in Homebrew (`brew search <name>`).
 - If the app is available in Homebrew and setting it up in nix-darwin would be complicated, prefer the Homebrew route (`homebrew.casks` / `homebrew.brews`). **Simplicity over source preference.**
 - Homebrew currently manages: `discord`, `whatsapp`, `parsec` (casks; installed to `/Applications`).
+- **Flathub is configured and available on NixOS** (`modules/linux/flatpak.nix`, wired into `hosts/nixos.nix` via the `nix-flatpak` flake input). It's the declarative fallback package source on Linux, mirroring Homebrew on macOS: apps that don't package well in nixpkgs or that track rolling releases go here. It enables the Flatpak daemon and the `flathub` remote, then installs declared apps via a systemd oneshot at activation. Declared app IDs (e.g. `com.modrinth.ModrinthApp`) go in `services.flatpak.packages` and take effect on `make switch`. Apps are stored in `/var/lib/flatpak`, not the nix store. Note that nix-flatpak extends `services.flatpak`, so un-declared apps installed via `flatpak install` stay as-is.
 
 ## Dev tooling (mise)
 
