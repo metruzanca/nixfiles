@@ -47,6 +47,7 @@ in {
   # Enabled per-user in gnome-home.nix.
   environment.systemPackages = [
     pkgs.gnomeExtensions.appindicator
+    pkgs.gnomeExtensions.gsconnect
     apexshot-gnome-extension
   ];
 

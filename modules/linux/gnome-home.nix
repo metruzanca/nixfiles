@@ -22,6 +22,8 @@
       enabled-extensions = [
         # AppIndicator: renders the Tailscale systray in the top bar.
         "appindicatorsupport@rgcjonas.gmail.com"
+        # GSConnect: KDE Connect protocol for Android pairing.
+        "gsconnect@andyholmes.github.io"
         # ApexShot: always-on-top previews, recording mask, window picker list.
         "apexshot-gnome-integration@apexshot.github.io"
       ];
