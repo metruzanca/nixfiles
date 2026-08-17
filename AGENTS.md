@@ -21,7 +21,8 @@ The config is split into modules by concern so a second machine can share the po
   - `packages.nix`: macOS-only packages — darwin-only derivations (`handy`, `herdr`) and desktop apps (`caffeine`, `raycast`, `rectangle`, `shottr`, `tailscale-gui`).
 - **`modules/linux/`** — NixOS-only settings; omit on macOS hosts:
   - `users.nix`: the primary user's uid/home/login shell (via `users.users`, `isNormalUser`).
-  - `desktop.nix`: DE-agnostic desktop — NVIDIA driver + Steam, pipewire sound, printing, locale/keymap, power-profiles-daemon.
+  - `desktop.nix`: DE-agnostic desktop — NVIDIA driver, pipewire sound, printing, locale/keymap, power-profiles-daemon.
+  - `gaming.nix`: Steam/Proton + gaming packages (GE-Proton installer `protonup-rs`, `vice` clip recorder, `modrinth-app` for Minecraft). New games/tooling go here.
   - `gnome.nix`: the GNOME desktop environment (GDM, GNOME, dconf) plus its own home-manager user config via `gnome-home.nix` (dark theme, mouse accel off, idle-sleep off, monitor layout). Self-contained so a different DE can be swapped in as its own module pair.
   - `home.nix`: generic user config (xdg/mimeapps default browser), imported by `hosts/nixos.nix`.
   - `networking.nix`: NetworkManager, Tailscale daemon, SSH server.
