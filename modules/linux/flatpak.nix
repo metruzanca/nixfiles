@@ -13,6 +13,8 @@
     # Declared Flathub apps (app IDs) go in this list, e.g.
     #   "com.mastermindzh.Tidal-hifi"
     # and take effect on `make switch`. Keep it manageable so installs stay fast.
-    packages = lib.mkDefault [ ];
+    packages = lib.mkDefault [
+      "com.modrinth.ModrinthApp"
+    ];
   };
 }
