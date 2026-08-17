@@ -82,24 +82,60 @@ gdbus call --session \
 ## Danger: a config mutter *accepts* can still break the display
 
 The rate matching above only gates whether the stored config is loaded. A config
-that passes validation is actually **applied to the hardware** — and on this
-desktop (NVIDIA driver, HDMI) applying `bt2100` (HDR) color modes at high
-refresh broke the display entirely: bottom monitor went solid green, top went
-no-signal, and the GDM greeter itself crashed on the next boot. The fallback
-state (60 Hz, standard color, default layout) was the only thing that ever
-worked reliably.
+that passes validation is actually **applied to the hardware**, and applying an
+unsupported combination can take the display down. On this desktop (NVIDIA
+driver, HDMI) the first fully-valid config — 75/144 Hz refresh **plus** HDR
+(`bt2100`) — broke everything: bottom monitor went solid green, top went
+no-signal, and the GDM greeter crashed on the next boot.
+
+What has been verified on this machine, in order:
+
+1. Layout + primary (LG top, AORUS/Giga bottom-primary) at 60 Hz, standard
+   color — works.
+2. The same with HDR (`bt2100`) at 60 Hz — works (both monitors report
+   `color-mode: 2`).
+3. The high refresh rates (75 Hz LG / 144 Hz AORUS) are still **untested**.
+
+The fallback state (60 Hz, standard color) is the only state guaranteed to work,
+and currently the user prefers it: standard color renders more vibrant than HDR
+on these panels, so HDR stays disabled.
 
 Testing order matters. Change one thing at a time and keep the current bootable
 generation in the GRUB menu:
 
 1. Layout/primary only (keep the rates that are already working).
-2. Then refresh rates (one monitor at a time).
-3. Then HDR (`<colormode>bt2100</colormode>`) — last, and per-monitor. Treat
-   this as likely-to-break on NVIDIA-over-HDMI, not as a free setting.
+2. Then refresh rates (one monitor at a time) — untested so far.
+3. Then HDR (`<colormode>bt2100</colormode>`) — tested and working at 60 Hz,
+   but never combined with the high refresh rates.
 
 If a switch breaks the display, boot the previous system generation from the
 GRUB menu (or `systemd-boot`), then `git revert` the monitors.xml change and
 commit before attempting anything else.
+
+## Enabling HDR (how to turn it on later)
+
+HDR is just the `<colormode>` element on each `<monitor>`:
+
+```xml
+<monitor>
+  <monitorspec>...</monitorspec>
+  <mode>...</mode>
+  <colormode>bt2100</colormode>
+</monitor>
+```
+
+1. Add `<colormode>bt2100</colormode>` inside each `<monitor>` you want HDR on.
+   Each monitor must list color mode `2` in `supported-color-modes` (check the
+   `GetCurrentState` query) or mutter rejects the file.
+2. `make build && make switch`, then re-login.
+3. Verify each monitor reports `color-mode: 2` (see "Verifying it applied").
+
+Notes from this machine:
+- HDR works at 60 Hz, but standard color looks more vibrant on these panels, so
+  it is intentionally left off.
+- HDR has never been tested together with the 75/144 Hz rates — that exact
+  combination is what first broke the display. If you re-enable HDR, start at
+  60 Hz, and only try raising the rates afterward, one monitor at a time.
 
 ## Editing and applying
 
