@@ -1,4 +1,22 @@
-{ ... }: {
+{ pkgs, ... }: {
+
+  # ApexShot's background daemon (tray icon + global hotkeys) — same FHS env as
+  # the app installed in packages.nix. Autostarted at login so screenshots work
+  # from the tray/hotkeys without launching the app first.
+  xdg.configFile."autostart/apexshot.desktop" = {
+    text = ''
+      [Desktop Entry]
+      Type=Application
+      Name=ApexShot Daemon
+      Comment=ApexShot screenshot daemon — tray icon and hotkey listener
+      Exec=${import ./apexshot.nix { inherit pkgs; }}/bin/apexshot daemon
+      Icon=apexshot
+      Categories=Utility;
+      StartupNotify=false
+      X-GNOME-Autostart-enabled=true
+      X-GNOME-Autostart-Delay=2
+    '';
+  };
 
   # Brave Origin as the default browser (MIME associations via xdg). The generated
   # file fully replaces ~/.config/mimeapps.list, so keep non-browser handlers

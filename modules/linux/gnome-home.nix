@@ -19,7 +19,12 @@
     # Enable the AppIndicator extension (installed system-wide in gnome.nix) so
     # the Tailscale systray renders in the top bar.
     "org/gnome/shell" = {
-      enabled-extensions = [ "appindicatorsupport@rgcjonas.gmail.com" ];
+      enabled-extensions = [
+        # AppIndicator: renders the Tailscale systray in the top bar.
+        "appindicatorsupport@rgcjonas.gmail.com"
+        # ApexShot: always-on-top previews, recording mask, window picker list.
+        "apexshot-gnome-integration@apexshot.github.io"
+      ];
     };
 
     "org/gnome/desktop/interface" = {
