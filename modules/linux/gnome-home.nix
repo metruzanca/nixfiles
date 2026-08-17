@@ -10,6 +10,17 @@
     force = true;
   };
 
+  # Launch Spotify on login (GNOME autostart entry).
+  xdg.configFile."autostart/spotify.desktop" = {
+    text = ''
+      [Desktop Entry]
+      Type=Application
+      Name=Spotify
+      Exec=spotify
+      X-GNOME-Autostart-enabled=true
+    '';
+  };
+
   # GNOME settings written to the user dconf database (authoritative, unlike
   # NixOS-level system defaults which lose to user-stored values). Written at
   # activation; removed keys are reset to defaults.
