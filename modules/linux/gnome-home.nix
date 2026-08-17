@@ -16,6 +16,12 @@
   dconf.enable = true;
 
   dconf.settings = {
+    # Enable the AppIndicator extension (installed system-wide in gnome.nix) so
+    # the Tailscale systray renders in the top bar.
+    "org/gnome/shell" = {
+      enabled-extensions = [ "appindicatorsupport@rgcjonas.gmail.com" ];
+    };
+
     "org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";
     };
