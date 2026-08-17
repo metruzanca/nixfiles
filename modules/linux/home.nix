@@ -18,6 +18,21 @@
     '';
   };
 
+  # Discord autostarted at login so it's ready when you log in.
+  xdg.configFile."autostart/discord.desktop" = {
+    text = ''
+      [Desktop Entry]
+      Type=Application
+      Name=Discord
+      Comment=Discord — voice, video and text chat
+      Exec=${pkgs.discord}/bin/discord
+      Icon=discord
+      Categories=Network;InstantMessaging;
+      StartupNotify=false
+      X-GNOME-Autostart-enabled=true
+    '';
+  };
+
   # Brave Origin as the default browser (MIME associations via xdg). The generated
   # file fully replaces ~/.config/mimeapps.list, so keep non-browser handlers
   # here too (e.g. proton-inbox). Web searches launched from GNOME also open in
