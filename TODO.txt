@@ -1,2 +1,0 @@
-- [ ] Tailscale in the gnome top status bar
-- [ ] helldivers 2 had white border when launched (might be fixed on reboot)
