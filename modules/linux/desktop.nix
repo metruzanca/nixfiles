@@ -73,4 +73,13 @@
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
+
+  # Razer peripherals (Basilisk X HyperSpeed — generic usbhid misses middle click).
+  hardware.openrazer = {
+    enable = true;
+    users = [ "metru" ];
+  };
+  environment.systemPackages = with pkgs; [
+    polychromatic
+  ];
 }
