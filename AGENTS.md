@@ -2,6 +2,8 @@
 
 This directory contains a multi-host [nix](https://nixos.org) flake that declaratively manages a MacBook Air (Apple Silicon, `aarch64-darwin`, hostname `m5air`, via [nix-darwin](https://github.com/nix-darwin/nix-darwin)) and a desktop PC (`x86_64-linux`, hostname `nixos`, via [NixOS](https://nixos.org)). Each system is configured entirely from code — install or change software by editing the module files and rebuilding, never by hand.
 
+When the user refers to "macOS", "the MacBook", or "m5air", or to "Linux"/"NixOS"/"the PC", figure out which machine they mean. **Before doing work, run `hostname`** to determine the machine you're actually on: `m5air` means macOS/nix-darwin (`modules/darwin/`), `nixos` means Linux/NixOS (`modules/linux/`). This decides which module directory wins and which rebuild command applies.
+
 ## What it manages
 
 The config is split into modules by concern so a second machine can share the portable parts:
