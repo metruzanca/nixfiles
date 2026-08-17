@@ -86,6 +86,9 @@ in {
       pkgs.proton-pass
       pkgs.proton-pass-cli
 
+      # Declarative secrets across environments/providers
+      pkgs.secretspec
+
       noodle
     ];
 
