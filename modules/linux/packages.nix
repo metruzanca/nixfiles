@@ -70,5 +70,11 @@ in {
     # GTK4/libadwaita frontend for mpv — the GNOME-friendly media player staple
     # (pulls in mpv as its backend). A better fit than VLC on a GNOME desktop.
     pkgs.celluloid
+
+    # keyctl — manage kernel keyrings. pass-cli stores its DB key in the kernel
+    # keyring; running it inside a fresh uid-owned session keyring (`keyctl
+    # session -`) fixes NoStorageAccess(AccessDenied) under GDM's session
+    # keyring (see home/.config/fish/functions/pass-cli.fish).
+    pkgs.keyutils
   ];
 }

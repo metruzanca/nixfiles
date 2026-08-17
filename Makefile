@@ -38,7 +38,12 @@ clean: ## Delete generations older than 7 days and garbage-collect the nix store
 	sudo nix-store --optimise
 
 pass-login: ## Create the pass-cli session (one-time, interactive)
-	pass-cli login
+	@if command -v keyctl >/dev/null 2>&1; then \
+		echo "pass-cli login (inside fresh session keyring to avoid keyring AccessDenied)"; \
+		keyctl session - pass-cli login; \
+	else \
+		pass-cli login; \
+	fi
 
 changelog: ## Check available options / changelog
 ifeq ($(UNAME_S),Darwin)
