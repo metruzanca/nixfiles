@@ -74,7 +74,11 @@
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
-  # Razer peripherals (Basilisk X HyperSpeed — generic usbhid misses middle click).
+  # Razer peripherals (Basilisk X HyperSpeed).
+  # openrazer gives kernel-level device access so Polychromatic can manage the
+  # mouse; on its own it doesn't restore the scroll wheel as a middle button,
+  # so we additionally force "driver mode" and remap the wheel to middle click
+  # (see below).
   hardware.openrazer = {
     enable = true;
     users = [ "metru" ];
@@ -82,4 +86,37 @@
   environment.systemPackages = with pkgs; [
     polychromatic
   ];
+
+  # The Basilisk X HyperSpeed exposes buttons on a keyboard HID interface. In
+  # the factory default "normal mode" the wheel press emits nothing, so the
+  # middle click is dead. Putting the device into "driver mode" (0x03 0x00)
+  # makes it emit events, at which point the wheel press appears as the Up
+  # arrow key on that keyboard interface — keyd then turns it into a real
+  # middle mouse button. Driver mode survives the daemon restarting but not a
+  # full replug/reboot, hence the boot-time oneshot.
+  systemd.services.razer-basilisk-driver-mode = {
+    description = "Put Razer Basilisk X HyperSpeed into driver mode";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "systemd-udev-settle.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      dev=/sys/bus/hid/devices/0003:1532:0083.0003/device_mode
+      if [ -w "$dev" ]; then
+        printf '\x03\x00' > "$dev"
+      fi
+    '';
+  };
+
+  # Remap the wheel's Up-arrow (on the mouse's keyboard interface, matched via
+  # its device id 1532:0083 with the k: prefix) into a middle mouse button.
+  services.keyd = {
+    enable = true;
+    keyboards.razer-basilisk = {
+      ids = [ "k:1532:0083" ];
+      settings.main.up = "middlemouse";
+    };
+  };
 }
