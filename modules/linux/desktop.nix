@@ -56,9 +56,6 @@
   };
   services.xserver.videoDrivers = [ "nvidia" ];
 
-  # Steam (gaming).
-  programs.steam.enable = true;
-
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
