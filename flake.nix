@@ -8,6 +8,7 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
+    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.7.0";
     # Pin the official taps so Homebrew taps are fully declarative.
     homebrew-core = {
       url = "github:homebrew/homebrew-core";
@@ -19,7 +20,7 @@
     };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, nix-homebrew, homebrew-core, homebrew-cask }:
+  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, nix-homebrew, nix-flatpak, homebrew-core, homebrew-cask }:
   {
     # Build darwin flake using:
     # $ darwin-rebuild build --flake .#m5air
@@ -49,6 +50,7 @@
         ({ ... }: {
           system.configurationRevision = self.rev or self.dirtyRev or null;
         })
+        nix-flatpak.nixosModules.nix-flatpak
         home-manager.nixosModules.home-manager
       ];
     };

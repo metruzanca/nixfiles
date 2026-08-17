@@ -149,6 +149,12 @@ in {
       # Per-project toolchains belong in mise (see AGENTS.md).
       pkgs.python3
 
+      # C/C++ toolchains. So many tools (e.g. `mise use --global node` building
+      # from source) need a working C/C++ compiler; gcc provides both CC (gcc)
+      # and CXX (g++), clang is the LLVM alternative.
+      pkgs.gcc
+      pkgs.clang
+
       # Common utilities
       pkgs.jq
 

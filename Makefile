@@ -22,9 +22,9 @@ build: ## Build the config without applying it
 
 switch: ## Apply the config (requires sudo)
 	sudo $(REBUILD) switch --flake .#$(HOST)
-	@if [ "$(UNAME_S)" = "Darwin" ] && [ "$(PASS_CLI)" = "1" ]; then \
-		if fish -c 'opencode-set-key' 2>/dev/null; then \
-			echo "opencode-set-key: credential refreshed"; \
+	@if [ "$(PASS_CLI)" = "1" ]; then \
+		if fish -c 'opencode-set-key && wakatime-set-key' 2>/dev/null; then \
+			echo "secrets: opencode + wakatime credentials refreshed"; \
 		else \
 			echo "pass-cli: skipped (run 'make pass-login' once). Rebuild OK."; \
 		fi; \
