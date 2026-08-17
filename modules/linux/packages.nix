@@ -57,10 +57,6 @@ in {
     # Screen recording / livestreaming. Linux-only in nixpkgs.
     pkgs.obs-studio
 
-    # Notion desktop app. The official notion-app is darwin-only in nixpkgs, so
-    # Linux uses the community repackaged build with Notion Enhancer.
-    pkgs.notion-app-enhanced
-
     handy
     herdr
 
