@@ -38,6 +38,87 @@ let
   });
 in {
 
+  # Pin secretspec and pass-cli to exact tested versions so nixpkgs-unstable
+  # upgrades can't silently break them. secretspec's protonpass provider
+  # drives the official pass-cli executable and inherits whatever it does;
+  # pass-cli has shipped backward-incompatible changes that broke secretspec
+  # until 0.19 (e.g. 2.2.4 removed `pass-cli test`). Tracking nixpkgs-unstable
+  # would move pass-cli under us, so both are overridden to pinned versions.
+  # See: https://secretspec.dev/docs/providers/protonpass
+  nixpkgs.overlays = [
+    (final: prev: let
+      # pin pass-cli (proton-pass-cli) to a tested release; one prebuilt
+      # binary per platform, like the noodle override above.
+      passCliVersion = "2.2.5";
+      passCliAsset =
+        if final.stdenv.hostPlatform.isDarwin && final.stdenv.hostPlatform.isAarch64 then {
+          asset = "pass-cli-macos-aarch64";
+          hash = "sha256-u6rAmSEkRxoMocwmJPzoH9rFxdUOjzGmu3Kfdx9/NuE=";
+        } else if final.stdenv.hostPlatform.isLinux && final.stdenv.hostPlatform.isx86_64 then {
+          asset = "pass-cli-linux-x86_64";
+          hash = "sha256-OXG/21ZJvFljTCGV41JZ6j9LeIm7paT2aYtq9Qsnz38=";
+        } else if final.stdenv.hostPlatform.isLinux && final.stdenv.hostPlatform.isAarch64 then {
+          asset = "pass-cli-linux-aarch64";
+          hash = "sha256-qFl+r5JjEkKkTFubE7D9DA/FayGmxPCHt9TAMWUSSbM=";
+        } else throw "proton-pass-cli: unsupported platform ${final.stdenv.hostPlatform.system}";
+    in {
+      proton-pass-cli = prev.proton-pass-cli.overrideAttrs (_: {
+        version = passCliVersion;
+        src = final.fetchurl {
+          url = "https://proton.me/download/pass-cli/${passCliVersion}/${passCliAsset.asset}";
+          hash = passCliAsset.hash;
+        };
+      });
+
+      # secretspec 0.19+ (0.19.0) — first release compatible with every
+      # pass-cli build (probes `pass-cli info`, falls back to `pass-cli test`).
+      secretspec = final.rustPlatform.buildRustPackage {
+        pname = "secretspec";
+        version = "0.19.0";
+
+        src = final.fetchCrate {
+          pname = "secretspec";
+          version = "0.19.0";
+          hash = "sha256-tpzmzChyyYogebNZZi3LT61MO1HKZW8ln+21CwlqW8M=";
+        };
+
+        cargoHash = "sha256-VO05AAjBqNVowY2AsyF2W1k4sXWJxOw1U0krs13JS28=";
+
+        postPatch = ''
+          mkdir -p ../tests/fixtures
+          cp ${
+            final.fetchurl {
+              url = "https://raw.githubusercontent.com/cachix/secretspec/v0.19.0/tests/fixtures/bw-shim.sh";
+              hash = "sha256-Xg1d8h2DOA6p0Hn9xP9TYzFN1863Wyk3QuQlFk+Y0ME=";
+            }
+          } ../tests/fixtures/bw-shim.sh
+          chmod +x ../tests/fixtures/bw-shim.sh
+          patchShebangs ../tests/fixtures/bw-shim.sh
+        '';
+
+        nativeCheckInputs = [
+          final.jq
+          final.sops
+        ];
+
+        preCheck = ''
+          export HOME="$TMPDIR"
+          export SSL_CERT_FILE="${final.cacert}/etc/ssl/certs/ca-bundle.crt"
+        '';
+
+        # A test binds to localhost, which requires an explicit Darwin sandbox exception.
+        __darwinAllowLocalNetworking = true;
+
+        meta = with final.lib; {
+          description = "Declarative secrets, every environment, any provider";
+          homepage = "https://secretspec.dev";
+          license = licenses.asl20;
+          mainProgram = "secretspec";
+        };
+      };
+    })
+  ];
+
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
   environment.systemPackages =
