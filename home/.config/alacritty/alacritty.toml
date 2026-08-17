@@ -1,3 +1,8 @@
+# Run herdr (the persistent terminal workspace manager) by default on every new
+# alacritty session.
+[terminal.shell]
+program = "herdr"
+
 [window]
 opacity = 0.85
 # Disabling this on MacOS will prevent the window from having tabs.
