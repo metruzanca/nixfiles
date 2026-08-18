@@ -34,5 +34,9 @@ in {
     PKG_CONFIG_PATH = "${gpuilibs-dev}/lib/pkgconfig";
     LIBRARY_PATH = "${gpuilibs-dev}/lib";
     CPATH = "${gpuilibs-dev}/include";
+    # At runtime the compiled binary must find the X11/wayland .so libs from
+    # systemPackages; NixOS doesn't put /run/current-system/sw/lib on the
+    # dynamic loader path by default.
+    LD_LIBRARY_PATH = "/run/current-system/sw/lib";
   };
 }
