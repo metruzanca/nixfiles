@@ -10,11 +10,19 @@
   # activation. Apps are stored in /var/lib/flatpak, not the nix store.
   services.flatpak = {
     enable = true;
-    # Declared Flathub apps (app IDs) go in this list, e.g.
-    #   "com.mastermindzh.Tidal-hifi"
-    # and take effect on `make switch`. Keep it manageable so installs stay fast.
+    remotes = [
+      {
+        name = "flathub";
+        location = "https://flathub.org/flatpakrepo";
+      }
+      {
+        name = "nvidia-geforcenow";
+        location = "https://international.download.nvidia.com/GFNLinux/flatpak/geforcenow.flatpakrepo";
+      }
+    ];
     packages = lib.mkDefault [
       "com.modrinth.ModrinthApp"
+      { appId = "com.nvidia.geforcenow"; origin = "nvidia-geforcenow"; }
     ];
   };
 }
