@@ -22,6 +22,8 @@
     ];
     packages = lib.mkDefault [
       "com.modrinth.ModrinthApp"
+      "io.github.randovania.Randovania"
+      "com.vba_m.visualboyadvance-m"
       { appId = "com.nvidia.geforcenow"; origin = "nvidia-geforcenow"; }
     ];
   };
