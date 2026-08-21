@@ -10,6 +10,16 @@
     shell = pkgs.fish;
   };
 
+  # Dev user.
+  users.users.dev = {
+    isNormalUser = true;
+    uid = 1001;
+    home = "/home/dev";
+    description = "Dev";
+    extraGroups = [ "wheel" ];
+    shell = pkgs.fish;
+  };
+
   # Make fish a valid login shell (users.users.metru.shell must be listed).
   environment.shells = [ pkgs.fish ];
 }
