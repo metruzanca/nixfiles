@@ -76,19 +76,6 @@
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
-  # Razer peripherals (Basilisk X HyperSpeed).
-  # openrazer gives kernel-level device access so Polychromatic can manage the
-  # mouse; on its own it doesn't restore the scroll wheel as a middle button,
-  # so we additionally force "driver mode" and remap the wheel to middle click
-  # (see below).
-  hardware.openrazer = {
-    enable = true;
-    users = [ "metru" ];
-  };
-  environment.systemPackages = with pkgs; [
-    polychromatic
-  ];
-
   # The Basilisk X HyperSpeed exposes buttons on a keyboard HID interface. In
   # the factory default "normal mode" the wheel press emits nothing, so the
   # middle click is dead. Putting the device into "driver mode" (0x03 0x00)
