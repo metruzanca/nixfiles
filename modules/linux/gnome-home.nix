@@ -56,5 +56,21 @@
       sleep-inactive-ac-type = "nothing";
       sleep-inactive-battery-type = "nothing";
     };
+
+    # Handy's in-app global hotkeys don't work under Wayland (the DE owns
+    # system-wide shortcuts), so mirror Handy's README fix: a GNOME custom
+    # shortcut that toggles transcription on the running instance via its CLI
+    # flag. Binding: Super+O.
+    "org/gnome/settings-daemon/plugins/media-keys" = {
+      custom-keybindings = [
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
+      ];
+    };
+
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
+      name = "Toggle Handy Transcription";
+      command = "handy --toggle-transcription";
+      binding = "<Super>o";
+    };
   };
 }

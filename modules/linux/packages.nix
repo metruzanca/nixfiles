@@ -6,23 +6,57 @@ let
 
   # Handy (https://github.com/cjpais/Handy) — local ML audio transcription with a
   # system tray UI. Ships per-OS binaries; the Linux AppImage is self-contained
-  # (bundles GTK3, WebKitGTK, onnxruntime, Vulkan ggml), so wrapType2 just repacks it.
-  # darwin/macOS binary lives in modules/darwin/packages.nix.
-  handy = pkgs.appimageTools.wrapType2 {
-    pname = "handy";
-    version = "0.9.5";
-    src = pkgs.fetchurl {
+  # (bundles GTK3, WebKitGTK, onnxruntime, Vulkan ggml), so wrapType2 just repacks it
+  # into a working binary. wrapType2 only installs the binary, so we additionally
+  # pull the AppImage's own icons and a .desktop entry out of the image so GNOME
+  # shows Handy as a launcher app (not just a CLI). darwin/macOS binary lives in
+  # modules/darwin/packages.nix.
+  handy = let
+    handy-src = pkgs.fetchurl {
       url = "https://github.com/cjpais/Handy/releases/download/v0.9.5/Handy_0.9.5_amd64.AppImage";
       hash = "sha256-u6HXEDrMMO8DRpcK8sHYh13zI40dZbelv1oOSKGn7Zw=";
     };
-    meta = {
-      description = "AI-powered audio transcription app with a system tray UI";
-      homepage = "https://github.com/cjpais/Handy";
-      license = lib.licenses.unfree;
-      platforms = [ "x86_64-linux" ];
-      mainProgram = "handy";
+    wrapped = pkgs.appimageTools.wrapType2 {
+      pname = "handy";
+      version = "0.9.5";
+      src = handy-src;
+      # Handy links gtk-layer-shell at runtime for its recording overlay; bundle
+      # it into the FHS env (README's top Linux startup-crash fix). The overlay
+      # itself is disabled by default on Linux, but the library still needs to
+      # load for the app to start reliably.
+      extraPkgs = pkgs: [ pkgs.gtk-layer-shell ];
+      meta = {
+        description = "AI-powered audio transcription app with a system tray UI";
+        homepage = "https://github.com/cjpais/Handy";
+        license = lib.licenses.unfree;
+        platforms = [ "x86_64-linux" ];
+        mainProgram = "handy";
+      };
     };
-  };
+    # Extract the AppImage's bundled icons (Handy ships no icon outside the image).
+    handy-icons = pkgs.appimageTools.extract {
+      pname = "handy";
+      version = "0.9.5";
+      src = handy-src;
+    };
+  in pkgs.runCommand "handy-0.9.5" { } ''
+    mkdir -p $out/bin $out/share/applications $out/share/icons
+    cp -d ${wrapped}/bin/* $out/bin/
+    # Desktop entry (Icon=handy resolves through the hicolor theme below).
+    cat > $out/share/applications/handy.desktop <<EOF
+    [Desktop Entry]
+    Type=Application
+    Name=Handy
+    Comment=AI-powered audio transcription with a system tray UI
+    Exec=handy
+    Icon=handy
+    Terminal=false
+    Categories=Utility;AudioVideo;
+    StartupWMClass=handy
+    EOF
+    # Install the AppImage's hicolor icon set.
+    cp -r ${handy-icons}/usr/share/icons/hicolor $out/share/icons/
+  '';
 
   # herdr (https://github.com/herdrdev/herdr) — terminal workspace manager.
   # The Linux build is a static-pie binary so it runs as-is on NixOS.
@@ -59,6 +93,10 @@ in {
 
     handy
     herdr
+
+    # Handy's Wayland text-input backend (README: wtype preferred on Wayland;
+    # without it Handy falls back to enigo, which has limited compatibility).
+    pkgs.wtype
 
     # Open-source screenshot / annotation / screen-recording tool (Wayland).
     apexshot
