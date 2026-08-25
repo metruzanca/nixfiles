@@ -24,6 +24,9 @@
       "com.modrinth.ModrinthApp"
       "io.github.randovania.Randovania"
       "com.vba_m.visualboyadvance-m"
+      # Native WhatsApp Web client (GTK4/libadwaita, CEF/Chromium). Rolling
+      # releases — nixpkgs only has the stale v3 WebKitGTK fork, so Flathub.
+      "io.github.tobagin.karere"
       { appId = "com.nvidia.geforcenow"; origin = "nvidia-geforcenow"; }
     ];
   };
