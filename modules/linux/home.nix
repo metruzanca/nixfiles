@@ -18,6 +18,21 @@
     '';
   };
 
+  # Karere (native WhatsApp client) autostarted at login.
+  xdg.configFile."autostart/karere.desktop" = {
+    text = ''
+      [Desktop Entry]
+      Type=Application
+      Name=Karere
+      Comment=Native WhatsApp client
+      Exec=flatpak run io.github.tobagin.karere
+      Icon=io.github.tobagin.karere
+      Categories=Network;InstantMessaging;
+      StartupNotify=false
+      X-GNOME-Autostart-enabled=true
+    '';
+  };
+
   # Discord autostarted at login so it's ready when you log in.
   xdg.configFile."autostart/discord.desktop" = {
     text = ''
