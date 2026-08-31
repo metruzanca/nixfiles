@@ -35,8 +35,8 @@
         "appindicatorsupport@rgcjonas.gmail.com"
         # GSConnect: KDE Connect protocol for Android pairing.
         "gsconnect@andyholmes.github.io"
-        # ApexShot: always-on-top previews, recording mask, window picker list.
-        "apexshot-gnome-integration@apexshot.github.io"
+        # Blur My Shell: blur on the top panel, dash and overview.
+        "blur-my-shell@aunetx"
       ];
     };
 

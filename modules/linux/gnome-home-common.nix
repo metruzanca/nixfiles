@@ -12,7 +12,6 @@
       enabled-extensions = [
         "appindicatorsupport@rgcjonas.gmail.com"
         "gsconnect@andyholmes.github.io"
-        "apexshot-gnome-integration@apexshot.github.io"
       ];
     };
 

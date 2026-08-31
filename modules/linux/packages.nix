@@ -1,9 +1,5 @@
 { lib, pkgs, ... }:
 let
-  # ApexShot — see ./apexshot.nix for the derivation (kept separate so home.nix
-  # can reference the same FHS env for the daemon autostart).
-  apexshot = import ./apexshot.nix { inherit pkgs; };
-
   # Handy (https://github.com/cjpais/Handy) — local ML audio transcription with a
   # system tray UI. Ships per-OS binaries; the Linux AppImage is self-contained
   # (bundles GTK3, WebKitGTK, onnxruntime, Vulkan ggml), so wrapType2 just repacks it
@@ -97,9 +93,6 @@ in {
     # Handy's Wayland text-input backend (README: wtype preferred on Wayland;
     # without it Handy falls back to enigo, which has limited compatibility).
     pkgs.wtype
-
-    # Open-source screenshot / annotation / screen-recording tool (Wayland).
-    apexshot
 
     # GTK4/libadwaita frontend for mpv — the GNOME-friendly media player staple
     # (pulls in mpv as its backend). A better fit than VLC on a GNOME desktop.
