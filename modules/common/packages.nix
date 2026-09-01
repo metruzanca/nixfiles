@@ -146,6 +146,10 @@ in {
       pkgs.zellij
       # charmbracelet's AI coding agent (Go/TUI).
       pkgs.crush
+      # VHS records terminal GIFs; needs ttyd and ffmpeg on PATH.
+      pkgs.vhs
+      pkgs.ttyd
+      pkgs.ffmpeg
 
       # System-wide Python for scripting (also pulled in by GUI apps like Vice).
       # Per-project toolchains belong in mise (see AGENTS.md).
