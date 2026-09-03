@@ -1,5 +1,18 @@
 { pkgs, ... }: {
 
+  # Dedicated SSH key for https://terminal.shop only. The private key lives in
+  # Proton Pass as an ssh-key item (vault `nix`, title `terminal.shop`) and is
+  # materialized to ~/.ssh/id_ed25519_terminal_shop by terminalshop-ssh-setup (at
+  # `make switch` and on demand). An explicit IdentityFile + IdentitiesOnly scoped
+  # to this host means ONLY this key is ever offered here — other hosts never see
+  # it (they don't reference this file). OpenSSH won't scope agent-only identities
+  # per host: an explicitly configured IdentityFile, even a bogus one, silently
+  # drops the agent, while omitting it offers the default ~/.ssh/id_* first.
+  programs.ssh.settings."terminal.shop" = {
+    IdentityFile = [ "~/.ssh/id_ed25519_terminal_shop" ];
+    IdentitiesOnly = true;
+  };
+
   # Karere (native WhatsApp client) autostarted at login.
   xdg.configFile."autostart/karere.desktop" = {
     text = ''
