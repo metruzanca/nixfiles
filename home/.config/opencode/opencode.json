@@ -4,20 +4,6 @@
     "~/.config/opencode/AGENTS.md"
   ],
   "mcp": {
-    "figma": {
-      "enabled": false,
-      "type": "remote",
-      "url": "https://mcp.figma.com/mcp"
-    },
-    "mcp-debugger": {
-      "command": [
-        "npx",
-        "-y",
-        "github:metruzanca/mcp-debugger"
-      ],
-      "enabled": true,
-      "type": "local"
-    },
     "railway": {
       "command": [
         "railway",
