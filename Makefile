@@ -12,7 +12,7 @@ endif
 # Must match a flake output (darwinConfigurations.<host> / nixosConfigurations.<host>).
 HOST ?= $(shell hostname -s)
 
-.PHONY: help build switch wifi clean changelog pass-login
+.PHONY: help build switch update rollback wifi clean changelog pass-login
 
 help: ## Show available commands
 	@cat $(MAKEFILE_LIST) | grep -E '^[a-zA-Z_-]+:.*?## .*$$' | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -28,6 +28,20 @@ switch: ## Apply the config (requires sudo)
 		else \
 			echo "pass-cli: skipped (run 'make pass-login' once). Rebuild OK."; \
 		fi; \
+	fi
+
+update: ## Update the flake inputs, then apply the config
+	nix flake update
+	$(MAKE) switch
+
+rollback: ## Undo a flake.lock update and rebuild the previous set (undo of 'make update')
+	@if git diff --quiet HEAD -- flake.lock; then \
+		echo "flake.lock already matches the last commit; nothing to roll back."; \
+		echo "After committing an update, roll back with 'git revert' instead."; \
+	else \
+		git checkout HEAD -- flake.lock; \
+		echo "flake.lock reverted to the last commit."; \
+		$(MAKE) switch; \
 	fi
 
 wifi: ## Add the Proton Pass Wi-Fi networks to the macOS preferred network list (macOS only)
