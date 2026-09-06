@@ -100,6 +100,13 @@ in {
     recursive = true;
   };
 
+  # ~/.config/herdr is fully managed by nix, mirroring
+  # home/.config/herdr.
+  xdg.configFile."herdr" = {
+    source = ../../home/.config/herdr;
+    recursive = true;
+  };
+
   xdg.configFile."starship.toml" = {
     source = ../../home/.config/starship.toml;
   };
