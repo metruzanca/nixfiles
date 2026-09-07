@@ -1,0 +1,3 @@
+new_tab_cwd = "follow"
+new_workspace_cwd = "home"
+new_pane_cwd = "follow"

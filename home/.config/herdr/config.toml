@@ -2,3 +2,21 @@ onboarding = false
 
 [terminal]
 new_cwd = "home"
+
+# Route new-tab / new-workspace through skinp.cwd-control so tabs follow the
+# current pane's directory while new workspaces start in $HOME.
+[keys]
+new_tab = ""
+new_workspace = ""
+
+[[keys.command]]
+key = "prefix+c"
+type = "plugin_action"
+command = "skinp.cwd-control.new-tab"
+description = "new tab (follow cwd)"
+
+[[keys.command]]
+key = "prefix+shift+n"
+type = "plugin_action"
+command = "skinp.cwd-control.new-workspace"
+description = "new workspace (home)"
