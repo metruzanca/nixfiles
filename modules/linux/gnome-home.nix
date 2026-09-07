@@ -1,4 +1,17 @@
-{ lib, ... }: {
+{ lib, ... }:
+let
+  # Single source of truth for the Handy dictation hotkey (see the dconf
+  # custom-keybinding block below). GNOME owns this key on Wayland — Handy's
+  # own in-app shortcut only fires while Handy's window is focused — so to
+  # change the combo, edit `binding` here (and keep Handy's in-app Transcribe
+  # shortcut in sync for parity). GNOME consumes bound keys, so Handy's in-app
+  # grab won't double-toggle.
+  handyToggle = {
+    name = "Toggle Handy Transcription";
+    command = "/run/current-system/sw/bin/handy --toggle-transcription";
+    binding = "<Control>space";
+  };
+in {
 
   # ~/.config/monitors.xml — monitor layout & primary display. The AORUS
   # FI27Q on HDMI-1 (<primary>yes</primary>) is the primary display, the LG
@@ -17,6 +30,19 @@
       Type=Application
       Name=Spotify
       Exec=spotify
+      X-GNOME-Autostart-enabled=true
+    '';
+  };
+
+  # Start Handy hidden to the tray on login (mirrors macOS launchd.nix) so the
+  # daemon behind the toggle hotkey below is always resident — the toggle CLI
+  # is an IPC to the running instance and silently no-ops without it.
+  xdg.configFile."autostart/handy.desktop" = {
+    text = ''
+      [Desktop Entry]
+      Type=Application
+      Name=Handy
+      Exec=handy --start-hidden
       X-GNOME-Autostart-enabled=true
     '';
   };
@@ -60,7 +86,7 @@
     # Handy's in-app global hotkeys don't work under Wayland (the DE owns
     # system-wide shortcuts), so mirror Handy's README fix: a GNOME custom
     # shortcut that toggles transcription on the running instance via its CLI
-    # flag. Binding: Super+O.
+    # flag. Binding is defined once in `handyToggle` above (Ctrl+Space).
     "org/gnome/settings-daemon/plugins/media-keys" = {
       custom-keybindings = [
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
@@ -68,9 +94,9 @@
     };
 
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
-      name = "Toggle Handy Transcription";
-      command = "handy --toggle-transcription";
-      binding = "<Super>o";
+      name = handyToggle.name;
+      command = handyToggle.command;
+      binding = handyToggle.binding;
     };
   };
 }

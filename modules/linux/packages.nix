@@ -90,9 +90,12 @@ in {
     handy
     herdr
 
-    # Handy's Wayland text-input backend (README: wtype preferred on Wayland;
-    # without it Handy falls back to enigo, which has limited compatibility).
-    pkgs.wtype
+    # Text pasting is handled by Handy's built-in ydotool backend (see
+    # handy.nix). wtype was previously installed as Handy's Wayland typing
+    # tool, but it needs the virtual-keyboard protocol Mutter doesn't
+    # implement, so it always failed on GNOME Wayland; leaving it on PATH made
+    # Handy's Auto typing tool pick the dead wtype before falling through to
+    # ydotool. Removed so Auto lands on ydotool (uinput, compositor-agnostic).
 
     # GTK4/libadwaita frontend for mpv — the GNOME-friendly media player staple
     # (pulls in mpv as its backend). A better fit than VLC on a GNOME desktop.

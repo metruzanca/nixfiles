@@ -6,7 +6,7 @@
     uid = 1000;
     home = "/home/metru";
     description = "Sam";
-    extraGroups = [ "networkmanager" "wheel" "input" ];
+    extraGroups = [ "networkmanager" "wheel" "input" "ydotool" ];
     shell = pkgs.fish;
   };
 
