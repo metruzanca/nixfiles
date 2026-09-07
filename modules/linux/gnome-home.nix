@@ -23,17 +23,6 @@ in {
     force = true;
   };
 
-  # Launch Spotify on login (GNOME autostart entry).
-  xdg.configFile."autostart/spotify.desktop" = {
-    text = ''
-      [Desktop Entry]
-      Type=Application
-      Name=Spotify
-      Exec=spotify
-      X-GNOME-Autostart-enabled=true
-    '';
-  };
-
   # Start Handy hidden to the tray on login (mirrors macOS launchd.nix) so the
   # daemon behind the toggle hotkey below is always resident — the toggle CLI
   # is an IPC to the running instance and silently no-ops without it.
