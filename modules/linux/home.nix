@@ -13,14 +13,26 @@
     IdentitiesOnly = true;
   };
 
-  # Karere (native WhatsApp client) autostarted at login.
+  # Karere (native WhatsApp client) autostarted at login. The Exec is a retry
+  # wrapper: flatpak 1.18.1 aborts launches with "Extension
+  # org.freedesktop.Platform.GL.default has invalid merge-dirs" when its
+  # openat2(RESOLVE_BENEATH) hits a transient kernel EAGAIN race mounting the
+  # GL extension (flatpak#6783; upstream fix retries on EAGAIN). Retrying makes
+  # Karere reliably come up at login. KARERE_FORCE_TRAY guarantees the tray icon
+  # even if the AppIndicator StatusNotifierWatcher isn't on the bus yet when
+  # Karere starts (an explicit "Disabled" tray setting still wins).
   xdg.configFile."autostart/karere.desktop" = {
     text = ''
       [Desktop Entry]
       Type=Application
       Name=Karere
       Comment=Native WhatsApp client
-      Exec=flatpak run io.github.tobagin.karere
+      Exec=${pkgs.writeShellScript "karere-autostart" ''
+        for _ in 1 2 3 4 5 6; do
+          KARERE_FORCE_TRAY=1 flatpak run io.github.tobagin.karere && exit 0
+          sleep 5
+        done
+      ''}
       Icon=io.github.tobagin.karere
       Categories=Network;InstantMessaging;
       StartupNotify=false
