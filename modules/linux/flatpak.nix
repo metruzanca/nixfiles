@@ -33,5 +33,20 @@
       "com.obsproject.Studio"
       { appId = "com.nvidia.geforcenow"; origin = "nvidia-geforcenow"; }
     ];
+
+    # OBS under Wayland: Twitch/YouTube "Connect Account" and the browser docks
+    # (Chat, Stream Information, Custom Browser Docks) are disabled because CEF
+    # has no Wayland support (obs-browser#279); forcing the xcb backend under
+    # XWayland restores them. Flatpak in a Wayland session only grants
+    # fallback-x11 and leaves DISPLAY unset, so QT_QPA_PLATFORM=xcb alone fails
+    # with "could not connect to display" — hence also pinning the X11 socket
+    # and DISPLAY=:0. Tradeoff: the whole OBS UI runs through XWayland.
+    overrides."com.obsproject.Studio" = {
+      Context.sockets = [ "x11" ];
+      Environment = {
+        DISPLAY = ":0";
+        QT_QPA_PLATFORM = "xcb";
+      };
+    };
   };
 }
