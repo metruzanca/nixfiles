@@ -85,6 +85,31 @@ let
       mainProgram = "vice";
     };
   };
+
+  # Bit Buddy input forwarder — works around the desktop pet not reacting to
+  # keyboard input unless its window is focused (its Windows "RawInput
+  # Helper" RPC hand-off breaks under Proton with RPC_S_SERVER_UNAVAILABLE).
+  # Sends synthetic X11 key events (XSendEvent, python-xlib) to Bit Buddy's
+  # window, matched by WM_CLASS plus a /proc/<pid>/environ SteamAppId check
+  # so only Steam-launched windows qualify, and forwards the pointer
+  # position (synthetic MotionNotify) so cursor-tracking works unfocused.
+  # Clicks are NOT forwarded (upstream dropped them — they steal focus).
+  # The script is vendored at ./bitbuddy_forwarder.py because upstream
+  # removed all mouse handling; bump it from
+  # https://github.com/marijnwijbenga/bit-buddy-fedora-extension
+  # NOTE: keylogger-shaped — reads every keystroke system-wide and logs
+  # nothing; read the script's header before trusting it.
+  bitbuddy-input-forwarder = let
+    python = pkgs.python3.withPackages (p: [ p.evdev p.xlib ]);
+  in pkgs.writeShellScriptBin "bitbuddy-input-forwarder" ''
+    # systemd user services don't inherit the graphical session env; the
+    # script's python-xlib needs DISPLAY plus the XWayland auth cookie.
+    export DISPLAY="''${DISPLAY:-:0}"
+    if [ -z "''${XAUTHORITY:-}" ]; then
+      export XAUTHORITY="$(ls -t /run/user/"$(id -u)"/.mutter-Xwaylandauth.* 2>/dev/null | head -n1)"
+    fi
+    exec ${python}/bin/python3 ${./bitbuddy_forwarder.py}
+  '';
 in {
   # Steam and Proton. Authenticate once by launching Steam; GE-Proton versions
   # can be installed with `protonup-rs -t` into Steam's compatibilitytools.d.
@@ -101,7 +126,23 @@ in {
 
   # Gaming system packages: Steam tooling and the game clip recorder.
   environment.systemPackages = [
-    pkgs.protonup-rs # CLI to install GE-Proton (and Wine-GE) into Steam
-    vice             # game clip recorder with a Wayland-friendly UI
+    pkgs.protonup-rs      # CLI to install GE-Proton (and Wine-GE) into Steam
+    pkgs.protontricks     # apply Wine registry tweaks to Proton prefixes
+    pkgs.xdotool          # rename Bit Buddy windows for OBS (`bitbuddy-name`)
+    bitbuddy-input-forwarder # forward keystrokes to the pet while unfocused
+    vice                  # game clip recorder with a Wayland-friendly UI
   ];
+
+  # Run the Bit Buddy input forwarder at login (keyboard + mouse-position).
+  systemd.user.services.bitbuddy-forwarder = {
+    description = "Bit Buddy input forwarder (synthetic input workaround for broken Proton RPC)";
+    after = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${bitbuddy-input-forwarder}/bin/bitbuddy-input-forwarder";
+      Restart = "on-failure";
+      RestartSec = "5";
+    };
+  };
 }
