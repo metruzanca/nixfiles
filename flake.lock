@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "bitbuddy": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1788827496,
+        "narHash": "sha256-D90g2VxuTOsz7Fn9oWST7+dSJuXPiLKJe9U0iQgNd6A=",
+        "owner": "metruzanca",
+        "repo": "bit-buddy-gnome",
+        "rev": "c22555fd9bac9cd2bd426faee7f1d8c9988d3724",
+        "type": "github"
+      },
+      "original": {
+        "owner": "metruzanca",
+        "repo": "bit-buddy-gnome",
+        "type": "github"
+      }
+    },
     "brew-src": {
       "flake": false,
       "locked": {
@@ -142,6 +162,7 @@
     },
     "root": {
       "inputs": {
+        "bitbuddy": "bitbuddy",
         "home-manager": "home-manager",
         "homebrew-cask": "homebrew-cask",
         "homebrew-core": "homebrew-core",

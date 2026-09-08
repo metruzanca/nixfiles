@@ -7,6 +7,9 @@
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    # Bit Buddy for GNOME: input forwarder + window naming (NixOS module).
+    bitbuddy.url = "github:metruzanca/bit-buddy-gnome";
+    bitbuddy.inputs.nixpkgs.follows = "nixpkgs";
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.7.0";
     # Pin the official taps so Homebrew taps are fully declarative.
@@ -20,7 +23,7 @@
     };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, nix-homebrew, nix-flatpak, homebrew-core, homebrew-cask }:
+  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, bitbuddy, nix-homebrew, nix-flatpak, homebrew-core, homebrew-cask }:
   {
     # Build darwin flake using:
     # $ darwin-rebuild build --flake .#m5air
@@ -52,6 +55,7 @@
         })
         nix-flatpak.nixosModules.nix-flatpak
         home-manager.nixosModules.home-manager
+        bitbuddy.nixosModules.default
       ];
     };
   };
