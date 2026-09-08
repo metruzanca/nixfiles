@@ -84,9 +84,6 @@ in {
     # modules/darwin/homebrew.nix), so keep it here to avoid duplication.
     pkgs.discord
 
-    # Screen recording / livestreaming. Linux-only in nixpkgs.
-    pkgs.obs-studio
-
     handy
     herdr
 

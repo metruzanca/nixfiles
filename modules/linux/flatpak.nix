@@ -27,6 +27,10 @@
       # Native WhatsApp Web client (GTK4/libadwaita, CEF/Chromium). Rolling
       # releases — nixpkgs only has the stale v3 WebKitGTK fork, so Flathub.
       "io.github.tobagin.karere"
+      # OBS Studio. Runs as a Flatpak (instead of nixpkgs) so GNOME's portal
+      # persists window/screen capture permissions against a stable app-id —
+      # the nix package re-prompts for every window capture on each launch.
+      "com.obsproject.Studio"
       { appId = "com.nvidia.geforcenow"; origin = "nvidia-geforcenow"; }
     ];
   };
