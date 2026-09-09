@@ -87,12 +87,14 @@ in {
     handy
     herdr
 
-    # Text pasting is handled by Handy's built-in ydotool backend (see
-    # handy.nix). wtype was previously installed as Handy's Wayland typing
-    # tool, but it needs the virtual-keyboard protocol Mutter doesn't
-    # implement, so it always failed on GNOME Wayland; leaving it on PATH made
-    # Handy's Auto typing tool pick the dead wtype before falling through to
-    # ydotool. Removed so Auto lands on ydotool (uinput, compositor-agnostic).
+    # No Handy integration daemons on Linux: neither the triggerhappy
+    # hotkey watcher (it re-fired Handy's toggle per input device — this box's
+    # keyboard exposes multiple evdev interfaces, so one Ctrl+Space produced
+    # several SIGUSR2s) nor the ydotool typing daemon (handy.nix was removed;
+    # ydotool no longer runs). Handy's global hotkey instead per its README:
+    # a GNOME custom keybinding (Ctrl+\) running `handy --toggle-transcription`,
+    # declared in gnome-home.nix. Auto typing falls back to enigo (or Handy's
+    # paired xdotool/wtype/ydotool if installed).
 
     # GTK4/libadwaita frontend for mpv — the GNOME-friendly media player staple
     # (pulls in mpv as its backend). A better fit than VLC on a GNOME desktop.
