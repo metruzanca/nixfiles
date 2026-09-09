@@ -151,6 +151,7 @@ in {
       pkgs.vhs
       pkgs.ttyd
       pkgs.ffmpeg
+      pkgs.yt-dlp
 
       # System-wide Python for scripting (also pulled in by GUI apps like Vice).
       # Per-project toolchains belong in mise (see AGENTS.md).
