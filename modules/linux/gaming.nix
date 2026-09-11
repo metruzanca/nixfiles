@@ -106,6 +106,24 @@ in {
     vice              # game clip recorder with a Wayland-friendly UI
   ];
 
+  # Vice autostarted at login so instant replay is armed from the first session.
+  # The GUI entrypoint is vice-app (upstream's desktop file exec); the wrapper
+  # puts ffmpeg/gsr/wf-recorder on PATH, same as the default launcher.
+  home-manager.users.metru.xdg.configFile."autostart/vice.desktop" = {
+    text = ''
+      [Desktop Entry]
+      Type=Application
+      Name=Vice
+      Comment=Record and share gameplay clips on Linux, like Medal.tv
+      Exec=${vice}/bin/vice-app
+      Icon=vice
+      Terminal=false
+      Categories=Game;Video;Recorder;AudioVideo;
+      StartupNotify=false
+      X-GNOME-Autostart-enabled=true
+    '';
+  };
+
   # Bit Buddy input forwarder + OBS window naming, from the bit-buddy-gnome
   # flake input (github:metruzanca/bit-buddy-gnome). Installs the daemon
   # (keyboard + mouse position to the unfocused pet), `bitbuddy-name`, and
