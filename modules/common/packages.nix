@@ -36,6 +36,39 @@ let
       mainProgram = "noodle";
     };
   });
+
+  # LigaComicMono: Comic Mono (nixpkgs' comic-mono) ligaturized with real
+  # coding ligatures via Ligaturizer (https://github.com/wayou/comic-mono-font).
+  # The stock comic-mono font has no OpenType substitution features; this fork
+  # adds the calt feature with the Fira Code ligature set. Family name is
+  # "Liga Comic Mono".
+  ligaComicMono = pkgs.stdenvNoCC.mkDerivation {
+    pname = "liga-comic-mono";
+    version = "2026-07-20";
+
+    src = pkgs.fetchurl {
+      url = "https://raw.githubusercontent.com/wayou/comic-mono-font/b38be28f75acece142a1f2c9afcaa629269ac201/LigaComicMono.ttf";
+      hash = "sha256-gFF5jC9RiGiUvFHYaelHLuBC1UJNISJnHus6CGcJOG4=";
+    };
+    srcBold = pkgs.fetchurl {
+      url = "https://raw.githubusercontent.com/wayou/comic-mono-font/b38be28f75acece142a1f2c9afcaa629269ac201/LigaComicMono-Bold.ttf";
+      hash = "sha256-nmfK9htICmeRJrgQ5aeak/59whtwoJT4IVEmd3e7RMM=";
+    };
+
+    dontUnpack = true;
+    installPhase = ''
+      mkdir -p $out/share/fonts/truetype
+      install -m0644 $src $out/share/fonts/truetype/LigaComicMono.ttf
+      install -m0644 $srcBold $out/share/fonts/truetype/LigaComicMono-Bold.ttf
+    '';
+
+    meta = with pkgs.lib; {
+      description = "Comic Mono with programming ligatures";
+      homepage = "https://github.com/wayou/comic-mono-font";
+      license = licenses.ofl;
+      platforms = platforms.all;
+    };
+  };
 in {
 
   # Pin secretspec and pass-cli to exact tested versions so nixpkgs-unstable
@@ -190,7 +223,7 @@ in {
   # Fonts installed into /Library/Fonts/Nix Fonts.
   fonts.packages = [
     pkgs.nerd-fonts.fira-code
-    pkgs.comic-mono
+    ligaComicMono
   ];
 
   # Allow proprietary packages (Spotify, etc.).
