@@ -107,6 +107,13 @@ in {
     recursive = true;
   };
 
+  # ~/.config/zed is fully managed by nix, mirroring
+  # home/.config/zed.
+  xdg.configFile."zed" = {
+    source = ../../home/.config/zed;
+    recursive = true;
+  };
+
   xdg.configFile."starship.toml" = {
     source = ../../home/.config/starship.toml;
   };

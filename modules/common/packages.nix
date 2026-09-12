@@ -190,6 +190,7 @@ in {
   # Fonts installed into /Library/Fonts/Nix Fonts.
   fonts.packages = [
     pkgs.nerd-fonts.fira-code
+    pkgs.comic-mono
   ];
 
   # Allow proprietary packages (Spotify, etc.).
