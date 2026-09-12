@@ -30,6 +30,71 @@ let
     '';
   });
 
+  # Eden (https://git.eden-emu.dev/eden-emu/eden) — Switch emulator (Yuzu/
+  # Sudachi derivative). Ships only as a dwarfs-based AppImage, and the pinned
+  # nixpkgs' appimage-exec.sh only handles squashfs type-02 AppImages, so
+  # `pkgs.appimageTools` can't unpack it — dwarfsextract reads the DWARFS image
+  # directly. The amd64 clang-PGO build is the recommended release; it needs at
+  # least x86_64-v3 (Ryzen/Haswell), which the 5600X provides. The AppDir bins
+  # are hardlinks to the static sharun launcher, which runs the real binary
+  # (shared/bin/eden) against the bundled loader/libs, so the wrappers just
+  # exec AppRun (or the sharun link for eden-cli) with the AppDir in place.
+  eden = pkgs.stdenv.mkDerivation (rec {
+    pname = "eden";
+    version = "0.2.1";
+
+    src = pkgs.fetchurl {
+      url = "https://stable.eden-emu.dev/v${version}/Eden-Linux-v${version}-amd64-clang-pgo.AppImage";
+      sha256 = "7a28bf988b0648831989722bdbaa90ab31371b403808199813e0ea7c8b25ba6d";
+    };
+
+    nativeBuildInputs = [ pkgs.dwarfs ];
+
+    dontUnpack = true;
+
+    buildPhase = ''
+      runHook preBuild
+      # dwarfsextract chdirs into the output dir, so pre-create it.
+      mkdir -p AppDir
+      dwarfsextract -i $src -o AppDir
+      runHook postBuild
+    '';
+
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out/lib/eden
+      cp -a AppDir/. $out/lib/eden/
+      chmod +x $out/lib/eden/AppRun $out/lib/eden/shared/bin/eden $out/lib/eden/shared/bin/eden-cli
+
+      mkdir -p $out/bin
+      cat > $out/bin/eden <<EOF
+      #!${pkgs.runtimeShell}
+      export DISABLE_AUTO_UPDATES=1
+      exec $out/lib/eden/AppRun "\$@"
+      EOF
+      chmod +x $out/bin/eden
+
+      cat > $out/bin/eden-cli <<EOF
+      #!${pkgs.runtimeShell}
+      export APPDIR=$out/lib/eden DISABLE_AUTO_UPDATES=1
+      exec $out/lib/eden/bin/eden-cli "\$@"
+      EOF
+      chmod +x $out/bin/eden-cli
+
+      install -Dm644 $out/lib/eden/dev.eden_emu.eden.desktop $out/share/applications/dev.eden_emu.eden.desktop
+      install -Dm644 $out/lib/eden/dev.eden_emu.eden.svg $out/share/icons/hicolor/scalable/apps/dev.eden_emu.eden.svg
+      runHook postInstall
+    '';
+
+    meta = with pkgs.lib; {
+      description = "FOSS Switch (Nintendo) emulator for PC, derived from Yuzu and Sudachi";
+      homepage = "https://git.eden-emu.dev/eden-emu/eden";
+      license = licenses.gpl3Plus;
+      platforms = [ "x86_64-linux" ];
+      mainProgram = "eden";
+    };
+  });
+
   # Vice (https://github.com/eklonofficial/Vice) — Medal.tv-style game clip
   # recorder for Linux. Python app (pyproject build); the UI runs in a pywebview
   # window on Qt6 WebEngine, recording is delegated to gpu-screen-recorder with
@@ -99,11 +164,13 @@ in {
     package = gpu-screen-recorder;
   };
 
-  # Gaming system packages: Steam tooling and the game clip recorder.
+  # Gaming system packages: Steam tooling, the game clip recorder, and the
+  # Eden Switch emulator.
   environment.systemPackages = [
     pkgs.protonup-rs  # CLI to install GE-Proton (and Wine-GE) into Steam
     pkgs.protontricks # apply Wine registry tweaks to Proton prefixes
     vice              # game clip recorder with a Wayland-friendly UI
+    eden              # Switch emulator (Yuzu/Sudachi derivative)
   ];
 
   # Vice autostarted at login so instant replay is armed from the first session.
