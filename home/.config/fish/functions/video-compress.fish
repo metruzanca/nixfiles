@@ -1,8 +1,12 @@
+if not type -q ffmpeg
+    return
+end
+
+if not ffmpeg -hide_banner -encoders 2>/dev/null | rg -q h264_nvenc
+    return
+end
+
 function video-compress --description 'Re-encode a video with NVENC H.264 at CQ 32 to <basename>_small.mp4'
-    if not type -q ffmpeg
-        printf 'ffmpeg is not installed\n' >&2
-        return 127
-    end
     if not type -q ffprobe
         printf 'ffprobe is not installed\n' >&2
         return 127
