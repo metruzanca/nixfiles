@@ -2,5 +2,30 @@
   "buffer_font_family": "Liga Comic Mono",
   "buffer_font_features": {
     "calt": true
+  },
+  "agent": {
+    "dock": "right",
+    "default_model": {
+      "provider": "opencode",
+      "model": "go/deepseek-v4-flash"
+    }
+  },
+  "project_panel": {
+    "dock": "left"
+  },
+  "outline_panel": {
+    "dock": "left"
+  },
+  "collaboration_panel": {
+    "dock": "left"
+  },
+  "git_panel": {
+    "dock": "left"
+  },
+  "language_models": {
+    "opencode": {
+      "show_zen_models": false,
+      "show_go_models": true
+    }
   }
 }
