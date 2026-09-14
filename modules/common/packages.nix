@@ -178,6 +178,8 @@ in {
       pkgs.mise
       pkgs.zellij
       pkgs.lazygit
+      # Render markdown in the terminal (charmbracelet).
+      pkgs.glow
       # charmbracelet's AI coding agent (Go/TUI).
       pkgs.crush
       # VHS records terminal GIFs; needs ttyd and ffmpeg on PATH.
