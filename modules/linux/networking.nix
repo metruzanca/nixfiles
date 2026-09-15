@@ -6,8 +6,16 @@
   networking.networkmanager.enable = true;
 
   # Launch the Tailscale daemon on boot (tailscaled). Authenticate once with
-  # `sudo tailscale up`.
-  services.tailscale.enable = true;
+  # `sudo tailscale up`. This node is a tailnet exit node: useRoutingFeatures
+  # enables IP forwarding, and the tailscaled-set oneshot re-applies
+  # `tailscale set --advertise-exit-node` at every boot. Approve the node as an
+  # exit node in the Tailscale admin console (Machines > ... > Approve exit node)
+  # before clients can route traffic through it.
+  services.tailscale = {
+    enable = true;
+    useRoutingFeatures = "both";
+    extraSetFlags = [ "--advertise-exit-node" ];
+  };
 
   # Official Tailscale Linux system tray app (top-bar icon to connect/disconnect,
   # pick an exit node, etc.). Bundled in the `tailscale` CLI since v1.96; run it
