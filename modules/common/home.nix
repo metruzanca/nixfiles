@@ -107,12 +107,16 @@ in {
     recursive = true;
   };
 
-  # ~/.config/zed is fully managed by nix, mirroring
-  # home/.config/zed.
-  xdg.configFile."zed" = {
-    source = ../../home/.config/zed;
-    recursive = true;
-  };
+  # ~/.config/zed/settings.json is seeded from home/.config/zed on every
+  # switch, but written as a real (writable) file — not a store symlink — so
+  # Zed can edit its own settings. A rebuild overwrites it; to adopt Zed's
+  # changes, copy them back into home/.config/zed/settings.json.
+  home.activation.seedZedSettings = lib.hm.dag.entryAfter
+    [ "writeBoundary" ] ''
+      mkdir -p "$HOME/.config/zed"
+      cp ${../../home/.config/zed/settings.json} "$HOME/.config/zed/settings.json"
+      chmod u+w "$HOME/.config/zed/settings.json"
+    '';
 
   xdg.configFile."starship.toml" = {
     source = ../../home/.config/starship.toml;
