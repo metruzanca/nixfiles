@@ -37,6 +37,9 @@ in {
 
     # macOS-only desktop apps
     pkgs.caffeine
+    # Browser: macOS uses pkgs.brave (app bundle "Brave Browser.app"); Linux
+    # uses pkgs.brave-origin (see modules/linux/packages.nix).
+    pkgs.brave
     pkgs.raycast # settings backup: backups/raycast-config.rayconfig (passphrase in Proton Pass → raycast_settings_password)
     pkgs.rectangle
     pkgs.shottr

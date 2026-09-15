@@ -269,9 +269,10 @@ in {
       pkgs.podman
       pkgs.podman-compose
 
-      # Desktop apps (cross-platform; macOS-only apps live in darwin/packages.nix)
+      # Desktop apps (cross-platform; macOS-only apps live in darwin/packages.nix,
+      # Linux-only apps in linux/packages.nix). The browser is split by host:
+      # macOS uses pkgs.brave, Linux uses pkgs.brave-origin.
       pkgs.spotify
-      pkgs.brave-origin
       pkgs.zed-editor
       pkgs.qbittorrent
       pkgs.mediawriter

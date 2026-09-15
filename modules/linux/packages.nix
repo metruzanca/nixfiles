@@ -156,6 +156,11 @@ in {
     # Helium browser (helium.computer), a privacy-focused Chromium fork.
     pkgs.helium
 
+    # Browser: Linux uses brave-origin (macOS uses pkgs.brave, see
+    # modules/darwin/packages.nix). mimeapps and the WhatsApp/Notion webapp
+    # wrappers in home.nix reference brave-origin.desktop.
+    pkgs.brave-origin
+
     handy
     herdr
     visigrid
