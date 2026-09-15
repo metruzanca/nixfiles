@@ -16,7 +16,10 @@
     enable = true;
     onActivation = {
       autoUpdate = true;
-      cleanup = "zap";
+      # "uninstall" removes undeclared casks but keeps their user data.
+      # Never use "zap": it deletes associated support files/user data, so
+      # dropping a cask from the list would silently wipe that app's data.
+      cleanup = "uninstall";
       upgrade = true;
     };
     casks = [ "discord" "notion" "parsec" "whatsapp" "podman-desktop" "alt-tab" ];
