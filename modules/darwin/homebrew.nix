@@ -22,7 +22,7 @@
       cleanup = "uninstall";
       upgrade = true;
     };
-    casks = [ "discord" "notion" "parsec" "whatsapp" "podman-desktop" "alt-tab" ];
+    casks = [ "discord" "notion" "parsec" "steam" "whatsapp" "podman-desktop" "alt-tab" ];
   };
 
   # Align the homebrew module's taps with the pinned nix-homebrew taps.

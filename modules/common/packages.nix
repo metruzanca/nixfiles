@@ -158,44 +158,36 @@ in {
         };
       });
 
-      # secretspec 0.19+ (0.19.0) — first release compatible with every
+      # secretspec 0.19+ (0.19.1) — first release compatible with every
       # pass-cli build (probes `pass-cli info`, falls back to `pass-cli test`).
-      secretspec = final.rustPlatform.buildRustPackage {
+      # Upstream ships one prebuilt tarball per platform (like the pass-cli /
+      # noodle overrides above), so fetch the binary instead of compiling from
+      # a crates.io source.
+      secretspec = let
+        secretspecVersion = "0.19.1";
+        secretspecPlatform =
+          if final.stdenv.hostPlatform.isDarwin && final.stdenv.hostPlatform.isAarch64 then {
+            name = "secretspec-aarch64-apple-darwin";
+            sha256 = "076536200199540515ebdf929f7cb3f413d82be3524771a2a5975b80ca85d727";
+          } else if final.stdenv.hostPlatform.isLinux && final.stdenv.hostPlatform.isx86_64 then {
+            name = "secretspec-x86_64-unknown-linux-gnu";
+            sha256 = "9a0b5882532f5ffbb1c687d9284fa8041949962b05f14fc131050f86c70e1efc";
+          } else throw "secretspec: unsupported platform ${final.stdenv.hostPlatform.system}";
+      in final.stdenvNoCC.mkDerivation {
         pname = "secretspec";
-        version = "0.19.0";
+        version = secretspecVersion;
 
-        src = final.fetchCrate {
-          pname = "secretspec";
-          version = "0.19.0";
-          hash = "sha256-tpzmzChyyYogebNZZi3LT61MO1HKZW8ln+21CwlqW8M=";
+        src = final.fetchurl {
+          url = "https://github.com/cachix/secretspec/releases/download/v${secretspecVersion}/${secretspecPlatform.name}.tar.xz";
+          sha256 = secretspecPlatform.sha256;
         };
 
-        cargoHash = "sha256-VO05AAjBqNVowY2AsyF2W1k4sXWJxOw1U0krs13JS28=";
-
-        postPatch = ''
-          mkdir -p ../tests/fixtures
-          cp ${
-            final.fetchurl {
-              url = "https://raw.githubusercontent.com/cachix/secretspec/v0.19.0/tests/fixtures/bw-shim.sh";
-              hash = "sha256-Xg1d8h2DOA6p0Hn9xP9TYzFN1863Wyk3QuQlFk+Y0ME=";
-            }
-          } ../tests/fixtures/bw-shim.sh
-          chmod +x ../tests/fixtures/bw-shim.sh
-          patchShebangs ../tests/fixtures/bw-shim.sh
+        sourceRoot = secretspecPlatform.name;
+        installPhase = ''
+          runHook preInstall
+          install -Dm755 secretspec $out/bin/secretspec
+          runHook postInstall
         '';
-
-        nativeCheckInputs = [
-          final.jq
-          final.sops
-        ];
-
-        preCheck = ''
-          export HOME="$TMPDIR"
-          export SSL_CERT_FILE="${final.cacert}/etc/ssl/certs/ca-bundle.crt"
-        '';
-
-        # A test binds to localhost, which requires an explicit Darwin sandbox exception.
-        __darwinAllowLocalNetworking = true;
 
         meta = with final.lib; {
           description = "Declarative secrets, every environment, any provider";

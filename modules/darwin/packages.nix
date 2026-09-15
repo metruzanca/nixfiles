@@ -20,7 +20,7 @@ let
     version = "0.8.2";
     src = pkgs.fetchurl {
       url = "https://github.com/herdrdev/herdr/releases/download/v0.8.2/herdr-macos-aarch64";
-      hash = "sha256-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=";
+      hash = "sha256-pdT01QTYswnJH4EQUFWTAPq6MSWEJfU8UIUvyW9q5XQ=";
     };
     dontUnpack = true;
     installPhase = ''

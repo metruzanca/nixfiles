@@ -54,6 +54,11 @@ in {
         ControlPath = "~/.ssh/master-%r@%n:%p";
         ControlPersist = "no";
       };
+      "github.com" = {
+        HostName = "ssh.github.com";
+        Port = 443;
+        User = "git";
+      };
       "desktop" = {
         User = "szanca";
       };

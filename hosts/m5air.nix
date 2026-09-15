@@ -3,7 +3,6 @@
   imports = [
     ../modules/common/packages.nix
     ../modules/common/nix.nix
-    ../modules/common/users.nix
     ../modules/darwin/default.nix
   ];
 
