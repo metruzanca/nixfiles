@@ -169,6 +169,7 @@ in {
   environment.systemPackages = [
     pkgs.protonup-rs  # CLI to install GE-Proton (and Wine-GE) into Steam
     pkgs.protontricks # apply Wine registry tweaks to Proton prefixes
+    pkgs.r2modman     # Thunderstore mod manager (BepInEx, MelonLoader)
     vice              # game clip recorder with a Wayland-friendly UI
     eden              # Switch emulator (Yuzu/Sudachi derivative)
   ];
