@@ -77,6 +77,60 @@ let
     };
   };
 
+  # VisiGrid (https://github.com/VisiGrid/VisiGrid) — fast, keyboard-first,
+  # local-only spreadsheet built on Zed's GPUI (wgpu). Not in nixpkgs; the
+  # Linux release is a prebuilt tarball. GPUI/wgpu dlopens libvulkan.so.1 at
+  # runtime rather than linking it via DT_NEEDED, so autoPatchelfHook won't
+  # pick it up — the vulkan-loader lib is appended to the RPATH explicitly so
+  # the .desktop launcher works without LD_LIBRARY_PATH. Without it visigrid
+  # panics at startup with "Failed to create surface for any enabled backend".
+  visigrid = pkgs.stdenv.mkDerivation {
+    pname = "visigrid";
+    version = "0.35.1";
+
+    src = pkgs.fetchurl {
+      url = "https://github.com/VisiGrid/VisiGrid/releases/download/v0.35.1/VisiGrid-linux-x86_64.tar.gz";
+      sha256 = "1d654dw18pcs8674d0bib48d6z85v5wdcnmk5x3g7d65iq6mq59m";
+    };
+
+    sourceRoot = "VisiGrid-linux-x86_64";
+
+    nativeBuildInputs = [
+      pkgs.autoPatchelfHook
+    ];
+
+    buildInputs = [
+      pkgs.dbus
+      pkgs.zlib
+      pkgs.libxkbcommon
+      pkgs.xorg.libxcb
+      pkgs.xorg.libXau
+      pkgs.xorg.libXdmcp
+      pkgs.stdenv.cc.cc.lib
+    ];
+
+    # GPUI/wgpu dlopens libvulkan.so.1 at runtime (no DT_NEEDED entry), so
+    # autoPatchelfHook won't add it on its own — append vulkan-loader to the
+    # RPATH so the .desktop launcher works without LD_LIBRARY_PATH.
+    appendRunpaths = [ "${pkgs.vulkan-loader}/lib" ];
+
+    installPhase = ''
+      mkdir -p $out/bin $out/share/applications $out/share/icons/hicolor/512x512/apps
+      install -Dm755 visigrid $out/bin/visigrid
+      install -Dm755 vgrid $out/bin/vgrid
+      install -Dm644 visigrid.desktop $out/share/applications/visigrid.desktop
+      install -Dm644 visigrid.png $out/share/icons/hicolor/512x512/apps/visigrid.png
+    '';
+
+    meta = with lib; {
+      description = "A fast, keyboard-first, local-only spreadsheet";
+      homepage = "https://visigrid.app";
+      license = licenses.agpl3Only;
+      platforms = [ "x86_64-linux" ];
+      mainProgram = "visigrid";
+    };
+  };
+
 in {
   environment.systemPackages = [
     # Linux-only desktop apps. Cross-platform apps live in
@@ -86,6 +140,7 @@ in {
 
     handy
     herdr
+    visigrid
 
     # No Handy integration daemons on Linux: neither the triggerhappy
     # hotkey watcher (it re-fired Handy's toggle per input device — this box's
