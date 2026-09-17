@@ -89,6 +89,26 @@
         "type": "github"
       }
     },
+    "myx": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1788947424,
+        "narHash": "sha256-dOcQgiq+XHXEoMvQjjwKhJ4ciMDKYCAEWVxrLxlk8yA=",
+        "owner": "HaseebKhalid1507",
+        "repo": "Myx",
+        "rev": "2738f9e50e2bd1f218f55e2a05342eea2db92e8e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "HaseebKhalid1507",
+        "repo": "Myx",
+        "type": "github"
+      }
+    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
@@ -166,6 +186,7 @@
         "home-manager": "home-manager",
         "homebrew-cask": "homebrew-cask",
         "homebrew-core": "homebrew-core",
+        "myx": "myx",
         "nix-darwin": "nix-darwin",
         "nix-flatpak": "nix-flatpak",
         "nix-homebrew": "nix-homebrew",

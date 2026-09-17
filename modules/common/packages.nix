@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, myx, ... }:
 
 let
   # noodle (noodlerest.dev) ships one prebuilt binary per platform from
@@ -209,6 +209,9 @@ in {
       pkgs.spotify
       pkgs.brave-origin
       pkgs.zed-editor
+
+      # Terminal Spotify player (not in nixpkgs; built from its flake).
+      myx.packages.${pkgs.system}.default
 
       # Proton & networking
       pkgs.tailscale
