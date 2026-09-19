@@ -17,6 +17,13 @@
     extraSetFlags = [ "--advertise-exit-node" ];
   };
 
+  # Trust the tailnet interface: any port is reachable from other tailnet
+  # devices over Tailscale (MagicDNS, e.g. http://nixos:<port>), while LAN/Wi-Fi
+  # and the internet stay firewalled. This is what lets dev servers run on
+  # arbitrary ports without per-port opens. Tradeoff: every tailnet device can
+  # reach any service on this machine.
+  networking.firewall.trustedInterfaces = [ "tailscale0" ];
+
   # Official Tailscale Linux system tray app (top-bar icon to connect/disconnect,
   # pick an exit node, etc.). Bundled in the `tailscale` CLI since v1.96; run it
   # as a systemd user service in the desktop session (never as root). GNOME needs
