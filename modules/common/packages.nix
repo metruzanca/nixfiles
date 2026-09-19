@@ -216,6 +216,7 @@ in {
       # Proton & networking
       pkgs.tailscale
       pkgs.protonmail-desktop
+      pkgs.protonmail-bridge
       pkgs.proton-pass
       pkgs.proton-pass-cli
 
