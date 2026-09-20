@@ -15,3 +15,9 @@ These rules apply to every OpenCode session on this machine.
 
 Do not launch Herdr merely to perform a normal coding task. If `HERDR_ENV` is
 not set, do not inspect or control the Herdr session.
+
+## Dev servers
+
+- When setting up a dev server (any local server in a dev project), always bind
+  to `0.0.0.0` instead of `127.0.0.1`. This lets other Tailnet devices reach it
+  remotely via MagicDNS.
