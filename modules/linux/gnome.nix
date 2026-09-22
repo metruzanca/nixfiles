@@ -26,11 +26,4 @@
   # Per-user GNOME preferences (dark theme, mouse accel off, idle-sleep off,
   # monitor layout) — see gnome-home.nix.
   home-manager.users.metru.imports = [ ./gnome-home.nix ];
-
-  # Hide dev user from GDM login screen; log in via "Not listed?" → type username.
-  services.displayManager.gdm.settings = {
-    greeter = {
-      HiddenUsers = "dev";
-    };
-  };
 }
