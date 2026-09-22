@@ -164,12 +164,13 @@ in {
     package = gpu-screen-recorder;
   };
 
-  # Gaming system packages: Steam tooling, the game clip recorder, and the
-  # Eden Switch emulator.
+  # Gaming system packages: Steam tooling, the game clip recorder, the Eden
+  # Switch emulator, and the Heroic launcher.
   environment.systemPackages = [
     pkgs.protonup-rs  # CLI to install GE-Proton (and Wine-GE) into Steam
     pkgs.protontricks # apply Wine registry tweaks to Proton prefixes
     pkgs.r2modman     # Thunderstore mod manager (BepInEx, MelonLoader)
+    pkgs.heroic       # GOG/Epic/Amazon games launcher
     vice              # game clip recorder with a Wayland-friendly UI
     eden              # Switch emulator (Yuzu/Sudachi derivative)
   ];
