@@ -160,5 +160,16 @@ in {
     # session -`) fixes NoStorageAccess(AccessDenied) under GDM's session
     # keyring (see home/.config/fish/functions/pass-cli.fish).
     pkgs.keyutils
+
+    # ComfyUI — node-based local image generator (NSFW-capable book covers /
+    # chapter art for the nsfw-stories project). nixpkgs 0.34.1 is built against
+    # cudaPackages_13, matching this GPU's driver 595/CUDA 13.2; no system CUDA
+    # install needed (PyTorch ships its own runtime). withManager bundles
+    # ComfyUI-Manager for installing custom nodes (ADetailer, ControlNet aux
+    # preprocessors). The package patches runtime dirs to a writable base at
+    # ~/.local/share/comfyui/ (models/, custom_nodes/, input/, output/) instead
+    # of the read-only nix store. Launch with `comfyui --medvram --preview-method
+    # auto` (fits SDXL into the 3070 Ti's 8GB).
+    (pkgs.comfyui.override { withManager = true; })
   ];
 }
