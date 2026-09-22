@@ -41,4 +41,12 @@
 
   # SSH server so other machines can reach this one (e.g. over Tailscale).
   services.openssh.enable = true;
+
+  # Silence the "Executing external compose provider" banner that `podman
+  # compose` prints on every run (it shells out to podman-compose). The warning
+  # is pure noise for a machine that uses podman-compose as its only compose
+  # provider; see podman-compose(1). This needs the containers module (which
+  # also installs /etc/containers/containers.conf).
+  virtualisation.containers.enable = true;
+  virtualisation.containers.containersConf.settings.engine.compose_warning_logs = false;
 }
