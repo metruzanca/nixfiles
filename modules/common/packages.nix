@@ -37,6 +37,61 @@ let
     };
   });
 
+  # agent-browser (vercel-labs) — browser automation CLI built for AI agents
+  # (snapshot-and-ref workflow, batch, diff, a11y audits) with an `mcp`
+  # subcommand. nixpkgs' build (0.27.0) predates `mcp`, so this packages the
+  # npm tarball's self-contained prebuilt binary the same way as `noodle`
+  # above: one tarball holds every platform's binary plus the bundled skill
+  # content, and the binary finds skills at ../skills and ../skill-data
+  # relative to bin/. Only glibc/libm are needed, so it runs natively.
+  agentBrowserUnwrapped = pkgs.stdenvNoCC.mkDerivation (let
+    asset =
+      if pkgs.stdenv.hostPlatform.isDarwin && pkgs.stdenv.hostPlatform.isAarch64 then
+        "darwin-arm64"
+      else if pkgs.stdenv.hostPlatform.isLinux && pkgs.stdenv.hostPlatform.isx86_64 then
+        "linux-x64"
+      else if pkgs.stdenv.hostPlatform.isLinux && pkgs.stdenv.hostPlatform.isAarch64 then
+        "linux-arm64"
+      else throw "agent-browser: unsupported platform ${pkgs.stdenv.hostPlatform.system}";
+  in {
+    pname = "agent-browser";
+    version = "0.38.1";
+
+    src = pkgs.fetchurl {
+      url = "https://registry.npmjs.org/agent-browser/-/agent-browser-0.38.1.tgz";
+      hash = "sha256-iaffR2H/M15N1TZ+TPBM7Lm6TizBMKAiD3mNGIQU3Gw=";
+    };
+
+    # The tarball bundles every platform's binary and all skill content; keep
+    # just this host's binary plus the skills the CLI autodetects next to it.
+    installPhase = ''
+      mkdir -p $out/bin
+      install -Dm755 bin/agent-browser-${asset} $out/bin/agent-browser
+      cp -r skills $out/skills
+      cp -r skill-data $out/skill-data
+    '';
+
+    meta = with pkgs.lib; {
+      description = "Headless browser automation CLI for AI agents";
+      homepage = "https://github.com/vercel-labs/agent-browser";
+      license = licenses.asl20;
+      platforms = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
+      mainProgram = "agent-browser";
+    };
+  });
+
+  # agent-browser launches a Chromium, but its own `agent-browser install`
+  # can't unpack Chrome here (the prebuilt Chrome misses system libs such as
+  # libglib-2.0.so.0, and nix-ld doesn't cover it) and NixOS has no FHS. Bake
+  # in nixpkgs' pinned Playwright browsers so it just works. The var is scoped
+  # to this wrapper — exporting PLAYWRIGHT_BROWSERS_PATH globally would hijack
+  # per-project Playwright installs. (Also note the store browsers aren't SUID,
+  # but agent-browser adds --no-sandbox itself.)
+  agentBrowser = pkgs.writeShellScriptBin "agent-browser" ''
+    export PLAYWRIGHT_BROWSERS_PATH="${pkgs.playwright-driver.browsers}"
+    exec ${agentBrowserUnwrapped}/bin/agent-browser "$@"
+  '';
+
   # LigaComicMono: Comic Mono (nixpkgs' comic-mono) ligaturized with real
   # coding ligatures via Ligaturizer (https://github.com/wayou/comic-mono-font).
   # The stock comic-mono font has no OpenType substitution features; this fork
@@ -182,6 +237,10 @@ in {
       pkgs.glow
       # charmbracelet's AI coding agent (Go/TUI).
       pkgs.crush
+      # agent-browser (vercel-labs) — CLI + MCP browser automation built for
+      # AI agents (accessibility snapshots with refs, batch, diff, a11y audits).
+      # Wrapper (defined above) points it at nixpkgs' pinned Playwright browsers.
+      agentBrowser
       # VHS records terminal GIFs; needs ttyd and ffmpeg on PATH.
       pkgs.vhs
       pkgs.ttyd

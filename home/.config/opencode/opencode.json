@@ -12,6 +12,14 @@
       ],
       "enabled": true,
       "type": "local"
+    },
+    "agent-browser": {
+      "command": [
+        "agent-browser",
+        "mcp"
+      ],
+      "enabled": true,
+      "type": "local"
     }
   },
   "plugin": [
