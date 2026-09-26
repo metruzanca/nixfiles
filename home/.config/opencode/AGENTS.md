@@ -16,6 +16,10 @@ These rules apply to every OpenCode session on this machine.
 Do not launch Herdr merely to perform a normal coding task. If `HERDR_ENV` is
 not set, do not inspect or control the Herdr session.
 
+## Writing
+
+- Never use em dashes. Use a comma, colon, or rewrite the sentence instead.
+
 ## Dev servers
 
 - When setting up a dev server (any local server in a dev project), always bind
