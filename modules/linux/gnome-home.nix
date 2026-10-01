@@ -26,6 +26,8 @@
         "gsconnect@andyholmes.github.io"
         # Blur My Shell: blur on the top panel, dash and overview.
         "blur-my-shell@aunetx"
+        # Multi Monitor Bar: copies the top panel to every monitor.
+        "multi-monitors-bar@frederykabryan"
       ];
     };
 

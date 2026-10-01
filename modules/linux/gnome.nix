@@ -17,6 +17,7 @@
     pkgs.gnomeExtensions.appindicator
     pkgs.gnomeExtensions.blur-my-shell
     pkgs.gnomeExtensions.gsconnect
+    pkgs.gnomeExtensions.multi-monitor-bar
   ];
 
   # dconf is GNOME's config store; the per-user settings in gnome-home.nix
