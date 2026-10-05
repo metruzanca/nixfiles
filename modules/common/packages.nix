@@ -278,6 +278,10 @@ in {
       pkgs.protonmail-bridge
       pkgs.proton-pass
       pkgs.proton-pass-cli
+      # rclone backs the Proton Drive FUSE mount (protondrive backend). The
+      # mount itself is Linux-only (see modules/linux/protondrive.nix); the
+      # binary is cross-platform so it lives here.
+      pkgs.rclone
 
       # Declarative secrets across environments/providers
       pkgs.secretspec
