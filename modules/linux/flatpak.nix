@@ -31,6 +31,7 @@
       # persists window/screen capture permissions against a stable app-id —
       # the nix package re-prompts for every window capture on each launch.
       "com.obsproject.Studio"
+      "org.telegram.desktop"
       { appId = "com.nvidia.geforcenow"; origin = "nvidia-geforcenow"; }
     ];
 
