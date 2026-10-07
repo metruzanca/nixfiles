@@ -142,6 +142,9 @@ in {
     herdr
     visigrid
 
+    # Email client to use with Gmail for Huddlesurety
+    pkgs.geary
+
     # No Handy integration daemons on Linux: neither the triggerhappy
     # hotkey watcher (it re-fired Handy's toggle per input device — this box's
     # keyboard exposes multiple evdev interfaces, so one Ctrl+Space produced
