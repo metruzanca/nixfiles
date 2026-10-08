@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, claude-desktop, ... }:
 let
   # Handy (https://github.com/cjpais/Handy) — local ML audio transcription with a
   # system tray UI. Ships per-OS binaries; the Linux AppImage is self-contained
@@ -132,11 +132,21 @@ let
   };
 
 in {
+  # Claude Desktop (anthropic.com/claude) ships only as a Debian/RPM package,
+  # so it is not in nixpkgs and there is no Flatpak. This flake repackages
+  # Anthropic's official Linux beta .deb for NixOS (autoPatchelf + Nix paths
+  # for its Cowork QEMU/virtiofsd helpers). Linux-only, hence scoped here
+  # rather than in common/packages.nix; the supplied overlay provides
+  # pkgs.claude-desktop below.
+  nixpkgs.overlays = [ claude-desktop.overlays.default ];
+
   environment.systemPackages = [
     # Linux-only desktop apps. Cross-platform apps live in
     # common/packages.nix; on macOS Discord is a Homebrew cask (see
     # modules/darwin/homebrew.nix), so keep it here to avoid duplication.
     pkgs.discord
+
+    pkgs.claude-desktop
 
     handy
     herdr
