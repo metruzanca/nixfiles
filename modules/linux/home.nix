@@ -86,6 +86,18 @@
     settings.StartupWMClass = "brave-app.notion.com__-Default";
   };
 
+  # Linear as a Brave app window. Linear ships no Linux desktop app (only
+  # macOS/Windows/mobile), so the official web app in app mode is the supported
+  # route; same pattern as Notion above.
+  xdg.dataFile."icons/hicolor/512x512/apps/linear.png".source = ../../assets/icons/linear.png;
+  xdg.desktopEntries."linear" = {
+    name = "Linear";
+    exec = "brave-origin --app=https://linear.app";
+    icon = "linear";
+    categories = [ "Network" ];
+    settings.StartupWMClass = "brave-linear.app__-Default";
+  };
+
   # Brave Origin as the default browser (MIME associations via xdg). The generated
   # file fully replaces ~/.config/mimeapps.list, so keep non-browser handlers
   # here too (e.g. proton-inbox). Web searches launched from GNOME also open in
