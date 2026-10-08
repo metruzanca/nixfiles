@@ -50,13 +50,21 @@
     variant = "";
   };
 
-  # NVIDIA (RTX 3070 Ti, GA104). `open = true` uses the open-source kernel
-  # modules, which are the recommended option on NixOS for Ampere+ cards.
+  # NVIDIA (RTX 3070 Ti, GA104). Use the proprietary kernel modules, not the
+  # open ones. The open module has a mapping-reuse bug that exhausts BAR1 VA
+  # space under sustained desktop use (dmaAllocMapping: "can't alloc VA space
+  # for mapping", then mapping_reuse.c NV_ERR_NO_MEMORY), which fails the atomic
+  # modeset ("Failed to initialize semaphore for plane fence", error -11) and
+  # hangs the GPU (krcWatchdog: "GPU is probably locked"), forcing a hard power
+  # cycle. The bug is specific to the open kernel module (NVIDIA issue #1132);
+  # the proprietary modules ship in the same package and are unaffected. Also
+  # enable Resizable BAR in BIOS to widen BAR1 (currently 256 MiB) so the
+  # mapping window is larger.
   hardware.graphics.enable = true;
   hardware.graphics.enable32Bit = true;
   hardware.nvidia = {
     modesetting.enable = true;
-    open = true;
+    open = false;
     nvidiaSettings = true;
   };
   services.xserver.videoDrivers = [ "nvidia" ];
