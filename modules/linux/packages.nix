@@ -1,4 +1,4 @@
-{ lib, pkgs, claude-desktop, ... }:
+{ lib, pkgs, claude-desktop, helium, ... }:
 let
   # Handy (https://github.com/cjpais/Handy) — local ML audio transcription with a
   # system tray UI. Ships per-OS binaries; the Linux AppImage is self-contained
@@ -137,8 +137,13 @@ in {
   # Anthropic's official Linux beta .deb for NixOS (autoPatchelf + Nix paths
   # for its Cowork QEMU/virtiofsd helpers). Linux-only, hence scoped here
   # rather than in common/packages.nix; the supplied overlay provides
-  # pkgs.claude-desktop below.
-  nixpkgs.overlays = [ claude-desktop.overlays.default ];
+  # pkgs.claude-desktop below. The helium overlay likewise exposes pkgs.helium
+  # from the community flake that repackages Helium's upstream .deb (see the
+  # helium input in flake.nix). Helium is not in nixpkgs or on Flathub.
+  nixpkgs.overlays = [
+    claude-desktop.overlays.default
+    helium.overlays.default
+  ];
 
   environment.systemPackages = [
     # Linux-only desktop apps. Cross-platform apps live in
@@ -147,6 +152,9 @@ in {
     pkgs.discord
 
     pkgs.claude-desktop
+
+    # Helium browser (helium.computer), a privacy-focused Chromium fork.
+    pkgs.helium
 
     handy
     herdr
