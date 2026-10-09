@@ -268,6 +268,7 @@ in {
       pkgs.spotify
       pkgs.brave-origin
       pkgs.zed-editor
+      pkgs.qbittorrent
 
       # Terminal Spotify player (not in nixpkgs; built from its flake).
       myx.packages.${pkgs.system}.default
