@@ -259,6 +259,7 @@ in {
 
       # Common utilities
       pkgs.jq
+      pkgs.unzip
 
       # Container tools
       pkgs.podman
@@ -269,6 +270,7 @@ in {
       pkgs.brave-origin
       pkgs.zed-editor
       pkgs.qbittorrent
+      pkgs.mediawriter
 
       # Terminal Spotify player (not in nixpkgs; built from its flake).
       myx.packages.${pkgs.system}.default
