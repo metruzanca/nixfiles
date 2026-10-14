@@ -102,13 +102,13 @@ let
   # ships no prebuilt binaries).
   vice = pkgs.python3.pkgs.buildPythonApplication {
     pname = "vice";
-    version = "2.7.2";
+    version = "2.14.1";
     pyproject = true;
     src = pkgs.fetchFromGitHub {
       owner = "eklonofficial";
       repo = "Vice";
-      rev = "v2.7.2";
-      hash = "sha256-T1kCVKDt/oQqW3rY7PnQYBi/W6/FgmOFzR2bllO9X4E=";
+      rev = "v2.14.1";
+      hash = "sha256-w7GZhlwsRh6smi+RRt65bEnk0dHvfRypHnP1MGFMtqA=";
     };
     nativeBuildInputs = with pkgs.python3.pkgs; [ setuptools wheel ];
     dependencies = with pkgs.python3.pkgs; [
@@ -140,6 +140,12 @@ let
     ];
     postInstall = ''
       install -Dm644 $src/vice.desktop $out/share/applications/vice.desktop
+      install -Dm644 $src/assets/vice.svg $out/share/icons/hicolor/scalable/apps/vice.svg
+      install -Dm644 $src/assets/vice.png $out/share/icons/hicolor/1024x1024/apps/vice.png
+      # This box's QtWebEngine GPU path fails (GBM unsupported -> Vulkan ->
+      # Skia OOM spin); force software compositing so the window is stable.
+      substituteInPlace $out/share/applications/vice.desktop \
+        --replace-fail 'Exec=vice-app' 'Exec=env VICE_WEBVIEW_SOFTWARE=1 vice-app'
     '';
     doCheck = false;
     meta = {
@@ -173,6 +179,7 @@ in {
     pkgs.heroic       # GOG/Epic/Amazon games launcher
     vice              # game clip recorder with a Wayland-friendly UI
     eden              # Switch emulator (Yuzu/Sudachi derivative)
+    pkgs.gamescope    # micro-compositor: launch HD2 through it to kill the borderless 1px border
   ];
 
   # Vice autostarted at login so instant replay is armed from the first session.
@@ -184,7 +191,7 @@ in {
       Type=Application
       Name=Vice
       Comment=Record and share gameplay clips on Linux, like Medal.tv
-      Exec=${vice}/bin/vice-app
+      Exec=env VICE_WEBVIEW_SOFTWARE=1 ${vice}/bin/vice-app
       Icon=vice
       Terminal=false
       Categories=Game;Video;Recorder;AudioVideo;
