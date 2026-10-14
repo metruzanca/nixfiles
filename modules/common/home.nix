@@ -138,6 +138,13 @@ in {
     recursive = true;
   };
 
+  # ~/.config/containers is fully managed by nix, mirroring
+  # home/.config/containers.
+  xdg.configFile."containers" = {
+    source = ../../home/.config/containers;
+    recursive = true;
+  };
+
   # ~/Pictures/fragment.jpg — the desktop wallpaper, kept at a stable
   # path so the wallpaper activation script can reference it. Source:
   # https://www.reddit.com/r/pixelsorting/comments/13z2qi1/fragment/
