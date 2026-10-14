@@ -1,4 +1,5 @@
 {
+  "cli_default_open_behavior": "new_window",
   "buffer_font_family": "Liga Comic Mono",
   "buffer_font_features": {
     "calt": true
@@ -21,6 +22,9 @@
   },
   "git_panel": {
     "dock": "left"
+  },
+  "terminal": {
+    "dock": "right"
   },
   "language_models": {
     "opencode": {
