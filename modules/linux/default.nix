@@ -7,6 +7,7 @@
     ./gnome.nix
     ./networking.nix
     ./packages.nix
+    ./symphonyrecomp.nix
     ./users.nix
   ];
 }

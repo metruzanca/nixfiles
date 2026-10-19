@@ -229,6 +229,8 @@ in {
       pkgs.gum
       pkgs.htop
       pkgs.gh
+      # Speakeasy CLI generates and manages API SDKs from OpenAPI specs.
+      pkgs.speakeasy-cli
       pkgs.tree
       pkgs.mise
       pkgs.zellij
@@ -237,6 +239,8 @@ in {
       pkgs.glow
       # charmbracelet's AI coding agent (Go/TUI).
       pkgs.crush
+      # Anthropic's AI coding agent CLI.
+      pkgs.claude-code
       # agent-browser (vercel-labs) — CLI + MCP browser automation built for
       # AI agents (accessibility snapshots with refs, batch, diff, a11y audits).
       # Wrapper (defined above) points it at nixpkgs' pinned Playwright browsers.
