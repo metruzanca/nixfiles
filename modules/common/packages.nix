@@ -267,7 +267,6 @@ in {
       pkgs.spotify
       pkgs.zed-editor
       pkgs.qbittorrent
-      pkgs.mediawriter
 
       # Terminal Spotify player (not in nixpkgs; built from its flake).
       myx.packages.${pkgs.system}.default

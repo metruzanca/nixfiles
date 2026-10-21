@@ -161,6 +161,9 @@ in {
     # wrappers in home.nix reference brave-origin.desktop.
     pkgs.brave-origin
 
+    # Fedora Media Writer: Linux-only (not available on macOS).
+    pkgs.mediawriter
+
     handy
     herdr
     visigrid
