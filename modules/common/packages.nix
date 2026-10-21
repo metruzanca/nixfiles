@@ -1,4 +1,4 @@
-{ pkgs, myx, ... }:
+{ pkgs, ... }:
 
 let
   # noodle (noodlerest.dev) ships one prebuilt binary per platform from
@@ -266,21 +266,12 @@ in {
       # macOS uses pkgs.brave, Linux uses pkgs.brave-origin.
       pkgs.spotify
       pkgs.zed-editor
-      pkgs.qbittorrent
-
-      # Terminal Spotify player (not in nixpkgs; built from its flake).
-      myx.packages.${pkgs.system}.default
 
       # Proton & networking
       pkgs.tailscale
       pkgs.protonmail-desktop
-      pkgs.protonmail-bridge
       pkgs.proton-pass
       pkgs.proton-pass-cli
-      # rclone backs the Proton Drive FUSE mount (protondrive backend). The
-      # mount itself is Linux-only (see modules/linux/protondrive.nix); the
-      # binary is cross-platform so it lives here.
-      pkgs.rclone
 
       # Declarative secrets across environments/providers
       pkgs.secretspec

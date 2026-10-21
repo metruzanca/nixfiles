@@ -1,4 +1,4 @@
-{ lib, pkgs, claude-desktop, helium, ... }:
+{ lib, pkgs, myx, claude-desktop, helium, ... }:
 let
   # Handy (https://github.com/cjpais/Handy) — local ML audio transcription with a
   # system tray UI. Ships per-OS binaries; the Linux AppImage is self-contained
@@ -164,12 +164,22 @@ in {
     # Fedora Media Writer: Linux-only (not available on macOS).
     pkgs.mediawriter
 
+    # qBittorrent: Linux build only (the macOS build fails against Qt 6.12).
+    pkgs.qbittorrent
+
     handy
     herdr
     visigrid
 
     # Email client to use with Gmail for Huddlesurety
     pkgs.geary
+    pkgs.protonmail-bridge
+
+    # Terminal Spotify player (not in nixpkgs; built from its flake).
+    myx.packages.${pkgs.system}.default
+
+    # rclone backs the Proton Drive FUSE mount (see modules/linux/protondrive.nix).
+    pkgs.rclone
 
     # No Handy integration daemons on Linux: neither the triggerhappy
     # hotkey watcher (it re-fired Handy's toggle per input device — this box's
