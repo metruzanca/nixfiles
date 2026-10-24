@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }: {
+{ config, lib, pkgs, ... }: {
 
   # Zen kernel: performance-tuned for interactive desktop/gaming use (PREEMPT,
   # low-latency scheduler tweaks) vs. the stock kernel's throughput-oriented
@@ -60,12 +60,32 @@
   # the proprietary modules ship in the same package and are unaffected. Also
   # enable Resizable BAR in BIOS to widen BAR1 (currently 256 MiB) so the
   # mapping window is larger.
+  #
+  # Pinned to the `latest` branch (610.x) rather than the default `stable`
+  # (595.99.02). 610.x is the current branch and also exposes NVENC API 13.1,
+  # which unblocks gpu-screen-recorder 6.x (see gaming.nix).
+  #
+  # Use the open kernel modules. Under the proprietary modules, Wine/Proton
+  # games (Warframe, Risk of Rain 2) deadlock on focus loss (alt-tab) with every
+  # game thread parked in a Wine sync wait (ntsync or fsync) and the game often
+  # never recovers. Ruled out: Proton build (Experimental, GE 11-3/11-7), sync
+  # backend (PROTON_NO_NTSYNC only moves the parked threads from ntsync to
+  # fsync), the always-on screen recorder (Vice/gpu-screen-recorder), driver
+  # version (595 and 610 both hung), and older system generations. Switching
+  # back to the open modules on 610 resolved it.
+  #
+  # WATCH FOR #1132: the open module has a BAR1 mapping-reuse bug that can
+  # hard-lock the GPU under sustained desktop use (needs a power cycle), which
+  # is why this was moved to proprietary originally. Enabling Resizable BAR in
+  # BIOS widens BAR1 (currently 256 MiB) and reduces that risk. If the screen
+  # hard-locks, that is #1132, not the game hang.
   hardware.graphics.enable = true;
   hardware.graphics.enable32Bit = true;
   hardware.nvidia = {
     modesetting.enable = true;
-    open = false;
+    open = true;
     nvidiaSettings = true;
+    package = config.boot.kernelPackages.nvidiaPackages.latest;
   };
   services.xserver.videoDrivers = [ "nvidia" ];
 
