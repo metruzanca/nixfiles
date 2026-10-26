@@ -18,7 +18,6 @@
       ../modules/common/home.nix
       ../modules/linux/home.nix
       ../modules/linux/gnome-home.nix
-      ../modules/linux/protondrive.nix
     ];
   };
 
