@@ -161,6 +161,10 @@ in {
     # wrappers in home.nix reference brave-origin.desktop.
     pkgs.brave-origin
 
+    # Stock Google Chrome (unmodified upstream build). Useful alongside the
+    # Brave/Helium forks for sites that need Chrome specifically.
+    pkgs.google-chrome
+
     # Fedora Media Writer: Linux-only (not available on macOS).
     pkgs.mediawriter
 
