@@ -126,7 +126,10 @@ let
     # recording, wl-clipboard/xclip for sharing, cloudflared for the share
     # tunnel, xdotool/xprop/wmctrl for focused-window detection.
     makeWrapperArgs = [
-      "--prefix PATH : ${pkgs.lib.makeBinPath [
+      "--prefix"
+      "PATH"
+      ":"
+      (pkgs.lib.makeBinPath [
         pkgs.ffmpeg
         gpu-screen-recorder
         pkgs.wf-recorder
@@ -136,7 +139,7 @@ let
         pkgs.xdotool
         pkgs.xprop
         pkgs.wmctrl
-      ]}"
+      ])
     ];
     postInstall = ''
       install -Dm644 $src/vice.desktop $out/share/applications/vice.desktop

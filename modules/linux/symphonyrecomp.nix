@@ -9,17 +9,17 @@ let
   runtimeLibs = lib.makeLibraryPath (with pkgs; [
     openal
     libGL
-    xorg.libX11
-    xorg.libXext
-    xorg.libXi
-    xorg.libXrandr
-    xorg.libXcursor
-    xorg.libXinerama
-    xorg.libXfixes
-    xorg.libXxf86vm
-    xorg.libxcb
-    xorg.libXau
-    xorg.libXdmcp
+    libx11
+    libxext
+    libxi
+    libxrandr
+    libxcursor
+    libxinerama
+    libxfixes
+    libxxf86vm
+    libxcb
+    libxau
+    libxdmcp
     libxkbcommon
     wayland
     libdecor

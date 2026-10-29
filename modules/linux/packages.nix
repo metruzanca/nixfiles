@@ -103,9 +103,9 @@ let
       pkgs.dbus
       pkgs.zlib
       pkgs.libxkbcommon
-      pkgs.xorg.libxcb
-      pkgs.xorg.libXau
-      pkgs.xorg.libXdmcp
+      pkgs.libxcb
+      pkgs.libxau
+      pkgs.libxdmcp
       pkgs.stdenv.cc.cc.lib
     ];
 

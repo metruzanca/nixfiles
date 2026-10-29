@@ -46,7 +46,7 @@ Sets up the environment for `nix develop`:
 ```nix
 mkShell rec {
   buildInputs = [
-    fontconfig freetype libxkbcommon xorg.libxcb xorg.libX11
+    fontconfig freetype libxkbcommon libxcb libx11
     wayland vulkan-loader openssl
   ];
 
