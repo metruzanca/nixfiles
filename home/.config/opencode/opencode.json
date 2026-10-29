@@ -22,9 +22,6 @@
       "type": "local"
     }
   },
-  "plugin": [
-    "opencode-wakatime"
-  ],
   "permission": "allow",
   "theme": "system"
 }
