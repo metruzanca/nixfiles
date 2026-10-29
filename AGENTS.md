@@ -52,7 +52,7 @@ The config is split into modules by concern so a second machine can share the po
 
 Run these from this directory (prefer the `make` targets; `make help` lists them):
 
-- **Build the config without applying it**: `make build` (picks `darwin-rebuild`/`nixos-rebuild` from the OS; defaults to this machine's hostname, override with `make build HOST=<name>`)
+- **Build the config without applying it**: `make build` (picks `darwin-rebuild`/`nixos-rebuild` from the OS; defaults to this machine's hostname, override with `make build HOST=<name>`). Slow: a full flake evaluation and system build. Run it when you are unsure a change will work, not after every edit.
 - **Apply the config** (requires sudo): `make switch`
 - **Clean up old generations and the nix store** (requires sudo): `make clean` — deletes system/home-manager generations older than 7 days and garbage-collects the store. Nix never cleans itself; run this occasionally if the store grows.
 - **Create the pass-cli session** (one-time, interactive): `make pass-login`
@@ -93,9 +93,9 @@ This repo is public — anything committed is visible to the world. Treat it acc
 ## Workflow
 
 1. Edit the relevant module file (see "What it manages") to add/change packages or settings.
-2. Run `make build` to validate.
-3. Apply with `make switch`.
+2. Validate only when you need to. Run `make build` when you are not confident the change will evaluate or build: a new package, a derivation edit, module or flake wiring, an unfamiliar option, or non-trivial nix code. Skip it for changes you are confident about, such as editing the contents of a plain config file, docs, comments, or a small tweak inside an existing module. Never build twice for the same change. Do not run `make switch` yourself, it needs sudo.
+3. Hand off for the apply: tell the user what changed and that it needs `make switch` (sudo). Let them run it.
 4. Restart any affected applications (or log out/in) for environment changes to take effect.
-5. Commit changes once they've been verified — i.e. the build passes and the changes are expected to work — an amend later is fine if a fix is needed. Pushing is left to the user.
+5. Commit changes once they've been verified: the build passed if you ran one, and the change is expected to work. An amend later is fine if a fix is needed. Pushing is left to the user.
 6. Before staging, re-check `git status` and `git diff --staged` for secrets.
 7. When multiple agents have touched the same file, only stage the hunks relevant to your own change (e.g. `git add -p`) rather than committing the whole file.
