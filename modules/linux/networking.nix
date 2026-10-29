@@ -39,15 +39,6 @@
     };
   };
 
-  # Distrust the compromised eMudhra/emSign roots (CVE-2026-111943). Remove
-  # these once the pinned nixpkgs carries the upstream fix.
-  security.pki.caCertificateBlacklist = [
-    "Comodo AAA Services root"
-    "emSign ECC Root CA - G3"
-    "emSign Root CA - C1"
-    "emSign ECC Root CA - C3"
-  ];
-
   # SSH server so other machines can reach this one (e.g. over Tailscale).
   services.openssh.enable = true;
 
