@@ -31,5 +31,8 @@
       "show_zen_models": false,
       "show_go_models": true
     }
+  },
+  "file_types": {
+    "Templ": ["gth"]
   }
 }
