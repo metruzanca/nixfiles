@@ -28,6 +28,8 @@
         "blur-my-shell@aunetx"
         # Multi Monitor Bar: copies the top panel to every monitor.
         "multi-monitors-bar@frederykabryan"
+        # Glean: clipboard history and quick notes.
+        "glean@gunwald.gitlab.com"
       ];
     };
 
