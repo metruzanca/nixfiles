@@ -266,6 +266,8 @@ in {
       # macOS uses pkgs.brave, Linux uses pkgs.brave-origin.
       pkgs.spotify
       pkgs.zed-editor
+      # t3code (t3.codes), a minimal web GUI for coding agents.
+      pkgs.t3code
 
       # Proton & networking
       pkgs.tailscale
