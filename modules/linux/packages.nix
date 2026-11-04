@@ -131,6 +131,51 @@ let
     };
   };
 
+  # t3code (https://t3.codes): desktop control surface for local coding agents.
+  # The nixpkgs package builds from source, and upstream's web client gates its
+  # T3 Connect remote-access UI on Clerk/relay identifiers that only release
+  # artifacts bake in (they come from a gitignored repo-root .env, and are
+  # compiled in at build time, so runtime env vars cannot restore the desktop
+  # UI). Hence the official AppImage instead of pkgs.t3code: it ships with T3
+  # Connect working. wrapType2 repacks it for NixOS (its FHS env already
+  # carries libsecret, gtk3, xdg-utils and libgbm, which is all this needs); we
+  # then install the image's own .desktop entry and hicolor icons so GNOME
+  # shows a launcher and the t3code:// scheme used by T3 Connect sign-in
+  # resolves. darwin/macOS uses the Homebrew cask (darwin/homebrew.nix).
+  t3code = let
+    version = "0.1.7";
+    t3code-src = pkgs.fetchurl {
+      url = "https://github.com/pingdotgg/t3code/releases/download/v${version}/T3-Code-${version}-x86_64.AppImage";
+      # sha512 as published in that release's latest-linux.yml.
+      hash = "sha512-6JalhN+xu4ZXxX5rjRqUlDtv43Qs7FFd1szwLTbJPU1VthN1h8v4i2v9g80yS3jMSvPguX/eW3BRdyUmz97dqg==";
+    };
+    wrapped = pkgs.appimageTools.wrapType2 {
+      pname = "t3code";
+      inherit version;
+      src = t3code-src;
+      meta = {
+        description = "Desktop app for coding agents, with T3 Connect remote access";
+        homepage = "https://t3.codes";
+        license = lib.licenses.mit;
+        platforms = [ "x86_64-linux" ];
+        mainProgram = "t3code";
+      };
+    };
+    contents = pkgs.appimageTools.extract {
+      pname = "t3code";
+      inherit version;
+      src = t3code-src;
+    };
+  in pkgs.runCommand "t3code-${version}" { } ''
+    mkdir -p $out/bin $out/share/applications $out/share/icons
+    cp -d ${wrapped}/bin/* $out/bin/
+    # Upstream's entry, with Exec pointing at the wrapped binary instead of the
+    # image's AppRun. Its MimeType line is what registers the t3code:// handler.
+    sed 's|^Exec=AppRun|Exec=t3code|' ${contents}/t3code.desktop \
+      > $out/share/applications/t3code.desktop
+    cp -r ${contents}/usr/share/icons/hicolor $out/share/icons/
+  '';
+
 in {
   # Claude Desktop (anthropic.com/claude) ships only as a Debian/RPM package,
   # so it is not in nixpkgs and there is no Flatpak. This flake repackages
@@ -173,6 +218,7 @@ in {
 
     handy
     herdr
+    t3code
     visigrid
 
     # Email client to use with Gmail for Huddlesurety
