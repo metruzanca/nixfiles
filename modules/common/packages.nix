@@ -225,6 +225,10 @@ in {
       pkgs.speakeasy-cli
       pkgs.tree
       pkgs.mise
+      # Nix language tooling for editors: nixd is the LSP (Zed's Nix
+      # extension launches it) and nixfmt is the formatter it invokes.
+      pkgs.nixd
+      pkgs.nixfmt
       pkgs.zellij
       pkgs.lazygit
       # Render markdown in the terminal (charmbracelet).
