@@ -270,6 +270,9 @@ in {
       # macOS uses pkgs.brave, Linux uses pkgs.brave-origin.
       pkgs.spotify
       pkgs.zed-editor
+      # IRC client (Rust/iced). Cross-platform, so this one line puts it on
+      # both hosts.
+      pkgs.halloy
 
       # Proton & networking
       pkgs.tailscale
