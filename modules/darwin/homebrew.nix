@@ -22,10 +22,7 @@
       cleanup = "uninstall";
       upgrade = true;
     };
-    # t3-code: official T3 Code desktop app. The nixpkgs build compiles its web
-    # client without the public Clerk/relay identifiers, so T3 Connect is
-    # missing from it; the release artifact has them baked in.
-    casks = [ "discord" "notion" "parsec" "steam" "whatsapp" "podman-desktop" "alt-tab" "t3-code" ];
+    casks = [ "discord" "notion" "parsec" "steam" "whatsapp" "podman-desktop" "alt-tab" ];
   };
 
   # Align the homebrew module's taps with the pinned nix-homebrew taps.

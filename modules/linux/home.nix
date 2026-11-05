@@ -112,9 +112,6 @@
     "x-scheme-handler/about" = "brave-origin.desktop";
     "x-scheme-handler/unknown" = "brave-origin.desktop";
     "x-scheme-handler/proton-inbox" = "proton-mail.desktop";
-    # T3 Code sign-in for T3 Connect redirects through the t3code:// scheme
-    # handled by the official AppImage's desktop entry (linux/packages.nix).
-    "x-scheme-handler/t3code" = "t3code.desktop";
   };
 
   # GNOME-specific user settings (dconf, monitor layout) live in
