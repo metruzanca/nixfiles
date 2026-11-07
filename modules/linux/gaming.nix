@@ -95,6 +95,83 @@ let
     };
   });
 
+  # Lichii (https://github.com/zortos293/Lichii): very experimental Nintendo
+  # Switch 2 emulator, an Eden (nx2) derivative. Releases are type-2 AppImages
+  # that bundle Qt 6 and FFmpeg; wrapType2 repacks one into an FHS env with the
+  # runtime libraries it needs (Vulkan loader, libusb, X11/Wayland). The
+  # desktop entry and icon are copied out of the image so GNOME lists it as an
+  # app. The asset is tagged `build-94` on GitHub, but the build itself reports
+  # build-95 (the release notes say the tag is misnumbered).
+  lichii = let
+    lichii-src = pkgs.fetchurl {
+      url = "https://github.com/zortos293/Lichii/releases/download/build-94/lichii-linux-x86_64.AppImage";
+      hash = "sha256-kL59d8lB8AndgFkxvVYq5k4NeZFx0O/P5jrBoo13h/o=";
+    };
+
+    # Qt's Adwaita Wayland decoration loads window-*-symbolic.svg from the
+    # system icon theme. With any theme other than "colorful", Lichii calls
+    # QIcon::setThemeSearchPaths([":/icons"]), which drops the filesystem
+    # paths; the decoration then logs "Failed to find an svg icon" for each
+    # window control and draws blank titlebar buttons. Making that call a no-op
+    # leaves Qt's default paths (XDG icon dirs plus resources), so the theme
+    # below is found. A preload shim is used because the binary hardcodes the
+    # resource-only list.
+    icon-shim = pkgs.stdenv.mkDerivation {
+      pname = "lichii-icon-theme-shim";
+      version = "build-95";
+      dontUnpack = true;
+      src = pkgs.writeText "lichii-icon-theme-shim.c" ''
+        void noop_set_theme_search_paths(const void *paths)
+            __asm__("_ZN5QIcon19setThemeSearchPathsERK5QListI7QStringE");
+        void noop_set_theme_search_paths(const void *paths) { (void)paths; }
+      '';
+      buildPhase = ''
+        runHook preBuild
+        $CC -shared -fPIC -o liblichii-icon-theme-shim.so $src
+        runHook postBuild
+      '';
+      installPhase = ''
+        runHook preInstall
+        install -Dm755 liblichii-icon-theme-shim.so \
+          $out/lib/liblichii-icon-theme-shim.so
+        runHook postInstall
+      '';
+    };
+
+    wrapped = pkgs.appimageTools.wrapType2 {
+      pname = "lichii";
+      version = "build-95";
+      src = lichii-src;
+      # adwaita-icon-theme supplies the symbolic window icons the Wayland
+      # decoration reads; xcb-util-cursor keeps the X11 fallback working.
+      extraPkgs = pkgs: [ pkgs.adwaita-icon-theme pkgs.xcb-util-cursor ];
+      meta = {
+        description = "Very experimental Nintendo Switch 2 emulator (Eden derivative)";
+        homepage = "https://github.com/zortos293/Lichii";
+        license = lib.licenses.gpl3Plus;
+        platforms = [ "x86_64-linux" ];
+        mainProgram = "lichii";
+      };
+    };
+
+    launcher = pkgs.writeScript "lichii" ''
+      #!${pkgs.runtimeShell}
+      export LD_PRELOAD=${icon-shim}/lib/liblichii-icon-theme-shim.so''${LD_PRELOAD:+:$LD_PRELOAD}
+      exec ${wrapped}/bin/lichii "$@"
+    '';
+
+    extracted = pkgs.appimageTools.extract {
+      pname = "lichii";
+      version = "build-95";
+      src = lichii-src;
+    };
+  in pkgs.runCommand "lichii-build-95" { } ''
+    mkdir -p $out/bin $out/share
+    install -Dm755 ${launcher} $out/bin/lichii
+    cp -r ${extracted}/usr/share/applications $out/share/
+    cp -r ${extracted}/usr/share/icons $out/share/
+  '';
+
   # Vice (https://github.com/eklonofficial/Vice) — Medal.tv-style game clip
   # recorder for Linux. Python app (pyproject build); the UI runs in a pywebview
   # window on Qt6 WebEngine, recording is delegated to gpu-screen-recorder with
@@ -182,6 +259,7 @@ in {
     pkgs.heroic       # GOG/Epic/Amazon games launcher
     vice              # game clip recorder with a Wayland-friendly UI
     eden              # Switch emulator (Yuzu/Sudachi derivative)
+    lichii            # Switch 2 emulator (reports build-95, tagged build-94)
     pkgs.gamescope    # micro-compositor: launch HD2 through it to kill the borderless 1px border
   ];
 
