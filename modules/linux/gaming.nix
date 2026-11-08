@@ -100,12 +100,12 @@ let
   # that bundle Qt 6 and FFmpeg; wrapType2 repacks one into an FHS env with the
   # runtime libraries it needs (Vulkan loader, libusb, X11/Wayland). The
   # desktop entry and icon are copied out of the image so GNOME lists it as an
-  # app. The asset is tagged `build-94` on GitHub, but the build itself reports
-  # build-95 (the release notes say the tag is misnumbered).
+  # app. Upstream recommends its PGO build; this pins the standard build, which
+  # is what the release was originally set up with.
   lichii = let
     lichii-src = pkgs.fetchurl {
-      url = "https://github.com/zortos293/Lichii/releases/download/build-94/lichii-linux-x86_64.AppImage";
-      hash = "sha256-kL59d8lB8AndgFkxvVYq5k4NeZFx0O/P5jrBoo13h/o=";
+      url = "https://github.com/zortos293/Lichii/releases/download/build-117/lichii-linux-x86_64.AppImage";
+      hash = "sha256-8EQTM+Nx765ITJezF+de2kDMIS5KII2mu53yXhbaoaE=";
     };
 
     # Qt's Adwaita Wayland decoration loads window-*-symbolic.svg from the
@@ -118,7 +118,7 @@ let
     # resource-only list.
     icon-shim = pkgs.stdenv.mkDerivation {
       pname = "lichii-icon-theme-shim";
-      version = "build-95";
+      version = "build-117";
       dontUnpack = true;
       src = pkgs.writeText "lichii-icon-theme-shim.c" ''
         void noop_set_theme_search_paths(const void *paths)
@@ -140,7 +140,7 @@ let
 
     wrapped = pkgs.appimageTools.wrapType2 {
       pname = "lichii";
-      version = "build-95";
+      version = "build-117";
       src = lichii-src;
       # adwaita-icon-theme supplies the symbolic window icons the Wayland
       # decoration reads; xcb-util-cursor keeps the X11 fallback working.
@@ -162,10 +162,10 @@ let
 
     extracted = pkgs.appimageTools.extract {
       pname = "lichii";
-      version = "build-95";
+      version = "build-117";
       src = lichii-src;
     };
-  in pkgs.runCommand "lichii-build-95" { } ''
+  in pkgs.runCommand "lichii-build-117" { } ''
     mkdir -p $out/bin $out/share
     install -Dm755 ${launcher} $out/bin/lichii
     cp -r ${extracted}/usr/share/applications $out/share/
@@ -259,7 +259,7 @@ in {
     pkgs.heroic       # GOG/Epic/Amazon games launcher
     vice              # game clip recorder with a Wayland-friendly UI
     eden              # Switch emulator (Yuzu/Sudachi derivative)
-    lichii            # Switch 2 emulator (reports build-95, tagged build-94)
+    lichii            # Switch 2 emulator (Eden derivative)
     pkgs.gamescope    # micro-compositor: launch HD2 through it to kill the borderless 1px border
   ];
 
