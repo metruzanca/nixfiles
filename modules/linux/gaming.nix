@@ -104,8 +104,8 @@ let
   # is what the release was originally set up with.
   lichii = let
     lichii-src = pkgs.fetchurl {
-      url = "https://github.com/zortos293/Lichii/releases/download/build-117/lichii-linux-x86_64.AppImage";
-      hash = "sha256-8EQTM+Nx765ITJezF+de2kDMIS5KII2mu53yXhbaoaE=";
+      url = "https://github.com/zortos293/Lichii/releases/download/build-130/lichii-linux-x86_64.AppImage";
+      hash = "sha256-JblIA1ZfZFpbvDzKe1romqHgMJHQFPRPN87w9aKrTJA=";
     };
 
     # Qt's Adwaita Wayland decoration loads window-*-symbolic.svg from the
@@ -118,7 +118,7 @@ let
     # resource-only list.
     icon-shim = pkgs.stdenv.mkDerivation {
       pname = "lichii-icon-theme-shim";
-      version = "build-117";
+      version = "build-130";
       dontUnpack = true;
       src = pkgs.writeText "lichii-icon-theme-shim.c" ''
         void noop_set_theme_search_paths(const void *paths)
@@ -140,7 +140,7 @@ let
 
     wrapped = pkgs.appimageTools.wrapType2 {
       pname = "lichii";
-      version = "build-117";
+      version = "build-130";
       src = lichii-src;
       # adwaita-icon-theme supplies the symbolic window icons the Wayland
       # decoration reads; xcb-util-cursor keeps the X11 fallback working.
@@ -162,10 +162,10 @@ let
 
     extracted = pkgs.appimageTools.extract {
       pname = "lichii";
-      version = "build-117";
+      version = "build-130";
       src = lichii-src;
     };
-  in pkgs.runCommand "lichii-build-117" { } ''
+  in pkgs.runCommand "lichii-build-130" { } ''
     mkdir -p $out/bin $out/share
     install -Dm755 ${launcher} $out/bin/lichii
     cp -r ${extracted}/usr/share/applications $out/share/
