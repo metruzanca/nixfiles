@@ -273,6 +273,9 @@ in {
       # IRC client (Rust/iced). Cross-platform, so this one line puts it on
       # both hosts.
       pkgs.halloy
+      # Godot game engine (4.x, standard build). Cross-platform, so this one
+      # line puts it on both hosts.
+      pkgs.godot
 
       # Proton & networking
       pkgs.tailscale
