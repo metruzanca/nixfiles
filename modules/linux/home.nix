@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ config, pkgs, ... }: {
 
   # Dedicated SSH key for https://terminal.shop only. The private key lives in
   # Proton Pass as an ssh-key item (vault `nix`, title `terminal.shop`) and is
@@ -96,6 +96,21 @@
     icon = "linear";
     categories = [ "Network" ];
     settings.StartupWMClass = "brave-linear.app__-Default";
+  };
+
+  # Hookshot — the native Ocarina of Time recompilation built from your own .nup
+  # with the Hookshot Builder AppImage into ~/Games/Hookshot. The folder's own
+  # `hookshot` launcher execs that AppImage, which NixOS cannot run directly (no
+  # FUSE), so this entry starts the game binary itself. To update the build, run
+  # the AppImage through appimage-run: --cli --update <game folder>.
+  xdg.desktopEntries."hookshot" = {
+    name = "Hookshot";
+    comment = "The Legend of Zelda: Ocarina of Time, recompiled to run natively";
+    exec = "${config.home.homeDirectory}/Games/Hookshot/bin/hookshot";
+    icon = "${config.home.homeDirectory}/Games/Hookshot/hookshot.png";
+    categories = [ "Game" ];
+    terminal = false;
+    startupNotify = true;
   };
 
   # Brave Origin as the default browser (MIME associations via xdg). The generated
