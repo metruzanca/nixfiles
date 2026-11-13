@@ -29,6 +29,26 @@
   # mise on both hosts instead of falling back to nixpkgs packages.
   programs.nix-ld.enable = true;
 
+  # Libraries those prebuilt executables dlopen at runtime, which nix-ld does
+  # not provide by default: the Vulkan loader (GPU drivers themselves already
+  # come from /run/opengl-driver) and the windowing libraries SDL2 opens by
+  # soname. Hookshot (the native Ocarina of Time recompilation in
+  # ~/Games/Hookshot) needs all of these; without the loader it exits with
+  # "Failed loading libvulkan.so.1", and without the SDL ones with
+  # "SDL_Init: wayland,x11 not available".
+  programs.nix-ld.libraries = with pkgs; [
+    vulkan-loader
+    wayland
+    libxkbcommon
+    libdecor
+    libX11
+    libXext
+    libXcursor
+    libXrandr
+    libXinerama
+    libXfixes
+  ];
+
   # High-performance power mode (Settings → Power → Power Mode). PPD only
   # keeps its profile in /var/lib/power-profiles-daemon/state.ini, so apply
   # the profile on every boot to make it declarative.
