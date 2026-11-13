@@ -172,20 +172,22 @@ let
     cp -r ${extracted}/usr/share/icons $out/share/
   '';
 
-  # Vice (https://github.com/eklonofficial/Vice) — Medal.tv-style game clip
+  # Vice (https://github.com/splitshotz/Vice) — Medal.tv-style game clip
   # recorder for Linux. Python app (pyproject build); the UI runs in a pywebview
   # window on Qt6 WebEngine, recording is delegated to gpu-screen-recorder with
   # wf-recorder as the Wayland fallback. Sourced from the release tag (upstream
-  # ships no prebuilt binaries).
+  # ships no prebuilt binaries; the web UI bundle is committed to the tree, so
+  # no Node build is needed). The optional cairo/PyGObject/vosk paths (key
+  # overlay, tray, voice) import lazily, so they stay out of the closure.
   vice = pkgs.python3.pkgs.buildPythonApplication {
     pname = "vice";
-    version = "2.14.1";
+    version = "2.18.0";
     pyproject = true;
     src = pkgs.fetchFromGitHub {
-      owner = "eklonofficial";
+      owner = "splitshotz";
       repo = "Vice";
-      rev = "v2.14.1";
-      hash = "sha256-w7GZhlwsRh6smi+RRt65bEnk0dHvfRypHnP1MGFMtqA=";
+      rev = "v2.18.0";
+      hash = "sha256-9t/pJyJCp7m6jHJZGT37y9dtWIwgtHUoGGtlNoRvyZI=";
     };
     nativeBuildInputs = with pkgs.python3.pkgs; [ setuptools wheel ];
     dependencies = with pkgs.python3.pkgs; [
@@ -222,15 +224,11 @@ let
       install -Dm644 $src/vice.desktop $out/share/applications/vice.desktop
       install -Dm644 $src/assets/vice.svg $out/share/icons/hicolor/scalable/apps/vice.svg
       install -Dm644 $src/assets/vice.png $out/share/icons/hicolor/1024x1024/apps/vice.png
-      # This box's QtWebEngine GPU path fails (GBM unsupported -> Vulkan ->
-      # Skia OOM spin); force software compositing so the window is stable.
-      substituteInPlace $out/share/applications/vice.desktop \
-        --replace-fail 'Exec=vice-app' 'Exec=env VICE_WEBVIEW_SOFTWARE=1 vice-app'
     '';
     doCheck = false;
     meta = {
       description = "Medal.tv-style game clip recorder for Linux: instant replay, game recording, and one-click sharing";
-      homepage = "https://github.com/eklonofficial/Vice";
+      homepage = "https://github.com/splitshotz/Vice";
       license = pkgs.lib.licenses.gpl3Plus;
       platforms = [ "x86_64-linux" ];
       mainProgram = "vice";
@@ -272,7 +270,7 @@ in {
       Type=Application
       Name=Vice
       Comment=Record and share gameplay clips on Linux, like Medal.tv
-      Exec=env VICE_WEBVIEW_SOFTWARE=1 ${vice}/bin/vice-app
+      Exec=${vice}/bin/vice-app
       Icon=vice
       Terminal=false
       Categories=Game;Video;Recorder;AudioVideo;
