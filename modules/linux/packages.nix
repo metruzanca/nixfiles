@@ -59,10 +59,10 @@ let
   # darwin/macOS binary lives in modules/darwin/packages.nix.
   herdr = pkgs.stdenvNoCC.mkDerivation {
     pname = "herdr";
-    version = "0.8.2";
+    version = "0.9.5";
     src = pkgs.fetchurl {
-      url = "https://github.com/herdrdev/herdr/releases/download/v0.8.2/herdr-linux-x86_64";
-      hash = "sha256-l2FQoU1JDJSyQ+ouGn6y37Z/EuNrGC25CTb2co5q7PQ=";
+      url = "https://github.com/herdrdev/herdr/releases/download/v0.9.5/herdr-linux-x86_64";
+      hash = "sha256-FNnovItKngEY13wyJm921GHwm0A0LrI3UpYL2J9Zkp0=";
     };
     dontUnpack = true;
     installPhase = ''

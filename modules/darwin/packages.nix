@@ -17,10 +17,10 @@ let
 
   herdr = pkgs.stdenvNoCC.mkDerivation {
     pname = "herdr";
-    version = "0.8.2";
+    version = "0.9.5";
     src = pkgs.fetchurl {
-      url = "https://github.com/herdrdev/herdr/releases/download/v0.8.2/herdr-macos-aarch64";
-      hash = "sha256-pdT01QTYswnJH4EQUFWTAPq6MSWEJfU8UIUvyW9q5XQ=";
+      url = "https://github.com/herdrdev/herdr/releases/download/v0.9.5/herdr-macos-aarch64";
+      hash = "sha256-+3fCIyoFqANUITgsiUOS9BdOTjihjkivPdApAVfDp+I=";
     };
     dontUnpack = true;
     installPhase = ''
