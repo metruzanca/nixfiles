@@ -81,9 +81,18 @@
   # enable Resizable BAR in BIOS to widen BAR1 (currently 256 MiB) so the
   # mapping window is larger.
   #
-  # Pinned to the `latest` branch (610.x) rather than the default `stable`
-  # (595.99.02). 610.x is the current branch and also exposes NVENC API 13.1,
-  # which unblocks gpu-screen-recorder 6.x (see gaming.nix).
+  # Pinned to 620.70.06 (NVIDIA's current production branch), built via
+  # `nvidiaPackages.mkDriver`, because the nixpkgs branches are behind: `latest`
+  # is 615.78.08 (new feature) and `production`/`stable` is 595.112.07.
+  # Enshrouded refuses 615.78.08: its Vulkan backend compares
+  # VkPhysicalDeviceProperties.driverVersion against 0x9a438000 (617.14.0) and
+  # shows "The graphics driver is too old, please update the driver." on the
+  # main menu when the driver is older, which 615.78.08 (0x99d38200) is. The
+  # nixpkgs PR that moves `production` to 620 is NixOS/nixpkgs#583684; drop this
+  # override (back to `nvidiaPackages.latest`) once it is merged and pinned.
+  #
+  # 620.x also exposes NVENC API 13.1, which unblocks gpu-screen-recorder 6.x
+  # (see gaming.nix).
   #
   # Use the open kernel modules. Under the proprietary modules, Wine/Proton
   # games (Warframe, Risk of Rain 2) deadlock on focus loss (alt-tab) with every
@@ -105,7 +114,14 @@
     modesetting.enable = true;
     open = true;
     nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.latest;
+    package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
+      version = "620.70.06";
+      sha256_64bit = "sha256-KRGOOr0IwHVZvMo9nHYjjQOUkK8DYqLlvPy+cgSv1LE=";
+      sha256_aarch64 = "sha256-P6ZaknHg3eKk5YxJZcOIhaAqOkKszcsm/IF0EGB/PgM=";
+      openSha256 = "sha256-dV8vzniUl3UJoG2Q3KdoUJigLRuQeTniUfB670gb1Mw=";
+      settingsSha256 = "sha256-CFBRmXFJ9eAf5BRlHMBolahz1Pshr9giI7zcZC29oZ8=";
+      persistencedSha256 = "sha256-FpGzhArrvR1nEt8lKDzNEnbvHvGP36gL1dINvpDAkpA=";
+    };
   };
   services.xserver.videoDrivers = [ "nvidia" ];
 
