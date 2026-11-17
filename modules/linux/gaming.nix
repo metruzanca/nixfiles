@@ -1,33 +1,14 @@
 { lib, pkgs, ... }:
 let
-  # Pin gpu-screen-recorder to 5.13.9: gsr 6.x hard-refuses to record unless the
-  # NVIDIA driver exposes NVENC API 13.1 (needs driver >= 610), but the nixpkgs
-  # driver is 595 (NVENC 13.0), so 6.0.1 dies with "no video encoder supported"
-  # even though plain ffmpeg still nvenc-encodes fine on this driver. 5.13.9 has
-  # no such gate and records with hardware NVENC. Drop this pin once nixpkgs
-  # ships an NVIDIA driver exposing NVENC API 13.1.
-  gpu-screen-recorder = pkgs.gpu-screen-recorder.overrideAttrs (o: {
-    __intentionallyOverridingVersion = true;
-    version = "5.13.9";
-    src = pkgs.fetchgit {
-      url = "https://repo.dec05eba.com/gpu-screen-recorder";
-      tag = "5.13.9";
-      hash = "sha256-rGjS21eY2XfcdRwmKE2hJO1+FIXAmmBJ4y2oKgSwoRM=";
+  # dwarfsextract reads Eden's DWARFS AppImage (see below). The
+  # dwarfsextract_format_test cases abort in this build sandbox ("terminate
+  # called without an active exception"), which fails dwarfs' 3670-test suite,
+  # so turn that suite off via the negative GTEST_FILTER nixpkgs already uses to
+  # skip sandbox-incompatible tests. Only the extractor is used here.
+  dwarfs = pkgs.dwarfs.overrideAttrs (o: {
+    env = o.env // {
+      GTEST_FILTER = "${o.env.GTEST_FILTER}:dwarfs/dwarfsextract_format_test.basic/*";
     };
-    # 5.13.9's meson.build has no `ffmpeg_static` option (added in 6.x), so the
-    # current recipe's flag would make meson error out.
-    mesonFlags = [
-      (lib.mesonBool "systemd" true)
-      (lib.mesonBool "portal" true)
-      (lib.mesonBool "capabilities" false)
-      (lib.mesonBool "nvidia_suspend_fix" false)
-    ];
-    # Only v4l2.c dlopens libturbojpeg.so.0 in 5.13.9 (image_writer.c doesn't),
-    # so the 6.x postPatch would fail; substitute just v4l2.c.
-    postPatch = ''
-      substituteInPlace src/capture/v4l2.c \
-        --replace-fail "libturbojpeg.so.0" "${lib.getLib pkgs.libjpeg_turbo}/lib/libturbojpeg${pkgs.stdenv.hostPlatform.extensions.sharedLibrary}"
-    '';
   });
 
   # Eden (https://git.eden-emu.dev/eden-emu/eden) — Switch emulator (Yuzu/
@@ -48,7 +29,7 @@ let
       sha256 = "7a28bf988b0648831989722bdbaa90ab31371b403808199813e0ea7c8b25ba6d";
     };
 
-    nativeBuildInputs = [ pkgs.dwarfs ];
+    nativeBuildInputs = [ dwarfs ];
 
     dontUnpack = true;
 
@@ -210,7 +191,7 @@ let
       ":"
       (pkgs.lib.makeBinPath [
         pkgs.ffmpeg
-        gpu-screen-recorder
+        pkgs.gpu-screen-recorder
         pkgs.wf-recorder
         pkgs.wl-clipboard
         pkgs.xclip
@@ -243,10 +224,7 @@ in {
   # Without it gsr falls back to a polkit root prompt every time it restarts the
   # recorder. The module installs gsr and a setcap wrapper
   # (/run/wrappers/bin/gsr-kms-server) so recording starts without prompting.
-  programs.gpu-screen-recorder = {
-    enable = true;
-    package = gpu-screen-recorder;
-  };
+  programs.gpu-screen-recorder.enable = true;
 
   # Gaming system packages: Steam tooling, the game clip recorder, the Eden
   # Switch emulator, and the Heroic launcher.
