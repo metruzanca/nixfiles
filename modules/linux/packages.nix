@@ -77,6 +77,94 @@ let
     };
   };
 
+  # herdr-core (https://github.com/herdrdev/herdr-core) is the one that actually
+  # runs the terminals behind the Herdr app; `hc` is its command. The Linux
+  # build is a static binary, so it needs no patching. Packaged here instead of
+  # letting the app download it into ~/.local/bin, so core updates go through
+  # `make switch` along with the app.
+  herdr-core = pkgs.stdenvNoCC.mkDerivation {
+    pname = "herdr-core";
+    version = "0.1.21";
+    src = pkgs.fetchurl {
+      url = "https://releases.herdr.dev/core/0.1.21/herdr-core-linux-x86_64.tar.gz";
+      hash = "sha256-eEJHVcEKQN3jigvbVcIKwZcG6a4F7Wj8Ks8fz/DZQcE=";
+    };
+    sourceRoot = ".";
+    dontBuild = true;
+    installPhase = ''
+      install -Dm755 herdr-core $out/bin/herdr-core
+      ln -s herdr-core $out/bin/hc
+    '';
+    meta = {
+      description = "Runs the terminals and coding agents that the Herdr app manages";
+      homepage = "https://github.com/herdrdev/herdr-core";
+      license = lib.licenses.unfree;
+      platforms = [ "x86_64-linux" ];
+      mainProgram = "herdr-core";
+    };
+  };
+
+  # herdr-app (https://github.com/herdrdev/herdr-app) is the Herdr desktop app
+  # (spaces, tabs and panes for terminals and coding agents). It has no GitHub
+  # releases; the prebuilt Linux tarball comes from the release server
+  # releases.herdr.dev.
+  herdr-app = pkgs.stdenv.mkDerivation {
+    pname = "herdr-app";
+    version = "0.1.16";
+    src = pkgs.fetchurl {
+      url = "https://releases.herdr.dev/app/0.1.16/herdr-app-linux-x86_64.tar.gz";
+      hash = "sha256-KC0mMhlrI4IGz+Zr+2HA+vKZyhyRhDvQdlIbvjZXEhY=";
+    };
+
+    sourceRoot = "herdr-app";
+
+    nativeBuildInputs = [
+      pkgs.autoPatchelfHook
+    ];
+
+    buildInputs = [
+      pkgs.libxcb
+      pkgs.libxkbcommon
+      pkgs.stdenv.cc.cc.lib
+    ];
+
+    # The Rust binary links only xcb/xkbcommon/libc/libm/libgcc, but wgpu
+    # dlopens libvulkan.so.1 and libEGL.so.1 and winit can dlopen Wayland, so
+    # autoPatchelfHook cannot see them. Append their lib dirs to the RPATH so
+    # the .desktop launcher works without LD_LIBRARY_PATH.
+    appendRunpaths = [
+      "${pkgs.vulkan-loader}/lib"
+      "${pkgs.libglvnd}/lib"
+      "${pkgs.wayland}/lib"
+    ];
+
+    installPhase = ''
+      mkdir -p $out/bin $out/share/applications $out/share/icons/hicolor/scalable/apps
+      install -Dm755 herdr-app $out/bin/herdr-app
+      install -Dm644 herdr-app.svg $out/share/icons/hicolor/scalable/apps/herdr-app.svg
+
+      cat > $out/share/applications/herdr-app.desktop <<EOF
+      [Desktop Entry]
+      Type=Application
+      Name=Herdr
+      Comment=Terminals and coding agents that keep running
+      Exec=herdr-app
+      Icon=herdr-app
+      Terminal=false
+      Categories=Development;
+      StartupWMClass=herdr-app
+      EOF
+    '';
+
+    meta = with lib; {
+      description = "Desktop app for terminals and coding agents that keep running";
+      homepage = "https://github.com/herdrdev/herdr-app";
+      license = licenses.unfree;
+      platforms = [ "x86_64-linux" ];
+      mainProgram = "herdr-app";
+    };
+  };
+
   # VisiGrid (https://github.com/VisiGrid/VisiGrid) — fast, keyboard-first,
   # local-only spreadsheet built on Zed's GPUI (wgpu). Not in nixpkgs; the
   # Linux release is a prebuilt tarball. GPUI/wgpu dlopens libvulkan.so.1 at
@@ -155,6 +243,8 @@ in {
 
     handy
     herdr
+    herdr-core
+    herdr-app
     visigrid
 
     # Email client to use with Gmail for Huddlesurety
