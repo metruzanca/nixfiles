@@ -1,4 +1,4 @@
-{ lib, pkgs, myx, claude-desktop, helium, ... }:
+{ lib, pkgs, ... }:
 let
   # Handy (https://github.com/cjpais/Handy) — local ML audio transcription with a
   # system tray UI. Ships per-OS binaries; the Linux AppImage is self-contained
@@ -132,29 +132,11 @@ let
   };
 
 in {
-  # Claude Desktop (anthropic.com/claude) ships only as a Debian/RPM package,
-  # so it is not in nixpkgs and there is no Flatpak. This flake repackages
-  # Anthropic's official Linux beta .deb for NixOS (autoPatchelf + Nix paths
-  # for its Cowork QEMU/virtiofsd helpers). Linux-only, hence scoped here
-  # rather than in common/packages.nix; the supplied overlay provides
-  # pkgs.claude-desktop below. The helium overlay likewise exposes pkgs.helium
-  # from the community flake that repackages Helium's upstream .deb (see the
-  # helium input in flake.nix). Helium is not in nixpkgs or on Flathub.
-  nixpkgs.overlays = [
-    claude-desktop.overlays.default
-    helium.overlays.default
-  ];
-
   environment.systemPackages = [
     # Linux-only desktop apps. Cross-platform apps live in
     # common/packages.nix; on macOS Discord is a Homebrew cask (see
     # modules/darwin/homebrew.nix), so keep it here to avoid duplication.
     pkgs.discord
-
-    pkgs.claude-desktop
-
-    # Helium browser (helium.computer), a privacy-focused Chromium fork.
-    pkgs.helium
 
     # Browser: Linux uses brave-origin (macOS uses pkgs.brave, see
     # modules/darwin/packages.nix). mimeapps and the WhatsApp/Notion webapp
@@ -162,7 +144,7 @@ in {
     pkgs.brave-origin
 
     # Stock Google Chrome (unmodified upstream build). Useful alongside the
-    # Brave/Helium forks for sites that need Chrome specifically.
+    # Brave fork for sites that need Chrome specifically.
     pkgs.google-chrome
 
     # Fedora Media Writer: Linux-only (not available on macOS).
@@ -178,9 +160,6 @@ in {
     # Email client to use with Gmail for Huddlesurety
     pkgs.geary
     pkgs.protonmail-bridge
-
-    # Terminal Spotify player (not in nixpkgs; built from its flake).
-    myx.packages.${pkgs.system}.default
 
     # rclone backs the Proton Drive FUSE mount (see modules/linux/protondrive.nix).
     pkgs.rclone

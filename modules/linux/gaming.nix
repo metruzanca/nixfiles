@@ -278,10 +278,4 @@ in {
       X-GNOME-Autostart-enabled=true
     '';
   };
-
-  # Bit Buddy input forwarder + OBS window naming, from the bit-buddy-gnome
-  # flake input (github:metruzanca/bit-buddy-gnome). Installs the daemon
-  # (keyboard + mouse position to the unfocused pet), `bitbuddy-name`, and
-  # `bitbuddy-wine-fix`, plus the systemd user service.
-  services.bitbuddy-forwarder.enable = true;
 }

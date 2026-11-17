@@ -7,22 +7,8 @@
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    # Bit Buddy for GNOME: input forwarder + window naming (NixOS module).
-    bitbuddy.url = "github:metruzanca/bit-buddy-gnome";
-    bitbuddy.inputs.nixpkgs.follows = "nixpkgs";
-    # Myx: terminal Spotify player (not in nixpkgs; ships its own flake).
-    myx.url = "github:HaseebKhalid1507/Myx";
-    myx.inputs.nixpkgs.follows = "nixpkgs";
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.7.0";
-    # Anthropic's official Claude Desktop Linux beta, repackaged from the
-    # upstream .deb (see modules/linux/packages.nix).
-    claude-desktop.url = "github:poeck/claude-desktop-nix-flake";
-    claude-desktop.inputs.nixpkgs.follows = "nixpkgs";
-    # Helium browser (helium.computer): not in nixpkgs or Flathub, repackaged
-    # from the upstream .deb (see modules/linux/packages.nix).
-    helium.url = "github:oxcl/nix-flake-helium-browser";
-    helium.inputs.nixpkgs.follows = "nixpkgs";
     # Pin the official taps so Homebrew taps are fully declarative.
     homebrew-core = {
       url = "github:homebrew/homebrew-core";
@@ -34,7 +20,7 @@
     };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, bitbuddy, myx, nix-homebrew, nix-flatpak, claude-desktop, helium, homebrew-core, homebrew-cask }:
+  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, nix-homebrew, nix-flatpak, homebrew-core, homebrew-cask }:
   {
     # Build darwin flake using:
     # $ darwin-rebuild build --flake .#m5air
@@ -50,7 +36,7 @@
       ];
       # Pin the Homebrew taps for nix-homebrew (see modules/darwin/homebrew.nix).
       specialArgs = {
-        inherit homebrew-core homebrew-cask myx;
+        inherit homebrew-core homebrew-cask;
       };
     };
 
@@ -66,11 +52,7 @@
         })
         nix-flatpak.nixosModules.nix-flatpak
         home-manager.nixosModules.home-manager
-        bitbuddy.nixosModules.default
       ];
-      specialArgs = {
-        inherit myx claude-desktop helium;
-      };
     };
   };
 }
