@@ -205,6 +205,9 @@ in {
     [
       pkgs.helix
       pkgs.opencode
+      # opencode's desktop client (same release train as the CLI above).
+      # Cross-platform, so this one line puts it on both hosts.
+      pkgs.opencode-desktop
       pkgs.alacritty
       pkgs.alacritty.terminfo
       # git is bundled with Xcode CLT on macOS but must be explicit on NixOS.
@@ -270,6 +273,11 @@ in {
       # macOS uses pkgs.brave, Linux uses pkgs.brave-origin.
       pkgs.spotify
       pkgs.zed-editor
+      # t3code (t3.codes) is deliberately not from nixpkgs: source builds drop
+      # its T3 Connect remote-access feature. Each host installs the official
+      # artifact instead (Linux: AppImage in modules/linux/packages.nix,
+      # macOS: Homebrew cask in modules/darwin/homebrew.nix).
+
       # IRC client (Rust/iced). Cross-platform, so this one line puts it on
       # both hosts.
       pkgs.halloy
