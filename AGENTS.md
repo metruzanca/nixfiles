@@ -2,19 +2,21 @@
 
 This directory contains a multi-host [nix](https://nixos.org) flake that declaratively manages a MacBook Air (Apple Silicon, `aarch64-darwin`, hostname `m5air`, via [nix-darwin](https://github.com/nix-darwin/nix-darwin)) and a desktop PC (`x86_64-linux`, hostname `nixos`, via [NixOS](https://nixos.org)). Each system is configured entirely from code — install or change software by editing the module files and rebuilding, never by hand.
 
-When the user refers to "macOS", "the MacBook", or "m5air", or to "Linux"/"NixOS"/"the PC", figure out which machine they mean. **Before doing work, run `hostname`** to determine the machine you're actually on: `m5air` means macOS/nix-darwin (`modules/darwin/`), `nixos` means Linux/NixOS (`modules/linux/`). This decides which module directory wins and which rebuild command applies.
+**nix is no longer used on macOS.** The MacBook (`m5air`) is configured by hand now; the NixOS PC (`nixos`) is the only machine this flake actively manages. The darwin code (`hosts/m5air.nix`, `modules/darwin/`, the `darwinConfigurations` output, the Homebrew casks) stays in the repo but is frozen: do not edit it, do not add macOS handling to shared changes, and do not build or switch the darwin config unless the user explicitly asks. If a session turns out to be on `m5air`, stop and ask before touching anything.
+
+When the user refers to "macOS", "the MacBook", or "m5air", or to "Linux"/"NixOS"/"the PC", figure out which machine they mean. **Before doing work, run `hostname`** to determine the machine you're actually on: `m5air` means macOS/nix-darwin (`modules/darwin/`), `nixos` means Linux/NixOS (`modules/linux/`). This decides which module directory wins and which rebuild command applies. Because of the note above, real work only lands on `nixos`; `modules/darwin/` is reference material, not a target.
 
 ## What it manages
 
 The config is split into modules by concern so a second machine can share the portable parts:
 
-- **`hosts/m5air.nix`** — the macOS machine's per-machine entry point: `hostPlatform`, hostname, `stateVersion`, and the home-manager wiring (`useGlobalPkgs`/`useUserPackages`/`backupFileExtension`, plus `home-manager.users.metru = import ../modules/common/home.nix`). It imports `modules/common/*` and `modules/darwin/`.
+- **`hosts/m5air.nix`** — (frozen, see the note at the top) the macOS machine's per-machine entry point: `hostPlatform`, hostname, `stateVersion`, and the home-manager wiring (`useGlobalPkgs`/`useUserPackages`/`backupFileExtension`, plus `home-manager.users.metru = import ../modules/common/home.nix`). It imports `modules/common/*` and `modules/darwin/`.
 - **`hosts/nixos.nix`** — the NixOS PC's per-machine entry point: same home-manager wiring, plus the bootloader and machine-specific bits. Imports `modules/common/*` and `modules/linux/`. Its generated `hosts/nixos-hardware.nix` (disk layout) must be regenerated with `nixos-generate-config` if the hardware changes. A new machine is a new `hosts/<name>.nix` plus its hardware config; macOS hosts import `modules/common/*` + `modules/darwin/`, Linux hosts import `modules/common/*` + `modules/linux/`.
 - **`modules/common/`** — portable settings reusable on any host:
   - `packages.nix`: CLIs (`evil-helix`, `opencode`, `git`, terminal tools), cross-platform GUI apps (`alacritty`, `zed-editor`), fonts, `allowUnfree`. Only packages that exist on non-macOS platforms belong here. The browser is not here — it's split by host (see below).
   - `nix.nix`: nix settings (flakes enabled), `programs.fish`.
   - `home.nix`: home-manager user config — SSH, dotfiles, and the `removeLegacyOpencode` cleanup. It is **not** a standalone module: the host file assigns it as the value of `home-manager.users.metru` (`import ../modules/common/home.nix`) so home-manager's `lib.hm` is in scope — do not add it to a NixOS-level `imports` list. (Plugging it into the home-manager users option via `home-manager.users.metru.imports` is fine, since that's the home-manager module system.) ~/.config/opencode` and `~/.config/mise/conf.d` are fully managed: first-party files under `home/.config/<app>/` mirror the home dir (like GNU Stow) and are linked recursively. Third-party opencode skills are overlaid at build time from upstream repos — list them in `thirdPartyUrls` (see `home.nix`). `~/.config/fish/config.fish` and `~/.config/mise/config.toml` are intentionally absent — writable local files for tools to append to or for per-machine `mise use -g`.
-- **`modules/darwin/`** — macOS-only settings; omit on Linux hosts:
+- **`modules/darwin/`** — (frozen, see the note at the top) macOS-only settings; omit on Linux hosts:
   - `users.nix`: the primary user's uid/home/login shell (via `users.knownUsers`).
   - `preferences.nix`: macOS preferences (`system.defaults` / `CustomUserPreferences`, e.g. natural scrolling off).
   - `launchd.nix`: apps launched at login.
@@ -33,6 +35,7 @@ The config is split into modules by concern so a second machine can share the po
 ## Package sources
 
 - **Nix is the default preferred source** — try `pkgs.*` in `modules/common/packages.nix` first.
+- The macOS/Homebrew guidance in this section is frozen together with the darwin config (see the note at the top). Ignore it for current work; only follow it if the user explicitly asks for macOS changes.
 - **Package placement follows platform support**: cross-platform packages go in `modules/common/packages.nix`; macOS-only packages go in `modules/darwin/packages.nix`. If unsure, check `nix eval nixpkgs#<pkg>.meta.platforms` — darwin-only output (e.g. `[ "aarch64-darwin" ]`) means it must live in the darwin module so a Linux host can reuse `modules/common/`.
 - If there is no clear nixpkgs package compatible with nix-darwin, look it up in Homebrew (`brew search <name>`).
 - If the app is available in Homebrew and setting it up in nix-darwin would be complicated, prefer the Homebrew route (`homebrew.casks` / `homebrew.brews`). **Simplicity over source preference.**
