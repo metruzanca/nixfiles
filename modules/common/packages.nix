@@ -1,6 +1,27 @@
 { pkgs, ... }:
 
 let
+  # opencode's TUI reads the system clipboard itself. On GNOME Wayland,
+  # mutter has no data-control protocol, so @opentui/core falls back to X11
+  # through XWayland and dlopens libxcb.so.1 at runtime. The nixpkgs wrapper
+  # only puts wayland on LD_LIBRARY_PATH, so that dlopen fails and Ctrl+V
+  # silently does nothing (upstream: anomalyco/opencode#61092). Wrap the
+  # binary with the X11 client libs so paste works even when the caller's
+  # session-wide LD_LIBRARY_PATH does not include them.
+  opencode = if pkgs.stdenv.hostPlatform.isLinux then
+    pkgs.runCommandLocal "opencode-wrapper" {
+      nativeBuildInputs = [ pkgs.makeBinaryWrapper ];
+      meta = pkgs.opencode.meta;
+    } ''
+      mkdir -p $out/bin
+      makeWrapper ${pkgs.opencode}/bin/opencode $out/bin/opencode \
+        --prefix LD_LIBRARY_PATH : ${
+          pkgs.lib.makeLibraryPath [ pkgs.libxcb pkgs.libxau pkgs.libxdmcp ]
+        }
+    ''
+  else
+    pkgs.opencode;
+
   # noodle (noodlerest.dev) ships one prebuilt binary per platform from
   # GitHub releases; there is no Linux source build. Picks the asset for the
   # current host so this works on both Linux and macOS.
@@ -204,7 +225,7 @@ in {
   environment.systemPackages =
     [
       pkgs.helix
-      pkgs.opencode
+      opencode
       # opencode's desktop client (same release train as the CLI above).
       # Cross-platform, so this one line puts it on both hosts.
       pkgs.opencode-desktop
