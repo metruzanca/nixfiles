@@ -72,13 +72,13 @@
     # `default` selects the body font: 0 = serif, 1 = sans-serif. On its own
     # that only affects text the book's own CSS leaves unspecified, so
     # `override-font` also injects a font-family override and makes every
-    # chapter use the sans face. Adwaita Sans is the humanist GNOME face (the
-    # generic "Sans" alias resolves to DejaVu Sans here). These keys are the
-    # same ones the in-app Preferences window writes; editing them there
+    # chapter use the sans face. The sans family is deliberately not set: it
+    # stays at Foliate's schema default 'Sans', which Pango resolves through
+    # fontconfig to the system generic sans (DejaVu Sans here). These keys are
+    # the same ones the in-app Preferences window writes; editing them there
     # lasts until the next `make switch`.
     "com/github/johnfactotum/Foliate/viewer/font" = {
       default = lib.hm.gvariant.mkUint32 1;
-      sans-serif = "Adwaita Sans";
       default-size = lib.hm.gvariant.mkUint32 18;
     };
 
