@@ -318,6 +318,11 @@ in {
     # (pulls in mpv as its backend). A better fit than VLC on a GNOME desktop.
     pkgs.celluloid
 
+    # Foliate: GTK4/libadwaita eBook reader (EPUB, MOBI/AZW3, FB2, CBZ). Matches
+    # GNOME's look and has a native Nautilus/GNOME Shell presence via its
+    # desktop entry; the ebook MIME types are pointed at it in home.nix.
+    pkgs.foliate
+
     # keyctl — manage kernel keyrings. pass-cli stores its DB key in the kernel
     # keyring; running it inside a fresh uid-owned session keyring (`keyctl
     # session -`) fixes NoStorageAccess(AccessDenied) under GDM's session

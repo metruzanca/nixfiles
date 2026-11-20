@@ -130,6 +130,16 @@
     # T3 Code sign-in for T3 Connect redirects through the t3code:// scheme
     # handled by the official AppImage's desktop entry (linux/packages.nix).
     "x-scheme-handler/t3code" = "t3code.desktop";
+    # Foliate (linux/packages.nix) as the ebook reader: double-clicking a book in
+    # Files/Nautilus (or opening one from GNOME Shell search) starts Foliate
+    # instead of falling back to an archive viewer. These are the formats its
+    # own desktop entry advertises; CBZ (comicbook+zip) is left unset on purpose.
+    "application/epub+zip" = "com.github.johnfactotum.Foliate.desktop";
+    "application/x-mobipocket-ebook" = "com.github.johnfactotum.Foliate.desktop";
+    "application/vnd.amazon.mobi8-ebook" = "com.github.johnfactotum.Foliate.desktop";
+    "application/x-fictionbook+xml" = "com.github.johnfactotum.Foliate.desktop";
+    "application/x-zip-compressed-fb2" = "com.github.johnfactotum.Foliate.desktop";
+    "x-scheme-handler/opds" = "com.github.johnfactotum.Foliate.desktop";
   };
 
   # GNOME-specific user settings (dconf, monitor layout) live in
