@@ -20,7 +20,16 @@ let
       # it into the FHS env (README's top Linux startup-crash fix). The overlay
       # itself is disabled by default on Linux, but the library still needs to
       # load for the app to start reliably.
-      extraPkgs = pkgs: [ pkgs.gtk-layer-shell ];
+      # libgpg-error: the AppImage bundles libsecret-1.so.0 and libgcrypt.so.20
+      # but NOT libgpg-error.so.0, which libgcrypt needs. The loader used to find
+      # it because libsecret's closure pulled it in; newer nixpkgs libsecret no
+      # longer does, so handy died at startup with "libgpg-error.so.0: cannot
+      # open shared object file". Bundling it explicitly keeps the AppImage's
+      # gcrypt happy.
+      extraPkgs = pkgs: [
+        pkgs.gtk-layer-shell
+        pkgs.libgpg-error
+      ];
       meta = {
         description = "AI-powered audio transcription app with a system tray UI";
         homepage = "https://github.com/cjpais/Handy";
