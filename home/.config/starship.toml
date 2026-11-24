@@ -20,3 +20,9 @@ format = "[$time]($style) "
 [aws]
 disabled = false
 format = "[$symbol]($style)"
+
+[custom.mask]
+command = 'printf %s "$MASK_NAME"'
+when = 'test -n "$MASK_NAME"'
+format = '[🎭 $output](bold purple) '
+description = "currently worn mask"
