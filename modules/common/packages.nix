@@ -295,9 +295,8 @@ in {
       pkgs.spotify
       pkgs.zed-editor
       # t3code (t3.codes) is deliberately not from nixpkgs: source builds drop
-      # its T3 Connect remote-access feature. Each host installs the official
-      # artifact instead (Linux: AppImage in modules/linux/packages.nix,
-      # macOS: Homebrew cask in modules/darwin/homebrew.nix).
+      # its T3 Connect remote-access feature. The official AppImage is packaged
+      # in modules/linux/packages.nix instead.
 
       # IRC client (Rust/iced). Cross-platform, so this one line puts it on
       # both hosts.

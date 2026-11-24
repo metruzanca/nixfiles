@@ -5,8 +5,7 @@ let
   # (bundles GTK3, WebKitGTK, onnxruntime, Vulkan ggml), so wrapType2 just repacks it
   # into a working binary. wrapType2 only installs the binary, so we additionally
   # pull the AppImage's own icons and a .desktop entry out of the image so GNOME
-  # shows Handy as a launcher app (not just a CLI). darwin/macOS binary lives in
-  # modules/darwin/packages.nix.
+  # shows Handy as a launcher app (not just a CLI).
   handy = let
     handy-src = pkgs.fetchurl {
       url = "https://github.com/cjpais/Handy/releases/download/v0.9.5/Handy_0.9.5_amd64.AppImage";
@@ -65,7 +64,6 @@ let
 
   # herdr (https://github.com/herdrdev/herdr) — terminal workspace manager.
   # The Linux build is a static-pie binary so it runs as-is on NixOS.
-  # darwin/macOS binary lives in modules/darwin/packages.nix.
   herdr = pkgs.stdenvNoCC.mkDerivation {
     pname = "herdr";
     version = "0.9.5";
@@ -184,7 +182,7 @@ let
   # carries libsecret, gtk3, xdg-utils and libgbm, which is all this needs); we
   # then install the image's own .desktop entry and hicolor icons so GNOME
   # shows a launcher and the t3code:// scheme used by T3 Connect sign-in
-  # resolves. darwin/macOS uses the Homebrew cask (darwin/homebrew.nix).
+  # resolves.
   #
   # Note: the AppImage also installs t3code's background relay service
   # (t3code.service). That is what T3 Connect needs to stay reachable; it was
@@ -280,14 +278,11 @@ let
 
 in {
   environment.systemPackages = [
-    # Linux-only desktop apps. Cross-platform apps live in
-    # common/packages.nix; on macOS Discord is a Homebrew cask (see
-    # modules/darwin/homebrew.nix), so keep it here to avoid duplication.
+    # Linux-only desktop apps. Cross-platform apps live in common/packages.nix.
     pkgs.discord
 
-    # Browser: Linux uses brave-origin (macOS uses pkgs.brave, see
-    # modules/darwin/packages.nix). mimeapps and the WhatsApp/Notion webapp
-    # wrappers in home.nix reference brave-origin.desktop.
+    # Browser: brave-origin. mimeapps and the WhatsApp/Notion webapp wrappers
+    # in home.nix reference brave-origin.desktop.
     pkgs.brave-origin
 
     # Stock Google Chrome (unmodified upstream build). Useful alongside the

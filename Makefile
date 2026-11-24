@@ -1,27 +1,19 @@
 PASS_CLI ?= 1
 
-# Pick the right rebuild tool per OS. darwin-rebuild on macOS, nixos-rebuild on Linux.
-UNAME_S := $(shell uname -s)
-ifeq ($(UNAME_S),Darwin)
-  REBUILD = darwin-rebuild
-else
-  REBUILD = nixos-rebuild
-endif
-
 # Current host: defaults to the machine's hostname, override with HOST=<name>.
-# Must match a flake output (darwinConfigurations.<host> / nixosConfigurations.<host>).
+# Must match a flake output (nixosConfigurations.<host>).
 HOST ?= $(shell hostname -s)
 
-.PHONY: help build switch update rollback wifi clean changelog pass-login
+.PHONY: help build switch update rollback clean changelog pass-login
 
 help: ## Show available commands
 	@cat $(MAKEFILE_LIST) | grep -E '^[a-zA-Z_-]+:.*?## .*$$' | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 build: ## Build the config without applying it
-	$(REBUILD) build --flake .#$(HOST)
+	nixos-rebuild build --flake .#$(HOST) --impure
 
 switch: ## Apply the config (requires sudo)
-	sudo $(REBUILD) switch --flake .#$(HOST)
+	sudo nixos-rebuild switch --flake .#$(HOST) --impure
 	@if [ "$(PASS_CLI)" = "1" ]; then \
 		if fish -c 'opencode-set-key && terminalshop-ssh-setup' 2>/dev/null; then \
 			echo "secrets: opencode + terminal.shop credentials refreshed"; \
@@ -44,9 +36,6 @@ rollback: ## Undo a flake.lock update and rebuild the previous set (undo of 'mak
 		$(MAKE) switch; \
 	fi
 
-wifi: ## Add the Proton Pass Wi-Fi networks to the macOS preferred network list (macOS only)
-	fish -c 'wifi-add-preferred'
-
 clean: ## Delete generations older than 7 days and garbage-collect the nix store (requires sudo)
 	sudo nix-collect-garbage --delete-older-than 7d
 	sudo nix-store --optimise
@@ -60,8 +49,4 @@ pass-login: ## Create the pass-cli session (one-time, interactive)
 	fi
 
 changelog: ## Check available options / changelog
-ifeq ($(UNAME_S),Darwin)
-	darwin-rebuild changelog
-else
 	@echo "NixOS changelog: https://nixos.org/manual/nixos/unstable/release-notes.html"
-endif

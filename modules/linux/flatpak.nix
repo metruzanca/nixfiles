@@ -1,7 +1,6 @@
 { lib, ... }: {
 
-  # Flatpak / Flathub: declarative fallback package source on NixOS, mirroring
-  # how Homebrew is used on macOS (see modules/darwin/homebrew.nix). Apps that
+  # Flatpak / Flathub: declarative fallback package source on NixOS. Apps that
   # don't package well in nixpkgs, or that track rolling releases, go here.
   #
   # nix-flatpak (via the flake module wired into hosts/nixos.nix) extends

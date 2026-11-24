@@ -25,14 +25,16 @@ let
     "https://github.com/railwayapp/railway-skills/tree/5d1e97178f86c82795d6737928bd641e0552166a/plugins/railway/skills/use-railway"
   ];
 
-  opencodeSource = pkgs.runCommand "opencode-config" {} (''
-    cp -r ${../../home/.config/opencode} $out
-    chmod -R u+w $out
-  '' + lib.concatMapStringsSep "\n" ({ name, src, subPath }: ''
-    cp -r ${src}${subPath} $out/skills/${name}
-    chmod -R u+w $out/skills/${name}
-  '') thirdPartySkills);
+  # Skills that only make sense on this machine. Everything else under
+  # ~/.config/opencode comes from the dotfiles submodule (modules/common/dotfiles.nix).
+  localSkills = builtins.attrNames (builtins.readDir ../../home/.config/opencode/skills);
+
+  # Fish functions that call nix-only helpers (pass-cli, opencode). The shared
+  # ones come from the dotfiles submodule.
+  localFishFunctions = builtins.attrNames (builtins.readDir ../../home/.config/fish/functions);
 in {
+  imports = [ ./dotfiles.nix ];
+
   home = {
     username = "metru";
     stateVersion = "25.05";
@@ -70,91 +72,49 @@ in {
 
   # ~/AGENTS.md — tells AI agents this system is nix-managed.
   # force: overwrite the pre-existing hand-written file, no backup.
-  home.file.".AGENTS.md" = {
-    source = ../../home/AGENTS.md;
-    force = true;
-  };
+  #
+  # ~/.config/opencode is a directory of per-file symlinks: the shared tree comes
+  # from the dotfiles submodule, and the nix-only plus third-party skills are
+  # added here.
+  #
+  # ~/Pictures/fragment.jpg — the desktop wallpaper, kept at a stable
+  # path so the wallpaper activation script can reference it. Source:
+  # https://www.reddit.com/r/pixelsorting/comments/13z2qi1/fragment/
+  home.file = {
+    ".AGENTS.md" = {
+      source = ../../home/AGENTS.md;
+      force = true;
+    };
 
-  home.file.".gitconfig" = {
-    source = ../../home/.gitconfig;
-  };
-
-  home.file.".gitignore_global" = {
-    source = ../../home/.gitignore_global;
-  };
-
-  # ~/.config/opencode is fully managed by nix. Static files live
-  # under home/.config/opencode; third-party skills (listed above) are
-  # overlaid at build time from their upstream GitHub repos.
-  xdg.configFile."opencode" = {
-    source = opencodeSource;
-    recursive = true;
-  };
-
-  # ~/.config/alacritty is fully managed by nix, mirroring
-  # home/.config/alacritty.
-  xdg.configFile."alacritty" = {
-    source = ../../home/.config/alacritty;
-    recursive = true;
-  };
-
-  # ~/.config/helix is fully managed by nix, mirroring
-  # home/.config/helix.
-  xdg.configFile."helix" = {
-    source = ../../home/.config/helix;
-    recursive = true;
-  };
+    "Pictures/fragment.jpg" = {
+      source = ../../wallpaper/fragment.jpg;
+    };
+  } // lib.listToAttrs (
+    map
+      (name: {
+        name = ".config/opencode/skills/${name}";
+        value.source = ../../home/.config/opencode/skills/${name};
+      })
+      localSkills
+    ++ map
+      (name: {
+        name = ".config/fish/functions/${name}";
+        value.source = ../../home/.config/fish/functions/${name};
+      })
+      localFishFunctions
+    ++ map
+      (s: {
+        name = ".config/opencode/skills/${s.name}";
+        value.source = "${s.src}${s.subPath}";
+      })
+      thirdPartySkills
+  );
 
   # ~/.config/herdr is fully managed by nix, mirroring
   # home/.config/herdr.
   xdg.configFile."herdr" = {
     source = ../../home/.config/herdr;
     recursive = true;
-  };
-
-  # ~/.config/zed/settings.json is seeded from home/.config/zed on every
-  # switch, but written as a real (writable) file — not a store symlink — so
-  # Zed can edit its own settings. A rebuild overwrites it; to adopt Zed's
-  # changes, copy them back into home/.config/zed/settings.json.
-  home.activation.seedZedSettings = lib.hm.dag.entryAfter
-    [ "writeBoundary" ] ''
-      mkdir -p "$HOME/.config/zed"
-      cp ${../../home/.config/zed/settings.json} "$HOME/.config/zed/settings.json"
-      chmod u+w "$HOME/.config/zed/settings.json"
-    '';
-
-  xdg.configFile."starship.toml" = {
-    source = ../../home/.config/starship.toml;
-  };
-
-  # ~/.config/fish is fully managed by nix, mirroring home/.config/fish.
-  # config.fish is intentionally absent (a writable local file, so tools
-  # can freely append to it).
-  xdg.configFile."fish" = {
-    source = ../../home/.config/fish;
-    recursive = true;
-  };
-
-  # ~/.config/mise/conf.d is fully managed by nix — shareable tool specs,
-  # tasks, and settings. config.toml is intentionally absent (a writable
-  # local file for per-machine `mise use -g`).
-  xdg.configFile."mise/conf.d" = {
-    source = ../../home/.config/mise/conf.d;
-    recursive = true;
-  };
-
-  # ~/.config/containers is fully managed by nix, mirroring
-  # home/.config/containers.
-  xdg.configFile."containers" = {
-    source = ../../home/.config/containers;
-    recursive = true;
-  };
-
-  # ~/Pictures/fragment.jpg — the desktop wallpaper, kept at a stable
-  # path so the wallpaper activation script can reference it. Source:
-  # https://www.reddit.com/r/pixelsorting/comments/13z2qi1/fragment/
-  home.file."Pictures/fragment.jpg" = {
-    source = ../../wallpaper/fragment.jpg;
   };
 
   # Remove legacy leftovers from the old opencode layout. Before

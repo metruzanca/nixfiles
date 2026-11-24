@@ -1,6 +1,6 @@
 { pkgs, ... }: {
 
-  # NixOS primary user (mirrors modules/darwin/users.nix).
+  # NixOS primary user.
   users.users.metru = {
     isNormalUser = true;
     uid = 1000;
