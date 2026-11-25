@@ -22,6 +22,14 @@ let
   else
     pkgs.opencode;
 
+  # Zed's upstream CLI is called `zed`, but nixpkgs ships it as `zeditor` to
+  # avoid colliding with the unrelated pkgs.zed. Re-export the familiar name so
+  # `zed .` works.
+  zed-cli = pkgs.runCommandLocal "zed-cli" { meta = pkgs.zed-editor.meta; } ''
+    mkdir -p $out/bin
+    ln -s ${pkgs.zed-editor}/bin/zeditor $out/bin/zed
+  '';
+
   # noodle (noodlerest.dev) ships one prebuilt binary per platform from
   # GitHub releases; there is no Linux source build. Picks the asset for the
   # current host so this works on both Linux and macOS.
@@ -294,6 +302,7 @@ in {
       # macOS uses pkgs.brave, Linux uses pkgs.brave-origin.
       pkgs.spotify
       pkgs.zed-editor
+      zed-cli
       # t3code (t3.codes) is deliberately not from nixpkgs: source builds drop
       # its T3 Connect remote-access feature. The official AppImage is packaged
       # in modules/linux/packages.nix instead.
