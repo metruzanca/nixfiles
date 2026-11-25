@@ -4,13 +4,19 @@
 # host, the server side of Moonlight. Lets the MacBook (or any Moonlight
 # client) stream this machine's desktop/games over the network.
 #
-# Requires a session to stream from, so it runs as a systemd *user* service
-# started with graphical-session.target (the NixOS module wires that up). The
-# NixOS module also enables uinput (virtual gamepad/keyboard injection) and
-# avahi (mDNS, so Moonlight auto-discovers this host on the LAN).
+# Requires a session to stream from, so it runs as a systemd *user* service.
+# It is not started at login (autoStart = false): start it on demand with
+# `systemctl --user start sunshine`. The NixOS module also enables uinput
+# (virtual gamepad/keyboard injection) and avahi (mDNS, so Moonlight
+# auto-discovers this host on the LAN).
 {
   services.sunshine = {
     enable = true;
+
+    # Do not launch Sunshine with the desktop session. It only idles until a
+    # Moonlight client connects, so it is started manually when streaming is
+    # wanted.
+    autoStart = false;
 
     # GNOME runs a Wayland session, and GNOME has no wlr-screencopy protocol, so
     # Sunshine falls back to capturing the framebuffer through KMS/DRM. That
