@@ -155,79 +155,6 @@ let
   };
 in {
 
-  # Pin secretspec and pass-cli to exact tested versions so nixpkgs-unstable
-  # upgrades can't silently break them. secretspec's protonpass provider
-  # drives the official pass-cli executable and inherits whatever it does;
-  # pass-cli has shipped backward-incompatible changes that broke secretspec
-  # until 0.19 (e.g. 2.2.4 removed `pass-cli test`). Tracking nixpkgs-unstable
-  # would move pass-cli under us, so both are overridden to pinned versions.
-  # See: https://secretspec.dev/docs/providers/protonpass
-  nixpkgs.overlays = [
-    (final: prev: let
-      # pin pass-cli (proton-pass-cli) to a tested release; one prebuilt
-      # binary per platform, like the noodle override above.
-      passCliVersion = "2.2.5";
-      passCliAsset =
-        if final.stdenv.hostPlatform.isDarwin && final.stdenv.hostPlatform.isAarch64 then {
-          asset = "pass-cli-macos-aarch64";
-          hash = "sha256-u6rAmSEkRxoMocwmJPzoH9rFxdUOjzGmu3Kfdx9/NuE=";
-        } else if final.stdenv.hostPlatform.isLinux && final.stdenv.hostPlatform.isx86_64 then {
-          asset = "pass-cli-linux-x86_64";
-          hash = "sha256-OXG/21ZJvFljTCGV41JZ6j9LeIm7paT2aYtq9Qsnz38=";
-        } else if final.stdenv.hostPlatform.isLinux && final.stdenv.hostPlatform.isAarch64 then {
-          asset = "pass-cli-linux-aarch64";
-          hash = "sha256-qFl+r5JjEkKkTFubE7D9DA/FayGmxPCHt9TAMWUSSbM=";
-        } else throw "proton-pass-cli: unsupported platform ${final.stdenv.hostPlatform.system}";
-    in {
-      proton-pass-cli = prev.proton-pass-cli.overrideAttrs (_: {
-        version = passCliVersion;
-        src = final.fetchurl {
-          url = "https://proton.me/download/pass-cli/${passCliVersion}/${passCliAsset.asset}";
-          hash = passCliAsset.hash;
-        };
-      });
-
-      # secretspec 0.19+ (0.19.1) — first release compatible with every
-      # pass-cli build (probes `pass-cli info`, falls back to `pass-cli test`).
-      # Upstream ships one prebuilt tarball per platform (like the pass-cli /
-      # noodle overrides above), so fetch the binary instead of compiling from
-      # a crates.io source.
-      secretspec = let
-        secretspecVersion = "0.19.1";
-        secretspecPlatform =
-          if final.stdenv.hostPlatform.isDarwin && final.stdenv.hostPlatform.isAarch64 then {
-            name = "secretspec-aarch64-apple-darwin";
-            sha256 = "076536200199540515ebdf929f7cb3f413d82be3524771a2a5975b80ca85d727";
-          } else if final.stdenv.hostPlatform.isLinux && final.stdenv.hostPlatform.isx86_64 then {
-            name = "secretspec-x86_64-unknown-linux-gnu";
-            sha256 = "9a0b5882532f5ffbb1c687d9284fa8041949962b05f14fc131050f86c70e1efc";
-          } else throw "secretspec: unsupported platform ${final.stdenv.hostPlatform.system}";
-      in final.stdenvNoCC.mkDerivation {
-        pname = "secretspec";
-        version = secretspecVersion;
-
-        src = final.fetchurl {
-          url = "https://github.com/cachix/secretspec/releases/download/v${secretspecVersion}/${secretspecPlatform.name}.tar.xz";
-          sha256 = secretspecPlatform.sha256;
-        };
-
-        sourceRoot = secretspecPlatform.name;
-        installPhase = ''
-          runHook preInstall
-          install -Dm755 secretspec $out/bin/secretspec
-          runHook postInstall
-        '';
-
-        meta = with final.lib; {
-          description = "Declarative secrets, every environment, any provider";
-          homepage = "https://secretspec.dev";
-          license = licenses.asl20;
-          mainProgram = "secretspec";
-        };
-      };
-    })
-  ];
-
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
   environment.systemPackages =
@@ -318,10 +245,6 @@ in {
       pkgs.tailscale
       pkgs.protonmail-desktop
       pkgs.proton-pass
-      pkgs.proton-pass-cli
-
-      # Declarative secrets across environments/providers
-      pkgs.secretspec
 
       noodle
     ];

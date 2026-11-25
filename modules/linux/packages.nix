@@ -327,12 +327,6 @@ in {
     # desktop entry; the ebook MIME types are pointed at it in home.nix.
     pkgs.foliate
 
-    # keyctl — manage kernel keyrings. pass-cli stores its DB key in the kernel
-    # keyring; running it inside a fresh uid-owned session keyring (`keyctl
-    # session -`) fixes NoStorageAccess(AccessDenied) under GDM's session
-    # keyring (see home/.config/fish/functions/pass-cli.fish).
-    pkgs.keyutils
-
     # ComfyUI — node-based local image generator (NSFW-capable book covers /
     # chapter art for the nsfw-stories project). It is built against
     # cudaPackages_13, matching this GPU's driver 595/CUDA 13.2; no system CUDA

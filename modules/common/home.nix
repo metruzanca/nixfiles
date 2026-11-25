@@ -29,7 +29,7 @@ let
   # ~/.config/opencode comes from the dotfiles submodule (modules/common/dotfiles.nix).
   localSkills = builtins.attrNames (builtins.readDir ../../home/.config/opencode/skills);
 
-  # Fish functions that call nix-only helpers (pass-cli, opencode). The shared
+  # Fish functions that call nix-only helpers (opencode). The shared
   # ones come from the dotfiles submodule.
   localFishFunctions = builtins.attrNames (builtins.readDir ../../home/.config/fish/functions);
 in {

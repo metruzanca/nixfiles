@@ -23,8 +23,8 @@ The configuration is split into modules by concern:
 - `modules/linux/` holds NixOS-only settings: the primary user, the
   GNOME/NVIDIA desktop, sound, gaming, networking, and Flatpak.
 - `dotfiles/` is a git submodule with the shared configuration (see below).
-- `home/` holds only the files that are nix-specific (secrets helpers, herdr,
-  monitor layout, `~/AGENTS.md`) plus assets like the wallpaper.
+- `home/` holds only the files that are nix-specific (herdr, monitor layout,
+  fish helpers, `~/AGENTS.md`) plus assets like the wallpaper.
 
 The `Makefile` provides short commands for building and applying the
 configuration.
@@ -101,7 +101,7 @@ To adapt it:
    hostname, and platform, plus a generated `hosts/<name>-hardware.nix`.
 2. Remove or replace machine-specific settings (the GPU setup in
    `modules/linux/desktop.nix`, gaming in `modules/linux/gaming.nix`, the
-   monitor layout, secrets helpers).
+   monitor layout, fish helpers).
 3. Replace or drop the dotfiles submodule with your own configuration.
 4. Update the flake inputs and system versions when needed.
 

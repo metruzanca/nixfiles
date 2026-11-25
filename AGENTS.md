@@ -54,8 +54,7 @@ dotfiles repo applies there, and it is not checked out from this flake.
   - `networking.nix`: NetworkManager, Tailscale daemon, SSH server.
 - **`home/`** — the nix-specific files that are *not* shared with the Mac:
   `AGENTS.md`, `monitors.xml`, `herdr/config.toml`, the opencode herdr skills,
-  and fish functions that call nix-only helpers (`opencode-set-key`,
-  `terminalshop-ssh-setup`, `pass-cli`, `video-compress`).
+  and fish functions that call nix-only helpers (`video-compress`).
 - **`dotfiles/`** — the shared config submodule (see below). Also holds the
   first-party config for fish, helical, starship, git, opencode, alacritty,
   zellij, lsd, and friends.
@@ -147,7 +146,6 @@ them):
 - **Clean up old generations and the nix store** (requires sudo): `make clean` —
   deletes generations older than 7 days and garbage-collects the store. Nix
   never cleans itself; run this occasionally if the store grows.
-- **Create the pass-cli session** (one-time, interactive): `make pass-login`
 - **Check available options / changelog**: `make changelog`
 - **Update third-party opencode skills** (bump the rev in
   `modules/common/home.nix`): `git ls-remote
@@ -189,16 +187,6 @@ them):
   own profile dir (e.g. `pkgs.brave` = Brave Browser / `com.brave.Browser` vs
   `pkgs.brave-origin` = Brave Origin / `com.brave.Browser.origin`). Check the
   app id before swapping.
-- **Secrets via Proton Pass CLI** (`pass-cli`): the source of truth for API keys
-  is the Proton Pass vault `nix` (opencode item title `m5air_opencode`, a legacy
-  name). Run `make pass-login` once to create the session. `make switch` then
-  regenerates `~/.local/share/opencode/auth.json` via `opencode-set-key` and
-  materializes the terminal.shop SSH key to
-  `~/.ssh/id_ed25519_terminal_shop` via `terminalshop-ssh-setup` (an ssh-key
-  item in vault `nix`, used only by the `terminal.shop` host block via
-  `IdentityFile` + `IdentitiesOnly`). These post-steps are best-effort: a
-  pass-cli failure never fails the rebuild, and `PASS_CLI=0 make switch` skips
-  them.
 
 ## Secrets (public repo)
 
@@ -215,9 +203,8 @@ This repo is public, so anything committed is visible to the world:
 - If a secret was ever committed, even to an amended/unpushed commit, treat it
   as compromised and rotate it. Git history is permanent.
 - Credentials that tools generate (e.g. `~/.local/share/opencode/auth.json`,
-  `~/.config/gh/hosts.yml`) live outside this repo. Keep the source of truth in
-  the Proton Pass vault (`nix`) and let `opencode-set-key`,
-  `terminalshop-ssh-setup`, and pass-cli retrieve them at runtime.
+  `~/.config/gh/hosts.yml`) live outside this repo and are created per machine
+  by those tools (e.g. `opencode auth login`). Never commit them.
 
 ## Workflow
 
