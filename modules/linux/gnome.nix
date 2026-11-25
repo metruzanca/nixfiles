@@ -53,6 +53,9 @@ in
   # AppIndicator / StatusNotifierItem support — required to render the Tailscale
   # systray (and other tray apps) in the top bar, since GNOME has no native tray.
   # Enabled per-user in gnome-home.nix.
+  # blur-my-shell is installed but not enabled there: it accumulates ~240 MiB of
+  # gnome-shell VRAM over a session, which an 8 GiB GPU cannot spare while
+  # gaming. Keep the package so re-enabling is a one-line change.
   environment.systemPackages = [
     pkgs.gnomeExtensions.appindicator
     pkgs.gnomeExtensions.blur-my-shell

@@ -24,8 +24,15 @@
         "appindicatorsupport@rgcjonas.gmail.com"
         # GSConnect: KDE Connect protocol for Android pairing.
         "gsconnect@andyholmes.github.io"
-        # Blur My Shell: blur on the top panel, dash and overview.
-        "blur-my-shell@aunetx"
+        # Blur My Shell is installed (gnome.nix) but deliberately NOT enabled.
+        # It grows gnome-shell's VRAM over a session: measured 556 MiB with it
+        # loaded vs 314 MiB right after a reload, so ~240 MiB of offscreen
+        # blur buffers accumulate from ordinary use (overview, app grid,
+        # menus, window previews). On an 8 GiB card that is the difference
+        # between Enshrouded (4.1 GiB on its own) hitching and not. Its idle
+        # cost is only ~10 MiB, so re-add this line if the looks matter more
+        # than the headroom; a logout/login or extension reload reclaims the
+        # buffers either way.
         # Multi Monitor Bar: copies the top panel to every monitor.
         "multi-monitors-bar@frederykabryan"
         # Glean: clipboard history and quick notes.
