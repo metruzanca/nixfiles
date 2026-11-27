@@ -1,6 +1,6 @@
 ---
 name: podman-services
-description: Use podman (or docker where that is what is available) to run local infrastructure such as PostgreSQL, MySQL, Redis, MongoDB, and Kafka as named containers defined in the project's docker-compose.yml. Use whenever a task needs a local database or other stateful service, instead of installing a server, starting a background process, or creating a one-off database.
+description: Use podman (or docker) to run local infrastructure such as PostgreSQL, Redis, MongoDB, and Kafka as named containers defined in the project's docker-compose.yml. Use whenever a task needs a local database or other stateful service, instead of installing a server, starting a background process, or creating a one-off database.
 ---
 
 # Local infrastructure runs in containers
