@@ -53,8 +53,9 @@ dotfiles repo applies there, and it is not checked out from this flake.
     entries, Brave web-app launchers).
   - `networking.nix`: NetworkManager, Tailscale daemon, SSH server.
 - **`home/`** — the nix-specific files that are *not* shared with the Mac:
-  `AGENTS.md`, `monitors.xml`, `herdr/config.toml`, the opencode herdr skills,
-  and fish functions that call nix-only helpers (`video-compress`).
+  `AGENTS.md`, `monitors.xml`, `herdr/config.toml`, the nix-only opencode skills
+  (herdr, Herdr workspace naming, podman services), and fish functions that call
+  nix-only helpers (`video-compress`).
 - **`dotfiles/`** — the shared config submodule (see below). Also holds the
   first-party config for fish, helical, starship, git, opencode, alacritty,
   zellij, lsd, and friends.

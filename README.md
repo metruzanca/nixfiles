@@ -76,8 +76,10 @@ git ls-remote https://github.com/railwayapp/railway-skills main | cut -f1
 make switch
 ```
 
-First-party skills live in the dotfiles repo; the two herdr skills are
-nix-specific and stay in `home/.config/opencode/skills/`.
+First-party skills live in the dotfiles repo. Skills that only make sense on
+this host (herdr, Herdr workspace naming, podman services) stay in
+`home/.config/opencode/skills/` and are linked automatically; a new directory
+there is picked up on the next `make switch`.
 
 ## Package sources
 
