@@ -29,7 +29,7 @@ dotfiles repo applies there, and it is not checked out from this flake.
     GUI apps (`alacritty`, `zed-editor`), fonts, `allowUnfree`.
   - `nix.nix`: nix settings (flakes enabled), `programs.fish`.
   - `home.nix`: the home-manager user config entry point — SSH, `~/AGENTS.md`,
-    herdr, the wallpaper, nix-only opencode skills, and the
+    herdr, the wallpaper, third-party opencode skills, and the
     `removeLegacyOpencode` cleanup. It is **not** a standalone NixOS module: the
     host file assigns it as the value of `home-manager.users.metru` so
     home-manager's `lib.hm` is in scope. Do not add it to a NixOS-level
@@ -53,8 +53,7 @@ dotfiles repo applies there, and it is not checked out from this flake.
     entries, Brave web-app launchers).
   - `networking.nix`: NetworkManager, Tailscale daemon, SSH server.
 - **`home/`** — the nix-specific files that are *not* shared with the Mac:
-  `AGENTS.md`, `monitors.xml`, `herdr/config.toml`, the nix-only opencode skills
-  (herdr, Herdr workspace naming, podman services), and fish functions that call
+  `AGENTS.md`, `monitors.xml`, `herdr/config.toml`, and fish functions that call
   nix-only helpers (`video-compress`).
 - **`dotfiles/`** — the shared config submodule (see below). Also holds the
   first-party config for fish, helical, starship, git, opencode, alacritty,

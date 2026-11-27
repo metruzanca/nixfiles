@@ -76,10 +76,10 @@ git ls-remote https://github.com/railwayapp/railway-skills main | cut -f1
 make switch
 ```
 
-First-party skills live in the dotfiles repo. Skills that only make sense on
-this host (herdr, Herdr workspace naming, podman services) stay in
-`home/.config/opencode/skills/` and are linked automatically; a new directory
-there is picked up on the next `make switch`.
+First-party skills live in the dotfiles repo at
+`dotfiles/home/.config/opencode/skills/`, so every machine gets them. Add a new
+skill directory there and commit it in the submodule. Third-party skills are the
+exception: they are fetched from upstream (see above).
 
 ## Package sources
 

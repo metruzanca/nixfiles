@@ -25,10 +25,6 @@ let
     "https://github.com/railwayapp/railway-skills/tree/5d1e97178f86c82795d6737928bd641e0552166a/plugins/railway/skills/use-railway"
   ];
 
-  # Skills that only make sense on this machine. Everything else under
-  # ~/.config/opencode comes from the dotfiles submodule (modules/common/dotfiles.nix).
-  localSkills = builtins.attrNames (builtins.readDir ../../home/.config/opencode/skills);
-
   # Fish functions that call nix-only helpers (opencode). The shared
   # ones come from the dotfiles submodule.
   localFishFunctions = builtins.attrNames (builtins.readDir ../../home/.config/fish/functions);
@@ -73,9 +69,9 @@ in {
   # ~/AGENTS.md — tells AI agents this system is nix-managed.
   # force: overwrite the pre-existing hand-written file, no backup.
   #
-  # ~/.config/opencode is a directory of per-file symlinks: the shared tree comes
-  # from the dotfiles submodule, and the nix-only plus third-party skills are
-  # added here.
+  # ~/.config/opencode is a directory of per-file symlinks: the shared tree,
+  # including all first-party skills, comes from the dotfiles submodule, and the
+  # third-party skills are added here.
   #
   # ~/Pictures/fragment.jpg — the desktop wallpaper, kept at a stable
   # path so the wallpaper activation script can reference it. Source:
@@ -91,12 +87,6 @@ in {
     };
   } // lib.listToAttrs (
     map
-      (name: {
-        name = ".config/opencode/skills/${name}";
-        value.source = ../../home/.config/opencode/skills/${name};
-      })
-      localSkills
-    ++ map
       (name: {
         name = ".config/fish/functions/${name}";
         value.source = ../../home/.config/fish/functions/${name};
