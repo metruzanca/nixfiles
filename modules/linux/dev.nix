@@ -57,6 +57,8 @@ in {
     # systemPackages; NixOS doesn't put /run/current-system/sw/lib on the
     # dynamic loader path by default. openssl's lib output is appended because
     # pkgs.openssl doesn't merge its libssl/crypto .so into sw/lib (see above).
-    LD_LIBRARY_PATH = "/run/current-system/sw/lib:${opensslRuntime.out}/lib";
+    # The CUDA driver directory is last so Mesa keeps priority for GL, while
+    # libcuda.so.1 is still available to torch and other CUDA consumers.
+    LD_LIBRARY_PATH = "/run/current-system/sw/lib:${opensslRuntime.out}/lib:/run/opengl-driver/lib";
   };
 }
