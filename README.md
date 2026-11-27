@@ -78,8 +78,12 @@ make switch
 
 First-party skills live in the dotfiles repo at
 `dotfiles/home/.config/opencode/skills/`, so every machine gets them. Add a new
-skill directory there and commit it in the submodule. Third-party skills are the
-exception: they are fetched from upstream (see above).
+skill directory there and commit it in the submodule.
+
+Third-party skills take one of two routes: fetched from upstream at build time
+(`thirdPartyUrls` in `modules/common/home.nix`), or vendored into
+`dotfiles/home/.agents/skills/` with their license when they ship in the
+`.agents/skills` layout. The Matt Pocock skills are vendored there.
 
 ## Package sources
 
